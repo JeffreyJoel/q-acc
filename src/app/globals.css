@@ -8,8 +8,6 @@
   }
 }
 
-
-
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -66,8 +64,6 @@
   }
 }
 
-
-
 @layer base {
   * {
     @apply border-border;
@@ -75,4 +71,52 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+@font-face {
+  font-family: "Tusker Grotesk 4000";
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("/fonts/TuskerGrotesk-4500Medium.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Tusker Grotesk 4000";
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("/fonts/TuskerGrotesk-4600SemiBold.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Tusker Grotesk 4000";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("/fonts/TuskerGrotesk-4700Bold.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Tusker Grotesk 6000";
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("/fonts/TuskerGrotesk-6500Medium.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Tusker Grotesk 6000";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("/fonts/TuskerGrotesk-6700Bold.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Tusker Grotesk 8000";
+  font-style: normal;
+  font-weight: 700;
+  font-display: auto;
+  src: url("/fonts/TuskerGrotesk-8700Bold.woff2") format("woff2");
 }
