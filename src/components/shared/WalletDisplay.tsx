@@ -1,0 +1,64 @@
+"use client";
+
+import { useState } from "react";
+import { ChevronDown } from "lucide-react";
+import Image from "next/image";
+import { useModal } from "@getpara/react-sdk";
+
+interface WalletDisplayProps {
+  walletAddress?: string;
+}
+
+export const WalletDisplay = ({ walletAddress }: WalletDisplayProps) => {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { openModal } = useModal();
+
+  const toggleDropdown = () => setIsMenuOpen(!isMenuOpen);
+
+  return (
+    <div className="relative inline-block text-left">
+      <button
+        onClick={toggleDropdown}
+        className="flex items-center gap-2 bg-neutral-800 px-4 py-3 rounded-full border border-peach-400/30 shadow-sm"
+      >
+        {/* <Image
+          src="/icons/polygon-icon.png"
+          alt="Polygon Icon"
+          width={24}
+          height={24}
+          className="rounded-full"
+        /> */}
+        <span className="text-sm font-medium">
+          {walletAddress || "0x0000...0000"}
+        </span>
+        <ChevronDown className="h-4 w-4" />
+      </button>
+
+      {isMenuOpen && (
+        <div className="absolute block right-0 left-0 mx-auto mt-2 pt-3 w-60 dark bg-neutral-800 rounded-2xl shadow-xl ring-1 ring-black ring-opacity-5 z-50 ">
+          {/* <div className="px-2 py-3 text-sm text-gray-700"> */}
+          {/* <div className="font-bold text-sm text-peach-400 mb-2">WALLET</div> */}
+          <div
+            className="hover:bg-peach-400/10 mx-2 px-4 py-3 rounded-lg cursor-pointer font-bold text-base text-peach-400"
+            onClick={() => openModal()}
+          >
+            {walletAddress}
+          </div>
+          {/* </div> */}
+          <div className="mx-2" />
+          <ul className="py-2 px-2 flex flex-col gap-3 text-base text-gray-200">
+            <li className="hover:bg-peach-400/10 px-4 py-3 rounded-xl cursor-pointer">
+              My Account
+            </li>
+            <li className="hover:bg-peach-400/10 px-4 py-3 rounded-xl cursor-pointer">
+              Do You Need Help?
+            </li>
+            {/* <li className="hover:bg-red-600 hover:text-white px-4 py-3 rounded-xl cursor-pointer text-red-600">
+              Sign out
+            </li> */}
+          </ul>
+        </div>
+      )}
+    </div>
+  );
+};

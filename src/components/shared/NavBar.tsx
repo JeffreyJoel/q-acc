@@ -11,7 +11,8 @@ import {
   MobileNavMenu,
 } from "@/components/ui/resizable-navbar";
 import { useState } from "react";
-
+import WalletConnect from "./WalletConnect";
+import { useAccount } from "@getpara/react-sdk";
 export function NavBar() {
   const navItems = [
     {
@@ -27,7 +28,7 @@ export function NavBar() {
       link: "#contact",
     },
   ];
-
+  const { data: account } = useAccount();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   return (
@@ -37,9 +38,10 @@ export function NavBar() {
         <NavBody>
           <NavbarLogo />
           <NavItems items={navItems} />
-          <div className="flex items-center gap-4">
-            <NavbarButton variant="secondary">Login</NavbarButton>
-            <NavbarButton variant="primary" className="rounded-full bg-peach-400">Sign up</NavbarButton>
+          <div className="flex items-center gap-4 relative">
+            {account?.isConnected ? "" : <NavbarButton variant="secondary">Login</NavbarButton>}
+            {/* <NavbarButton variant="primary" className="rounded-full bg-peach-400">Sign up</NavbarButton> */}
+            <WalletConnect />
           </div>
         </NavBody>
 
@@ -70,18 +72,12 @@ export function NavBar() {
             <div className="flex w-full flex-col gap-4">
               <NavbarButton
                 onClick={() => setIsMobileMenuOpen(false)}
-                variant="primary"
+                variant="secondary"
                 className="w-full"
               >
                 Login
               </NavbarButton>
-              <NavbarButton
-                onClick={() => setIsMobileMenuOpen(false)}
-                variant="primary"
-                className="w-full"
-              >
-                Book a call
-              </NavbarButton>
+              <NavbarButton  onClick={() => setIsMobileMenuOpen(false)} variant="primary" className="w-full rounded-full bg-peach-400">Sign up</NavbarButton>
             </div>
           </MobileNavMenu>
         </MobileNav>
