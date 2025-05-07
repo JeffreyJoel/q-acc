@@ -6,6 +6,9 @@ import GeneralInfo from "@/components/project/GeneralInfo";
 import { ChevronLeft, Twitter, Github, Globe } from "lucide-react";
 import { CopyButton } from "@/components/shared/CopyButton";
 import { Tabs, TabsTrigger, TabsList, TabsContent } from "@/components/ui/tabs";
+import TeamMember from "@/components/project/Team";
+import { IconBrandX, IconBrandGithub } from "@tabler/icons-react";
+import { GeckoTerminalChart } from "@/components/project/GeckoTerminal";
 
 export default function ProjectPage({ params }: { params: { id: string } }) {
   return (
@@ -68,7 +71,7 @@ export default function ProjectPage({ params }: { params: { id: string } }) {
                       rel="noopener noreferrer"
                       className="bg-neutral-800 hover:bg-neutral-700 transition-colors p-3 rounded-full"
                     >
-                      <Globe className="w-4 h-4 text-white" />
+                      <Globe className="w-5 h-5 text-white" />
                     </a>
                   )}
                   {projectData.twitter && (
@@ -78,7 +81,7 @@ export default function ProjectPage({ params }: { params: { id: string } }) {
                       rel="noopener noreferrer"
                       className="bg-neutral-800 hover:bg-neutral-700 transition-colors p-3 rounded-full"
                     >
-                      <Twitter className="w-4 h-4 text-white" />
+                      <IconBrandX className="w-5 h-5 text-white" />
                     </a>
                   )}
                   {projectData.github && (
@@ -88,7 +91,7 @@ export default function ProjectPage({ params }: { params: { id: string } }) {
                       rel="noopener noreferrer"
                       className="bg-neutral-800 hover:bg-neutral-700 transition-colors p-3 rounded-full"
                     >
-                      <Github className="w-4 h-4 text-white" />
+                      <IconBrandGithub className="w-5 h-5 text-white" />
                     </a>
                   )}
                 </div>
@@ -96,28 +99,29 @@ export default function ProjectPage({ params }: { params: { id: string } }) {
             </div>
           </div>
         </div>
-        {/*  */}
+        
+        <GeckoTerminalChart projectId={projectData.id} tokenSymbol={projectData.tokenSymbol} />
 
         <GeneralInfo projectData={projectData} />
 
-        <div className="mt-8 bg-neutral-800 rounded-2xl p-6 mb-8">
+        <div className="mt-8 rounded-2xl p-6 mb-8">
           <Tabs defaultValue="about" className="w-full ">
             <TabsList className="gap-6 mb-6 bg-transparent rounded-full py-6">
               <TabsTrigger
                 value="about"
-                className="px-4 py-2 w-fit rounded-full data-[state=active]:bg-peach-400 data-[state=active]:text-black data-[state=active]:shadow-none"
+                className="px-4 py-2 w-fit rounded-full hover:bg-neutral-800 hover:text-peach-400 data-[state=active]:bg-peach-400 data-[state=active]:text-black data-[state=active]:shadow-none"
               >
                 About
               </TabsTrigger>
               <TabsTrigger
                 value="team"
-                className="px-4 py-2 w-fit rounded-full data-[state=active]:bg-peach-400 data-[state=active]:text-black text-base data-[state=active]:shadow-none"
+                className="px-4 py-2 w-fit rounded-full hover:bg-neutral-800 hover:text-peach-400 data-[state=active]:bg-peach-400 data-[state=active]:text-black text-base data-[state=active]:shadow-none"
               >
                 Team
               </TabsTrigger>
               <TabsTrigger
                 value="roadmap"
-                className="px-4 py-2 w-fit rounded-full data-[state=active]:bg-peach-400 data-[state=active]:text-black data-[state=active]:shadow-none"
+                className="px-4 py-2 w-fit rounded-full hover:bg-neutral-800 hover:text-peach-400 data-[state=active]:bg-peach-400 data-[state=active]:text-black data-[state=active]:shadow-none"
               >
                 Roadmap
               </TabsTrigger>
@@ -131,10 +135,10 @@ export default function ProjectPage({ params }: { params: { id: string } }) {
               </div>
             </TabsContent>
             <TabsContent value="team" className="mt-0">
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-6 py-4">
-                {/* {projectData.team.map((member, index) => ( */}
-                {/* <TeamMember key={index} member={member} /> */}
-                {/*   ))} */}
+              <div className="flex flex-wrap justify-center gap-4 py-4">
+                {projectData.team.map((member, index) => (
+                  <TeamMember key={index} member={member} />
+                ))}
               </div>
             </TabsContent>
             <TabsContent value="roadmap" className="mt-0">
@@ -143,7 +147,7 @@ export default function ProjectPage({ params }: { params: { id: string } }) {
                   <div key={index} className="relative pl-6">
                     <div
                       className={`absolute left-0 top-1.5 w-3 h-3 rounded-full ${
-                        milestone.completed ? "bg-[#5AFF15]" : "bg-[#333]"
+                        milestone.completed ? "bg-peach-400" : "bg-[#333]"
                       }`}
                     ></div>
                     {index < projectData.roadmap.length - 1 && (

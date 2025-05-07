@@ -1,9 +1,7 @@
 "use client";
 
-import Image from "next/image";
-import { NavBar } from "@/components/shared/NavBar";
 import SearchComponent from "@/components/shared/Search";
-import ProjectCard from "@/components/card";
+import ProjectCard from "@/components/project/ProjectCard";
 import { projects } from "@/constant/projects";
 import { useState } from "react";
 export default function Home() {
@@ -33,7 +31,6 @@ export default function Home() {
 
   return (
     <>
-      {/* <NavBar /> */}
       <div className="mt-32 max-w-7xl mx-auto">
         <div className="text-center flex flex-col gap-4 mt-20 mb-12">
           <h1 className="text-4xl font-tusker-8 mt-12 font-bold  text-white ">
