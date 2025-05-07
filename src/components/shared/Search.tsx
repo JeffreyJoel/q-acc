@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { Search } from "lucide-react"
+import { Search, X } from "lucide-react"
 
 const categories = [
   { id: "defi", name: "DeFi" },
@@ -49,9 +49,19 @@ const SearchComponent = ({
             type="text"
             className="block w-full p-4 pl-10 text-sm text-white bg-neutral-800 rounded-full focus:ring-peach-400 focus:border-peach-400 outline-none"
             placeholder="Search projects by name, description, or category..."
+            value={searchText}
+            onChange={(e) => setSearchText(e.target.value)}
           />
+           {(searchText || selectedCategories.length > 0) && (
+            <button
+              onClick={clearSearch}
+              className="absolute right-3 top-1/2 -translate-y-1/2 p-1 rounded-full bg-neutral-600 hover:bg-neutral-500 transition-colors"
+              aria-label="Clear search"
+            >
+              <X className="w-4 h-4 text-white" />
+            </button>
+          )}
         </div>
-
         <div>
           <div className="flex flex-wrap justify-center gap-2">
             {categories.map((category) => (

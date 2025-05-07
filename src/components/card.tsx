@@ -1,3 +1,4 @@
+import Link from "next/link"
 import type React from "react"
 
 interface Project {
@@ -141,9 +142,9 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
             <button className="px-6 py-4 rounded-full text-sm font-bold items-center flex gap-2 text-white bg-giv-500 w-full justify-center opacity-80 hover:opacity-100">
               Buy Token
             </button>
-            <button className="px-6 py-4 text-black rounded-full text-sm font-bold flex gap-2 text-giv-500 bg-peach-400 w-full justify-center items-center">
+            <Link href="/project/1" className="px-6 py-4 text-black rounded-full text-sm font-bold flex gap-2 text-giv-500 bg-peach-400 w-full justify-center items-center">
               Review Project
-            </button>
+            </Link>
           </div>
         </div>
       </div>

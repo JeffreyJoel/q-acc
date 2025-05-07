@@ -33,7 +33,7 @@ export default function Home() {
 
   return (
     <>
-      <NavBar />
+      {/* <NavBar /> */}
       <div className="mt-32 max-w-7xl mx-auto">
         <div className="text-center flex flex-col gap-4 mt-20 mb-12">
           <h1 className="text-4xl font-tusker-8 mt-12 font-bold  text-white ">

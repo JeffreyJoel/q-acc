@@ -9,7 +9,6 @@ import {
   walletConnectWallet,
   zerionWallet,
 } from "@getpara/evm-wallet-connectors";
-// import {phantomWallet} from "@getpara/solana-wallet-connectors";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { sepolia, celo, mainnet, polygon } from "wagmi/chains";
 import { para } from "@/client/para";
