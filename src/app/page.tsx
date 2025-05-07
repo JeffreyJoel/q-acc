@@ -31,7 +31,7 @@ export default function Home() {
 
   return (
     <>
-      <div className="mt-32 max-w-7xl mx-auto">
+      <div className="mt-32 max-w-7xl mx-auto px-6 lg:px-4">
         <div className="text-center flex flex-col gap-4 mt-20 mb-12">
           <h1 className="text-4xl font-tusker-8 mt-12 font-bold  text-white ">
             THE FUTURE OF <span className="text-peach-400">TOKENIZATION</span>
@@ -71,7 +71,7 @@ export default function Home() {
             Launched <span className="text-peach-300 ml-2">Projects</span>
           </h2>
           {launchedProjects.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16 ">
               {launchedProjects.map((project) => (
                 <ProjectCard key={project.id} project={project} />
               ))}

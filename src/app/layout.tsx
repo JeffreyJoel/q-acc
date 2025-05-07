@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
-import { ParaProviders } from "@/providers/ParaProvider";
-import { NavBar } from "@/components/shared/NavBar";
+import ClientLayout from "./ClientLayout";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -15,10 +14,10 @@ const geistMono = localFont({
   weight: "100 900",
 });
 
-const title = 'Quadratic Acceleration';
+const title = "Quadratic Acceleration";
 const description =
-  'The Quadratic Accelerator is pioneering a novel tokenization protocol that combines the best features of Quadratic Funding (QF) and Augmented Bonding Curves (ABCs).';
-const image = '/images/banners/banner-lg.jpg';
+  "The Quadratic Accelerator is pioneering a novel tokenization protocol that combines the best features of Quadratic Funding (QF) and Augmented Bonding Curves (ABCs).";
+const image = "/images/banners/banner-lg.jpg";
 
 export const metadata: Metadata = {
   title,
@@ -34,7 +33,7 @@ export const metadata: Metadata = {
     ],
   },
   twitter: {
-    card: 'summary_large_image',
+    card: "summary_large_image",
     title,
     description,
     images: [image],
@@ -49,15 +48,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        <link rel='icon' href='/favicon.ico' />
+        <link rel="icon" href="/favicon.ico" />
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased dark bg-neutral-900`}
       >
-        <ParaProviders>
-          <NavBar/>
-          {children}
-        </ParaProviders>
+        <ClientLayout>{children}</ClientLayout>
       </body>
     </html>
   );
