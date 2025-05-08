@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { projectData } from "@/constant/projects";
+import { projectData } from "@/data/projects";
 import GeneralInfo from "@/components/project/GeneralInfo";
 import { ChevronLeft, Twitter, Github, Globe } from "lucide-react";
 import { CopyButton } from "@/components/shared/CopyButton";

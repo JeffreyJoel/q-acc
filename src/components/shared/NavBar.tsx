@@ -25,7 +25,7 @@ export function NavBar() {
     },
     {
       name: "Leaderboard",
-      link: "#leaderboard",
+      link: "/leaderboard",
     },
   ];
   const { data: account } = useAccount();

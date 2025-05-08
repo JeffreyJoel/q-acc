@@ -2,7 +2,7 @@
 
 import SearchComponent from "@/components/shared/Search";
 import ProjectCard from "@/components/project/ProjectCard";
-import { projects } from "@/constant/projects";
+import { projects } from "@/data/projects";
 import { useState } from "react";
 export default function Home() {
   const [searchText, setSearchText] = useState("");
