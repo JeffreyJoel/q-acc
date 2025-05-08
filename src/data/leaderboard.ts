@@ -7,6 +7,7 @@ export const leaderboardData = [
       role: "project backer",
       points: 18720,
       isCurrentUser: false,
+      projectsFunded: 12,
     },
     {
       id: 2,
@@ -16,6 +17,7 @@ export const leaderboardData = [
       role: "project backer",
       points: 9370,
       isCurrentUser: false,
+      projectsFunded: 8,
     },
     {
       id: 3,
@@ -25,6 +27,7 @@ export const leaderboardData = [
       role: "You",
       points: 7340,
       isCurrentUser: true,
+      projectsFunded: 5,
     },
     {
       id: 4,
@@ -34,6 +37,7 @@ export const leaderboardData = [
       role: "project backer",
       points: 5100,
       isCurrentUser: false,
+      projectsFunded: 4,
     },
     {
       id: 5,
@@ -43,6 +47,7 @@ export const leaderboardData = [
       role: "project backer",
       points: 4320,
       isCurrentUser: false,
+      projectsFunded: 3,
     },
     {
       id: 6,
@@ -52,6 +57,7 @@ export const leaderboardData = [
       role: "project backer",
       points: 3840,
       isCurrentUser: false,
+      projectsFunded: 2,
     },
     {
       id: 7,
@@ -61,6 +67,7 @@ export const leaderboardData = [
       role: "project backer",
       points: 2950,
       isCurrentUser: false,
+      projectsFunded: 2,
     },
     {
       id: 8,
@@ -70,5 +77,6 @@ export const leaderboardData = [
       role: "project backer",
       points: 1750,
       isCurrentUser: false,
+      projectsFunded: 1,
     },
   ]
