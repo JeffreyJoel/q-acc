@@ -44,7 +44,6 @@ export const WalletDisplay = ({ walletAddress }: WalletDisplayProps) => {
           >
             {walletAddress}
           </div>
-          {/* </div> */}
           <div className="mx-2" />
           <ul className="py-2 px-2 flex flex-col gap-3 text-base text-gray-200">
             <li className="hover:bg-peach-400/10 px-4 py-3 rounded-xl cursor-pointer">

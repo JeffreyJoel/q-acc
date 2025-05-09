@@ -6,9 +6,11 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
 
 import { leaderboardData } from "@/data/leaderboard";
+import { useRouter } from "next/navigation";
 
 export function Leaderboard() {
   const [searchQuery, setSearchQuery] = useState("");
+  const router = useRouter();
 
   const filteredData = leaderboardData.filter((item) =>
     item.name.toLowerCase().includes(searchQuery.toLowerCase())
@@ -50,7 +52,8 @@ export function Leaderboard() {
             .map((item) => (
               <div
                 key={item.id}
-                className="flex items-center justify-between bg-neutral-800 rounded-3xl p-4 border border-peach-400"
+                className="flex items-center justify-between bg-neutral-800 rounded-3xl p-4 border border-peach-400 cursor-pointer"
+                onClick={() => router.push(`/profile/${item.id}`)}
               >
                 <div className="flex items-center gap-4">
                   <div
@@ -122,8 +125,9 @@ export function Leaderboard() {
               key={item.id}
               className={`
               flex items-center justify-between 
-              bg-neutral-800 rounded-3xl p-4
+              bg-neutral-800 rounded-3xl p-4 cursor-pointer
             `}
+              onClick={() => router.push(`/profile/${item.id}`)}
             >
               <div className="flex items-center gap-4">
                 <div
