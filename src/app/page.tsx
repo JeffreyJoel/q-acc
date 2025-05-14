@@ -2,32 +2,63 @@
 
 import SearchComponent from "@/components/shared/Search";
 import ProjectCard from "@/components/project/ProjectCard";
-import { projects } from "@/data/projects";
-import { useState } from "react";
+// import { projects } from "@/data/projects"; // Will be replaced by the hook
+import { useState, useMemo } from "react";
+import { useFetchAllProjects } from "@/hooks/useProjects"; // Import the hook
+import { IProject } from "@/types/project.type"; // Import the project type
+
 export default function Home() {
   const [searchText, setSearchText] = useState("");
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
 
-  const filteredProjects = projects.filter((project) => {
-    const searchMatch =
-      searchText === "" ||
-      project.name.toLowerCase().includes(searchText.toLowerCase()) ||
-      project.description.toLowerCase().includes(searchText.toLowerCase()) ||
-      project.categories.some((category) =>
-        category.toLowerCase().includes(searchText.toLowerCase())
-      );
+  const { data: allProjects, isLoading, error } = useFetchAllProjects(); // Use the hook
 
-    const categoryMatch =
-      selectedCategories.length === 0 ||
-      project.categories.some((category) =>
-        selectedCategories.includes(category)
-      );
+  const projects = useMemo(() => allProjects?.projects || [], [allProjects]);
+  console.log(allProjects);
 
-    return searchMatch && categoryMatch;
-  });
+  const filteredProjects = useMemo(() => {
+    if (!projects) return [];
+    return projects.filter((project: IProject) => {
+      const searchMatch =
+        searchText === "" ||
+        (project.title && project.title.toLowerCase().includes(searchText.toLowerCase())) ||
+        (project.description && project.description.toLowerCase().includes(searchText.toLowerCase())) ||
+        (project.categories && project.categories.some((category) =>
+          category.name.toLowerCase().includes(searchText.toLowerCase())
+        ));
 
-  const newProjects = filteredProjects.filter((project) => project.isNew);
-  const launchedProjects = filteredProjects.filter((project) => !project.isNew);
+      const categoryMatch =
+        selectedCategories.length === 0 ||
+        (project.categories && project.categories.some((category) =>
+          selectedCategories.includes(category.name)
+        ));
+
+      return searchMatch && categoryMatch;
+    });
+  }, [projects, searchText, selectedCategories]);
+
+  // Removing isNew logic for now as it's not in IProject
+  // const newProjects = filteredProjects.filter((project) => project.isNew);
+  // const launchedProjects = filteredProjects.filter((project) => !project.isNew);
+  // For now, we'll display all filtered projects in one list.
+  // You might want to re-introduce a way to distinguish 'new' vs 'launched'
+  // based on the available fields in IProject (e.g., creationDate).
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <p className="text-xl text-white">Loading projects...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <p className="text-xl text-red-500">Error loading projects: {error.message}</p>
+      </div>
+    );
+  }
 
   return (
     <>
@@ -49,23 +80,24 @@ export default function Home() {
         />
         <div className="mt-16">
           <h2 className="text-xl font-medium font-tusker-8 text-white mb-6 flex items-center">
-            New <span className="text-peach-300 ml-2">Projects</span>
+            All <span className="text-peach-300 ml-2">Projects</span>
           </h2>
-          {newProjects.length > 0 ? (
+          {filteredProjects.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
-              {newProjects.map((project) => (
+              {filteredProjects.map((project: IProject) => ( // Use IProject type
                 <ProjectCard key={project.id} project={project} />
               ))}
             </div>
           ) : (
             <div className="bg-neutral-800 rounded-xl p-8 text-center mb-16">
               <p className="text-neutral-300">
-                No new projects match your search criteria.
+                No projects match your search criteria.
               </p>
             </div>
           )}
         </div>
 
+        {/* Removing the separate "Launched Projects" section for now
         <div className="mt-16">
           <h2 className="text-xl font-medium font-tusker-8 text-white mb-6 flex items-center">
             Launched <span className="text-peach-300 ml-2">Projects</span>
@@ -84,6 +116,7 @@ export default function Home() {
             </div>
           )}
         </div>
+        */}
       </div>
     </>
   );

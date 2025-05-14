@@ -1,16 +1,32 @@
 "use client";
 
 import Link from "next/link";
-import { projectData } from "@/data/projects";
+import { useFetchProjectBySlug } from "@/hooks/useProjects";
 import GeneralInfo from "@/components/project/GeneralInfo";
-import { ChevronLeft, Twitter, Github, Globe } from "lucide-react";
+import { ChevronLeft, Globe } from "lucide-react";
 import { CopyButton } from "@/components/shared/CopyButton";
 import { Tabs, TabsTrigger, TabsList, TabsContent } from "@/components/ui/tabs";
 import TeamMember from "@/components/project/Team";
 import { IconBrandX, IconBrandGithub } from "@tabler/icons-react";
 import { GeckoTerminalChart } from "@/components/project/GeckoTerminal";
+import { IProject, EProjectSocialMediaType, TeamMember as TeamMemberType, IProjectSocialMedia } from "@/types/project.type";
+import RichTextViewer from "@/components/project/RichTextViewer";
 
 export default function ProjectPage({ params }: { params: { id: string } }) {
+  const { data: project, isLoading, error } = useFetchProjectBySlug(params.id);
+
+  if (isLoading) {
+    return <div className="mt-24 max-w-7xl mx-auto text-center">Loading project data...</div>;
+  }
+
+  if (error || !project) {
+    return <div className="mt-24 max-w-7xl mx-auto text-center">Failed to load project data. {error?.message}</div>;
+  }
+
+  const twitterSocial = project.socialMedia?.find((s: IProjectSocialMedia) => s.type === EProjectSocialMediaType.X);
+  const githubSocial = project.socialMedia?.find((s: IProjectSocialMedia) => s.type === EProjectSocialMediaType.GITHUB);
+  const websiteSocial = project.socialMedia?.find((s: IProjectSocialMedia) => s.type === EProjectSocialMediaType.WEBSITE);
+
   return (
     <div className="mt-24 max-w-7xl mx-auto">
       <div className="px-4 sm:px-6 lg:px-8 pt-8">
@@ -25,8 +41,8 @@ export default function ProjectPage({ params }: { params: { id: string } }) {
       <div className="w-full mt-4 relative rounded-xl overflow-hidden h-[300px] md:h-[400px] mb-8">
         <div className="absolute inset-0">
           <img
-            src={projectData.image || ""}
-            alt={projectData.name || ""}
+            src={project.image || ""}
+            alt={project.title || ""}
             className="w-full h-full object-cover "
           />
           <div className="absolute inset-0 bg-gradient-to-t from-neutral-900 to-transparent" />
@@ -38,35 +54,30 @@ export default function ProjectPage({ params }: { params: { id: string } }) {
           <div className="flex items-center gap-3">
             <div className="bg-[#111] rounded-xl p-4 flex-shrink-0">
               <img
-                src={projectData.logo || "/placeholder.svg"}
-                alt={`${projectData.name} logo`}
+                src={project.icon || "/placeholder.svg"}
+                alt={`${project.title} logo`}
                 className="w-20 h-20 rounded-lg object-cover"
               />
             </div>
             <div>
               <div className="flex items-center gap-3">
                 <h1 className="text-2xl font-bold font-tusker-8">
-                  {projectData.name}
+                  {project.title}
                 </h1>
-                {projectData.isNew && (
-                  <span className="bg-peach-400 text-black px-3 py-1 rounded-full text-sm font-medium">
-                    New
-                  </span>
-                )}
               </div>
               <div>
                 <p className="text-gray-400 my-2 text-sm font-medium flex items-center">
-                  {projectData.address.slice(0, 8)}...
-                  {projectData.address.slice(
-                    projectData.address.length - 8,
-                    projectData.address.length
+                  {project.walletAddress?.slice(0, 8)}...
+                  {project.walletAddress?.slice(
+                    project.walletAddress.length - 8,
+                    project.walletAddress.length
                   )}
-                  <CopyButton text={projectData.address} />
+                  <CopyButton text={project.walletAddress || ''} />
                 </p>
                 <div className="flex space-x-3">
-                  {projectData.website && (
+                  {websiteSocial && (
                     <a
-                      href={projectData.website}
+                      href={websiteSocial.link}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="bg-neutral-800 hover:bg-neutral-700 transition-colors p-3 rounded-full"
@@ -74,9 +85,9 @@ export default function ProjectPage({ params }: { params: { id: string } }) {
                       <Globe className="w-5 h-5 text-white" />
                     </a>
                   )}
-                  {projectData.twitter && (
+                  {twitterSocial && (
                     <a
-                      href={`https://twitter.com/${projectData.twitter}`}
+                      href={twitterSocial.link}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="bg-neutral-800 hover:bg-neutral-700 transition-colors p-3 rounded-full"
@@ -84,9 +95,9 @@ export default function ProjectPage({ params }: { params: { id: string } }) {
                       <IconBrandX className="w-5 h-5 text-white" />
                     </a>
                   )}
-                  {projectData.github && (
+                  {githubSocial && (
                     <a
-                      href={`https://github.com/${projectData.github}`}
+                      href={githubSocial.link}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="bg-neutral-800 hover:bg-neutral-700 transition-colors p-3 rounded-full"
@@ -100,9 +111,11 @@ export default function ProjectPage({ params }: { params: { id: string } }) {
           </div>
         </div>
         
-        <GeckoTerminalChart projectId={projectData.id} tokenSymbol={projectData.tokenSymbol} />
+        {project.id && project.abc?.tokenTicker && (
+           <GeckoTerminalChart projectId={parseInt(project.id, 10)} tokenSymbol={project.abc.tokenTicker} />
+        )}
 
-        <GeneralInfo projectData={projectData} />
+        <GeneralInfo projectData={project as IProject} />
 
         <div className="mt-8 rounded-2xl p-6 mb-8">
           <Tabs defaultValue="about" className="w-full ">
@@ -128,46 +141,29 @@ export default function ProjectPage({ params }: { params: { id: string } }) {
             </TabsList>
             <TabsContent value="about" className="mt-0">
               <div>
-                <p className="text-gray-300 mb-4">{projectData.description}</p>
-                <p className="text-gray-300 whitespace-pre-line">
-                  {projectData.longDescription}
-                </p>
+                {/* <p className="text-gray-300 mb-4">{project.description}</p> */}
+                <RichTextViewer description={project.description} />
+                
               </div>
             </TabsContent>
             <TabsContent value="team" className="mt-0">
               <div className="flex flex-wrap justify-center gap-4 py-4">
-                {projectData.team.map((member, index) => (
-                  <TeamMember key={index} member={member} />
+                {(project as any).teamMembers && (project as any).teamMembers.map((member: TeamMemberType, index: number) => (
+                  <TeamMember 
+                    key={index} 
+                    member={{
+                      name: member.name,
+                      image: (member.image as unknown as string) || "/placeholder.svg",
+                      role: "N/A",
+                      twitter: member.twitter
+                    }} 
+                  />
                 ))}
               </div>
             </TabsContent>
             <TabsContent value="roadmap" className="mt-0">
               <div className="space-y-4 py-4">
-                {projectData.roadmap.map((milestone, index) => (
-                  <div key={index} className="relative pl-6">
-                    <div
-                      className={`absolute left-0 top-1.5 w-3 h-3 rounded-full ${
-                        milestone.completed ? "bg-peach-400" : "bg-[#333]"
-                      }`}
-                    ></div>
-                    {index < projectData.roadmap.length - 1 && (
-                      <div className="absolute left-1.5 top-4 w-0.5 h-full bg-[#333]"></div>
-                    )}
-                    <div>
-                      <div className="flex justify-between items-center">
-                        <h3 className="font-bold text-white">
-                          {milestone.title}
-                        </h3>
-                        <span className="text-sm text-gray-400">
-                          {milestone.date}
-                        </span>
-                      </div>
-                      <p className="text-sm text-gray-300 mt-1">
-                        {milestone.description}
-                      </p>
-                    </div>
-                  </div>
-                ))}
+                <p className="text-gray-400">Roadmap data is not available for this project.</p>
               </div>
             </TabsContent>
           </Tabs>
