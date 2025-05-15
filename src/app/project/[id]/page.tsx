@@ -11,9 +11,11 @@ import { IconBrandX, IconBrandGithub } from "@tabler/icons-react";
 import { GeckoTerminalChart } from "@/components/project/GeckoTerminal";
 import { IProject, EProjectSocialMediaType, TeamMember as TeamMemberType, IProjectSocialMedia } from "@/types/project.type";
 import RichTextViewer from "@/components/project/RichTextViewer";
+import Image from "next/image";
 
 export default function ProjectPage({ params }: { params: { id: string } }) {
   const { data: project, isLoading, error } = useFetchProjectBySlug(params.id);
+  console.log(project);
 
   if (isLoading) {
     return <div className="mt-24 max-w-7xl mx-auto text-center">Loading project data...</div>;
@@ -40,10 +42,12 @@ export default function ProjectPage({ params }: { params: { id: string } }) {
       </div>
       <div className="w-full mt-4 relative rounded-xl overflow-hidden h-[300px] md:h-[400px] mb-8">
         <div className="absolute inset-0">
-          <img
+          <Image
             src={project.image || ""}
             alt={project.title || ""}
-            className="w-full h-full object-cover "
+            className="w-full h-full object-cover rounded-xl "
+            width={2000}
+            height={2000}
           />
           <div className="absolute inset-0 bg-gradient-to-t from-neutral-900 to-transparent" />
         </div>
@@ -53,9 +57,11 @@ export default function ProjectPage({ params }: { params: { id: string } }) {
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-3">
             <div className="bg-[#111] rounded-xl p-4 flex-shrink-0">
-              <img
+              <Image
                 src={project.icon || "/placeholder.svg"}
                 alt={`${project.title} logo`}
+                width={200}
+                height={200}
                 className="w-20 h-20 rounded-lg object-cover"
               />
             </div>
@@ -141,7 +147,6 @@ export default function ProjectPage({ params }: { params: { id: string } }) {
             </TabsList>
             <TabsContent value="about" className="mt-0">
               <div>
-                {/* <p className="text-gray-300 mb-4">{project.description}</p> */}
                 <RichTextViewer description={project.description} />
                 
               </div>

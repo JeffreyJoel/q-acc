@@ -2,10 +2,9 @@
 
 import SearchComponent from "@/components/shared/Search";
 import ProjectCard from "@/components/project/ProjectCard";
-// import { projects } from "@/data/projects"; // Will be replaced by the hook
 import { useState, useMemo } from "react";
-import { useFetchAllProjects } from "@/hooks/useProjects"; // Import the hook
-import { IProject } from "@/types/project.type"; // Import the project type
+import { useFetchAllProjects } from "@/hooks/useProjects";
+import { IProject } from "@/types/project.type";
 
 export default function Home() {
   const [searchText, setSearchText] = useState("");
@@ -36,13 +35,6 @@ export default function Home() {
       return searchMatch && categoryMatch;
     });
   }, [projects, searchText, selectedCategories]);
-
-  // Removing isNew logic for now as it's not in IProject
-  // const newProjects = filteredProjects.filter((project) => project.isNew);
-  // const launchedProjects = filteredProjects.filter((project) => !project.isNew);
-  // For now, we'll display all filtered projects in one list.
-  // You might want to re-introduce a way to distinguish 'new' vs 'launched'
-  // based on the available fields in IProject (e.g., creationDate).
 
   if (isLoading) {
     return (

@@ -1,12 +1,8 @@
 import { IconMoneybag } from "@tabler/icons-react";
 import {
   Clock,
-  Ticket,
-  RefreshCw,
-  Calculator,
   Wallet,
   Coins,
-  ChartBar,
   ChartColumn,
 } from "lucide-react";
 
@@ -22,13 +18,13 @@ export default function GeneralInfo({ projectData }: GeneralInfoProps) {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <div className="text-gray-400 mb-2">Total contributed amount</div>
-              <div className="text-3xl font-bold">$75 000</div>
+              <div className="text-3xl font-bold">${projectData.totalDonations}</div>
             </div>
             <div>
               <div className="text-gray-400 mb-2">Time Remaining</div>
               <div className="flex items-center gap-2">
                 <Clock className="text-peach-400" size={24} />
-                <span className="text-2xl font-bold">6 days, 12 hours, 30 minutes</span>
+                <span className="text-2xl font-bold">{projectData.timeRemaining}</span>
               </div>
             </div>
           </div>
