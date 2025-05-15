@@ -4,17 +4,15 @@ import { IconMenu2, IconX } from "@tabler/icons-react";
 import {
   motion,
   AnimatePresence,
-  useScroll,
-  useMotionValueEvent,
 } from "motion/react";
 import Image from "next/image";
 
-import React, { useRef, useState } from "react";
-
+import React, { useEffect, useState } from "react";
 
 interface NavbarProps {
   children: React.ReactNode;
   className?: string;
+  scrollThreshold?: number;
 }
 
 interface NavBodyProps {
@@ -50,25 +48,34 @@ interface MobileNavMenuProps {
   onClose: () => void;
 }
 
-export const Navbar = ({ children, className }: NavbarProps) => {
-  const ref = useRef<HTMLDivElement>(null);
-  const { scrollY } = useScroll({
-    target: ref,
-    offset: ["start start", "end start"],
-  });
+export const Navbar = ({ children, className, scrollThreshold = 100 }: NavbarProps) => {
   const [visible, setVisible] = useState<boolean>(false);
 
-  useMotionValueEvent(scrollY, "change", (latest) => {
-    if (latest > 100) {
-      setVisible(true);
-    } else {
-      setVisible(false);
-    }
-  });
+  // Replace useScroll and useMotionValueEvent with a more reliable useEffect
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+      if (currentScrollY > scrollThreshold) {
+        setVisible(true);
+      } else {
+        setVisible(false);
+      }
+    };
+
+    // Add event listener with passive option for better performance
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    
+    // Initial check on mount
+    handleScroll();
+    
+    // Cleanup
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, [scrollThreshold]);
 
   return (
     <motion.div
-      ref={ref}
       className={cn("fixed inset-x-0 top-6 z-40 w-full", className)}
     >
       {React.Children.map(children, (child) =>
@@ -156,7 +163,6 @@ export const MobileNav = ({ children, className, visible }: MobileNavProps) => {
         width: visible ? "90%" : "100%",
         paddingRight: visible ? "16px" : "0px",
         paddingLeft: visible ? "16px" : "0px",
-      
         y: visible ? 20 : 0,
       }}
       transition={{
@@ -197,13 +203,38 @@ export const MobileNavMenu = ({
   isOpen,
   onClose,
 }: MobileNavMenuProps) => {
+  // Close menu when clicking outside
+  useEffect(() => {
+    if (!isOpen) return;
+    
+    const handleClickOutside = (e: MouseEvent) => {
+      // Check if click is outside the menu
+      const target = e.target as HTMLElement;
+      if (!target.closest('[data-mobile-menu]')) {
+        onClose();
+      }
+    };
+    
+    // Add with a slight delay to prevent immediate closing
+    const timer = setTimeout(() => {
+      document.addEventListener('click', handleClickOutside);
+    }, 100);
+    
+    return () => {
+      clearTimeout(timer);
+      document.removeEventListener('click', handleClickOutside);
+    };
+  }, [isOpen, onClose]);
+
   return (
     <AnimatePresence>
       {isOpen && (
         <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
+          data-mobile-menu
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -10 }}
+          transition={{ duration: 0.2 }}
           className={cn(
             "absolute inset-x-0 top-16 z-50 flex w-full flex-col items-start justify-start gap-4 rounded-lg bg-white px-4 py-8 shadow-[0_0_24px_rgba(34,_42,_53,_0.06),_0_1px_1px_rgba(0,_0,_0,_0.05),_0_0_0_1px_rgba(34,_42,_53,_0.04),_0_0_4px_rgba(34,_42,_53,_0.08),_0_16px_68px_rgba(47,_48,_55,_0.05),_0_1px_0_rgba(255,_255,_255,_0.1)_inset] dark:bg-neutral-950",
             className,
@@ -223,10 +254,18 @@ export const MobileNavToggle = ({
   isOpen: boolean;
   onClick: () => void;
 }) => {
-  return isOpen ? (
-    <IconX className="text-black dark:text-white" onClick={onClick} />
-  ) : (
-    <IconMenu2 className="text-black dark:text-white" onClick={onClick} />
+  return (
+    <button 
+      onClick={onClick}
+      aria-label={isOpen ? "Close menu" : "Open menu"}
+      className="p-2 focus:outline-none"
+    >
+      {isOpen ? (
+        <IconX className="text-black dark:text-white" />
+      ) : (
+        <IconMenu2 className="text-black dark:text-white" />
+      )}
+    </button>
   );
 };
 
@@ -242,6 +281,7 @@ export const NavbarLogo = () => {
         width={100}
         height={100}
         className="w-[200px] h-auto"
+        priority
       />
     </a>
   );

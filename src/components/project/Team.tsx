@@ -6,7 +6,7 @@ import Link from "next/link"
 interface TeamMemberProps {
   member: {
     name: string
-    role: string
+    role?: string
     image: string
     twitter?: string
   }
@@ -17,7 +17,7 @@ const TeamMember = ({ member }: TeamMemberProps) => {
     <div className="bg-neutral-800 w-[250px] p-4 h-auto rounded-2xl flex flex-col items-center text-center">
       <div className="relative mb-3">
         <img
-          src={member.image || "/placeholder.svg"}
+          src={member.image || "/images/user.png"}
           alt={member.name}
           width={200}
           height={200}

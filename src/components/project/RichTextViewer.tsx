@@ -7,11 +7,10 @@ interface RichTextViewerProps {
 
 const RichTextViewer: React.FC<RichTextViewerProps> = ({ description }) => {
   return (
-    <div className='container border-b-[1px]  px-0  font-redHatText '>
+    <div className='container dark border-b-[1px]  px-0  font-redHatText '>
       <style>{`
         .ql-container > .ql-editor {
           word-break: break-word;
-          font-family: "Red Hat Text", sans-serif;
           font-size: 16px;
           margin: 0 auto;
           
@@ -21,6 +20,10 @@ const RichTextViewer: React.FC<RichTextViewerProps> = ({ description }) => {
         .ql-container > .ql-editor li,
         .ql-container > .ql-editor blockquote {
           line-height: 24px;
+        }
+        .ql-container > .ql-editor span, .ql-container > .ql-editor strong{
+          background-color: transparent !important;
+          color: #d4d4d4 !important;
         }
 
         .ql-container > .ql-editor h1 {
@@ -83,8 +86,9 @@ const RichTextViewer: React.FC<RichTextViewerProps> = ({ description }) => {
         min-height: 50vh;
         }
         .ql-container > .ql-editor a {
-          color: #007bff !important;
-          cursor:pointer
+          color: #FBBA80 !important;
+          cursor:pointer;
+          background-color: transparent !important;
         }
         
         .ql-code-block-container {

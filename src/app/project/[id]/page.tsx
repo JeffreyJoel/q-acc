@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import { useFetchProjectBySlug } from "@/hooks/useProjects";
 import GeneralInfo from "@/components/project/GeneralInfo";
 import { ChevronLeft, Globe } from "lucide-react";
@@ -9,28 +10,48 @@ import { Tabs, TabsTrigger, TabsList, TabsContent } from "@/components/ui/tabs";
 import TeamMember from "@/components/project/Team";
 import { IconBrandX, IconBrandGithub } from "@tabler/icons-react";
 import { GeckoTerminalChart } from "@/components/project/GeckoTerminal";
-import { IProject, EProjectSocialMediaType, TeamMember as TeamMemberType, IProjectSocialMedia } from "@/types/project.type";
+import {
+  IProject,
+  EProjectSocialMediaType,
+  TeamMember as TeamMemberType,
+  IProjectSocialMedia,
+} from "@/types/project.type";
 import RichTextViewer from "@/components/project/RichTextViewer";
 import Image from "next/image";
 
 export default function ProjectPage({ params }: { params: { id: string } }) {
   const { data: project, isLoading, error } = useFetchProjectBySlug(params.id);
-  console.log(project);
+
+  console.log("project", project);
 
   if (isLoading) {
-    return <div className="mt-24 max-w-7xl mx-auto text-center">Loading project data...</div>;
+    return (
+      <div className="mt-24 max-w-7xl mx-auto text-center">
+        Loading project data...
+      </div>
+    );
   }
 
   if (error || !project) {
-    return <div className="mt-24 max-w-7xl mx-auto text-center">Failed to load project data. {error?.message}</div>;
+    return (
+      <div className="mt-24 max-w-7xl mx-auto text-center">
+        Failed to load project data. {error?.message}
+      </div>
+    );
   }
 
-  const twitterSocial = project.socialMedia?.find((s: IProjectSocialMedia) => s.type === EProjectSocialMediaType.X);
-  const githubSocial = project.socialMedia?.find((s: IProjectSocialMedia) => s.type === EProjectSocialMediaType.GITHUB);
-  const websiteSocial = project.socialMedia?.find((s: IProjectSocialMedia) => s.type === EProjectSocialMediaType.WEBSITE);
+  const twitterSocial = project.socialMedia?.find(
+    (s: IProjectSocialMedia) => s.type === EProjectSocialMediaType.X
+  );
+  const githubSocial = project.socialMedia?.find(
+    (s: IProjectSocialMedia) => s.type === EProjectSocialMediaType.GITHUB
+  );
+  const websiteSocial = project.socialMedia?.find(
+    (s: IProjectSocialMedia) => s.type === EProjectSocialMediaType.WEBSITE
+  );
 
   return (
-    <div className="mt-24 max-w-7xl mx-auto">
+    <div className="mt-24 max-w-7xl min-h-screen mx-auto">
       <div className="px-4 sm:px-6 lg:px-8 pt-8">
         <Link
           href="/"
@@ -46,8 +67,9 @@ export default function ProjectPage({ params }: { params: { id: string } }) {
             src={project.image || ""}
             alt={project.title || ""}
             className="w-full h-full object-cover rounded-xl "
-            width={2000}
-            height={2000}
+            width={1000}
+            height={1000}
+            priority
           />
           <div className="absolute inset-0 bg-gradient-to-t from-neutral-900 to-transparent" />
         </div>
@@ -63,6 +85,7 @@ export default function ProjectPage({ params }: { params: { id: string } }) {
                 width={200}
                 height={200}
                 className="w-20 h-20 rounded-lg object-cover"
+                priority
               />
             </div>
             <div>
@@ -73,12 +96,12 @@ export default function ProjectPage({ params }: { params: { id: string } }) {
               </div>
               <div>
                 <p className="text-gray-400 my-2 text-sm font-medium flex items-center">
-                  {project.walletAddress?.slice(0, 8)}...
-                  {project.walletAddress?.slice(
-                    project.walletAddress.length - 8,
-                    project.walletAddress.length
+                  {project.abc?.projectAddress?.slice(0, 8)}...
+                  {project.abc?.projectAddress?.slice(
+                    project.abc?.projectAddress.length - 8,
+                    project.abc?.projectAddress.length
                   )}
-                  <CopyButton text={project.walletAddress || ''} />
+                  <CopyButton text={project.abc?.projectAddress || ""} />
                 </p>
                 <div className="flex space-x-3">
                   {websiteSocial && (
@@ -116,9 +139,12 @@ export default function ProjectPage({ params }: { params: { id: string } }) {
             </div>
           </div>
         </div>
-        
-        {project.id && project.abc?.tokenTicker && (
-           <GeckoTerminalChart projectId={parseInt(project.id, 10)} tokenSymbol={project.abc.tokenTicker} />
+
+        {project?.abc?.issuanceTokenAddress && (
+          <GeckoTerminalChart
+            tokenSymbol={project.abc.tokenTicker}
+            tokenAddress={project.abc.issuanceTokenAddress}
+          />
         )}
 
         <GeneralInfo projectData={project as IProject} />
@@ -146,29 +172,33 @@ export default function ProjectPage({ params }: { params: { id: string } }) {
               </TabsTrigger>
             </TabsList>
             <TabsContent value="about" className="mt-0">
-              <div>
+              <div className="max-w-6xl mx-auto">
                 <RichTextViewer description={project.description} />
-                
               </div>
             </TabsContent>
             <TabsContent value="team" className="mt-0">
               <div className="flex flex-wrap justify-center gap-4 py-4">
-                {(project as any).teamMembers && (project as any).teamMembers.map((member: TeamMemberType, index: number) => (
-                  <TeamMember 
-                    key={index} 
-                    member={{
-                      name: member.name,
-                      image: (member.image as unknown as string) || "/placeholder.svg",
-                      role: "N/A",
-                      twitter: member.twitter
-                    }} 
-                  />
-                ))}
+                {(project as any).teamMembers &&
+                  (project as any).teamMembers.map(
+                    (member: TeamMemberType, index: number) => (
+                      <TeamMember
+                        key={index}
+                        member={{
+                          name: member.name,
+                          image: member.image as unknown as string,
+                          // role: member.role || "N/A",
+                          twitter: member.twitter || "N/A",
+                        }}
+                      />
+                    )
+                  )}
               </div>
             </TabsContent>
             <TabsContent value="roadmap" className="mt-0">
               <div className="space-y-4 py-4">
-                <p className="text-gray-400">Roadmap data is not available for this project.</p>
+                <p className="text-gray-400">
+                  Roadmap data is not available for this project.
+                </p>
               </div>
             </TabsContent>
           </Tabs>

@@ -5,9 +5,9 @@ import {
   Coins,
   ChartColumn,
 } from "lucide-react";
-
+import { IProject } from "@/types/project.type";
 interface GeneralInfoProps {
-  projectData: any;
+  projectData: IProject;
 }
 
 export default function GeneralInfo({ projectData }: GeneralInfoProps) {
@@ -21,11 +21,11 @@ export default function GeneralInfo({ projectData }: GeneralInfoProps) {
               <div className="text-3xl font-bold">${projectData.totalDonations}</div>
             </div>
             <div>
-              <div className="text-gray-400 mb-2">Time Remaining</div>
+              {/* <div className="text-gray-400 mb-2">Time Remaining</div>
               <div className="flex items-center gap-2">
                 <Clock className="text-peach-400" size={24} />
-                <span className="text-2xl font-bold">{projectData.timeRemaining}</span>
-              </div>
+                <span className="text-2xl font-bold">TBA</span>
+              </div> */}
             </div>
           </div>
         </div>
@@ -41,13 +41,13 @@ export default function GeneralInfo({ projectData }: GeneralInfoProps) {
             <div className="flex items-center gap-3">
               <IconMoneybag className="text-gray-400" size={20} />
               <span>
-                Total tokens sold = <span className="font-bold">1000</span>
+                Total tokens supply = <span className="font-bold">{projectData.abc?.totalSupply}</span>
               </span>
             </div>
             <div className="flex items-center gap-3">
               <Coins className="text-gray-400" size={20} />
               <span>Token Price</span>
-              <span className="font-bold">1 $H2DAO = $0.1</span>
+              <span className="font-bold">1 ${projectData.abc?.tokenTicker} = ${projectData.abc?.tokenPrice}</span>
             </div>
             <div className="flex items-center gap-3">
               <ChartColumn size={20} className="text-gray-400" />
@@ -61,12 +61,12 @@ export default function GeneralInfo({ projectData }: GeneralInfoProps) {
       <div className="space-y-6 row-2">
         <div className="bg-neutral-800 rounded-2xl p-6 backdrop-blur-lg bg-opacity-80">
           <p className="text-gray-300 font-medium">
-            Backed by <span className="text-white font-bold">300</span>{" "}
+            Backed by <span className="text-white font-bold">{projectData.countUniqueDonors}</span>{" "}
             supporters
           </p>
           <div className="space-y-6">
             <div className="mt-6">
-              <div className="text-gray-400 mb-2">Wallet balance</div>
+              {/* <div className="text-gray-400 mb-2">Wallet balance</div>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <Wallet size={20} />
@@ -76,12 +76,12 @@ export default function GeneralInfo({ projectData }: GeneralInfoProps) {
                   / <span className="text-neutral-300 font-semibold">200 </span>{" "}
                   $POL
                 </div>
-              </div>
+              </div> */}
             </div>
             <div>
               <p className="text-gray-400 font-medium mb-2">Token price</p>
               <div className="flex items-center gap-2">
-                <p className="text-neutral-300 text-lg font-semibold">$0.1</p>{" "}
+                <p className="text-neutral-300 text-lg font-semibold">${projectData.abc?.tokenPrice}</p>{" "}
                 <span className="text-sm text-green-400 font-medium">
                   + 10% (24h)
                 </span>
@@ -89,7 +89,7 @@ export default function GeneralInfo({ projectData }: GeneralInfoProps) {
             </div>
             <button className="w-full bg-peach-400 text-black font-medium py-3 rounded-full hover:bg-peach-300 transition-colors flex items-center justify-center gap-2">
               <Coins size={20} />
-              Buy $H2DAO
+              Buy ${projectData.abc?.tokenTicker}
             </button>
           </div>
         </div>

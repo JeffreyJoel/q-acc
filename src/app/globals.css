@@ -73,6 +73,10 @@
   }
 }
 
+span{
+  background-color: transparent !important;
+}
+
 @font-face {
   font-family: "Tusker Grotesk 4000";
   font-style: normal;
