@@ -16,7 +16,7 @@ function WalletConnect() {
 
   return (
     <div>
-      {account?.isConnected ? (
+      {account && account.isConnected ? (
         wallet && (
           <WalletDisplay
             walletAddress={para.getDisplayAddress(wallet.id, {

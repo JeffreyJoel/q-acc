@@ -38,7 +38,7 @@ export function NavBar() {
           <NavbarLogo />
           <NavItems items={navItems} />
           <div className="flex items-center gap-4 relative">
-            {account?.isConnected ? "" : <NavbarButton variant="secondary">Login</NavbarButton>}
+            {/* {account?.isConnected ? "" : <NavbarButton variant="secondary">Login</NavbarButton>} */}
             {/* <NavbarButton variant="primary" className="rounded-full bg-peach-400">Sign up</NavbarButton> */}
             <WalletConnect />
           </div>
@@ -68,13 +68,13 @@ export function NavBar() {
               </a>
             ))}
             <div className="flex w-full flex-col gap-4">
-              <NavbarButton
+              {/* <NavbarButton
                 onClick={() => setIsMobileMenuOpen(false)}
                 variant="secondary"
                 className="w-full"
               >
                 Login
-              </NavbarButton>
+              </NavbarButton> */}
               <NavbarButton  onClick={() => setIsMobileMenuOpen(false)} variant="primary" className="w-full rounded-full bg-peach-400">Sign up</NavbarButton>
             </div>
           </MobileNavMenu>
