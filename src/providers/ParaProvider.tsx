@@ -43,7 +43,7 @@ const config: ParaModalProps = {
     ExternalWallet.RAINBOW,
     ExternalWallet.ZERION,
     ExternalWallet.RABBY,
-    // ExternalWallet.PHANTOM, (commented out)
+    // ExternalWallet.PHANTOM,
   ],
   theme: {
     foregroundColor: "#FFFFFF",
@@ -75,7 +75,7 @@ const connector = paraConnector({
 
 const wagmiConfigOpts = {
   chains: [polygon, polygonAmoy],
-  connectors: [connector],
+  // connectors: [connector],
   transports: {
     [polygon.id]: http(),
     [polygonAmoy.id]: http(),
@@ -92,7 +92,7 @@ export const ParaProviders: React.FC<Props> = ({ children }) => {
       <QueryClientProvider client={queryClient}>
         <ParaEvmProvider
           config={{
-            projectId: process.env.NEXT_PUBLIC_PARA_API_KEY || "",
+            projectId: process.env.NEXT_PUBLIC_WALLET_CONNECT_ID || "",
             appName: config.appName || "",
             chains: [polygon, polygonAmoy],
             wallets: [

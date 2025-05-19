@@ -52,11 +52,11 @@ function WalletConnect() {
           Sign In
         </NavbarButton>
       )}
-      <ProfileCreationModal
+      {/* <ProfileCreationModal
         isOpen={isProfileModalOpen}
         onClose={handleCloseProfileModal}
         onSubmit={handleSubmitProfile}
-      />
+      /> */}
     </div>
   );
 }
