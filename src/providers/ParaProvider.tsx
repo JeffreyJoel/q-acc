@@ -39,7 +39,7 @@ const config: ParaModalProps = {
   externalWallets: [
     ExternalWallet.METAMASK,
     ExternalWallet.COINBASE,
-    ExternalWallet.WALLETCONNECT,
+    // ExternalWallet.WALLETCONNECT,
     ExternalWallet.RAINBOW,
     ExternalWallet.ZERION,
     ExternalWallet.RABBY,
@@ -98,7 +98,7 @@ export const ParaProviders: React.FC<Props> = ({ children }) => {
             wallets: [
               metaMaskWallet,
               rainbowWallet,
-              walletConnectWallet,
+              // walletConnectWallet,
               zerionWallet,
               coinbaseWallet,
               rabbyWallet,

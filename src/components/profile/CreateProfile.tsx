@@ -1,98 +1,103 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useState, useEffect } from "react"
-import { motion, AnimatePresence } from "framer-motion"
-import { X, Upload, ArrowRight, ArrowLeft, Loader2 } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { cn } from "@/lib/utils"
+import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { X, Upload, ArrowRight, ArrowLeft, Loader2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
 
 interface ProfileFormData {
-  email: string
-  fullName: string
-  username: string
-  profileImage: string | null
-  termsAgreed: boolean
+  email: string;
+  fullName: string;
+  username: string;
+  profileImage: string | null;
+  termsAgreed: boolean;
 }
 
 interface ProfileCreationModalProps {
-  isOpen: boolean
-  onClose: () => void
-  initialData?: Partial<ProfileFormData>
-  onSubmit?: (data: ProfileFormData) => Promise<void>
+  isOpen: boolean;
+  onClose: () => void;
+  initialData?: Partial<ProfileFormData>;
+  onSubmit?: (data: ProfileFormData) => Promise<void>;
 }
 
-export default function ProfileCreationModal({ isOpen, onClose, initialData, onSubmit }: ProfileCreationModalProps) {
-  const [step, setStep] = useState(1)
-  const [isSubmitting, setIsSubmitting] = useState(false)
+export default function ProfileCreationModal({
+  isOpen,
+  onClose,
+  initialData,
+  onSubmit,
+}: ProfileCreationModalProps) {
+  const [step, setStep] = useState(1);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState<ProfileFormData>({
     email: "",
     fullName: "",
     username: "",
     profileImage: null,
     termsAgreed: false,
-  })
+  });
 
   // Initialize form with initial data if any
   useEffect(() => {
     if (initialData) {
-      setFormData((prev) => ({ ...prev, ...initialData }))
+      setFormData((prev) => ({ ...prev, ...initialData }));
     }
-  }, [initialData])
+  }, [initialData]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value, type, checked } = e.target
+    const { name, value, type, checked } = e.target;
     setFormData((prev) => ({
       ...prev,
       [name]: type === "checkbox" ? checked : value,
-    }))
-  }
+    }));
+  };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
+    const file = e.target.files?.[0];
     if (file) {
-      const reader = new FileReader()
+      const reader = new FileReader();
       reader.onload = (e) => {
         setFormData((prev) => ({
           ...prev,
           profileImage: e.target?.result as string,
-        }))
-      }
-      reader.readAsDataURL(file)
+        }));
+      };
+      reader.readAsDataURL(file);
     }
-  }
+  };
 
-  const nextStep = () => setStep((prev) => Math.min(prev + 1, 3))
-  const prevStep = () => setStep((prev) => Math.max(prev - 1, 1))
+  const nextStep = () => setStep((prev) => Math.min(prev + 1, 3));
+  const prevStep = () => setStep((prev) => Math.max(prev - 1, 1));
   const skipStep = () => {
     if (step < 3) {
-      nextStep()
+      nextStep();
     } else {
-      handleSubmit()
+      handleSubmit();
     }
-  }
+  };
 
   const handleSubmit = async () => {
     try {
-      setIsSubmitting(true)
+      setIsSubmitting(true);
 
       if (onSubmit) {
-        await onSubmit(formData)
+        await onSubmit(formData);
       } else {
-        await new Promise((resolve) => setTimeout(resolve, 1500))
+        await new Promise((resolve) => setTimeout(resolve, 1500));
       }
 
-      onClose()
+      onClose();
     } catch (error) {
-      console.error("Error submitting form:", error)
+      console.error("Error submitting form:", error);
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
-  }
+  };
 
-  if (!isOpen) return null
+  if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
@@ -102,11 +107,13 @@ export default function ProfileCreationModal({ isOpen, onClose, initialData, onS
         exit={{ opacity: 0, scale: 0.95 }}
         className="bg-[#171717] rounded-3xl w-full max-w-md overflow-hidden shadow-xl"
       >
-     
         <div className="relative px-6 pt-6 ">
-          <h2 className="text-xl font-semibold text-white">Create Your Profile</h2>
+          <h2 className="text-xl font-semibold text-white">
+            Create Your Profile
+          </h2>
           <p className="text-neutral-400 text-sm mt-1">
-            Step {step} of 3: {step === 1 ? "Email" : step === 2 ? "Personal Info" : "Terms"}
+            Step {step} of 3:{" "}
+            {step === 1 ? "Email" : step === 2 ? "Personal Info" : "Terms"}
           </p>
 
           <button
@@ -118,20 +125,22 @@ export default function ProfileCreationModal({ isOpen, onClose, initialData, onS
           </button>
         </div>
 
-    
         <div className="px-6 pt-4 flex items-center gap-2">
           {[1, 2, 3].map((i) => (
             <div
               key={i}
               className={cn(
                 "h-1 rounded-full transition-all duration-300",
-                i === step ? "bg-[#FBBA80] flex-grow" : i < step ? "bg-[#FBBA80] w-8" : "bg-neutral-600 w-8",
+                i === step
+                  ? "bg-[#FBBA80] flex-grow"
+                  : i < step
+                  ? "bg-[#FBBA80] w-8"
+                  : "bg-neutral-600 w-8"
               )}
             />
           ))}
         </div>
 
-     
         <div className="px-6 py-10">
           <AnimatePresence mode="wait">
             {step === 1 && (
@@ -143,8 +152,8 @@ export default function ProfileCreationModal({ isOpen, onClose, initialData, onS
                 transition={{ duration: 0.2 }}
                 className="space-y-6"
               >
-                <div className="space-y-2">
-                  <label htmlFor="email" className="text-neutral-200">
+                <div className="space-y-1">
+                  <label htmlFor="email" className="text-neutral-300 text-xs">
                     Email Address
                   </label>
                   <Input
@@ -192,8 +201,10 @@ export default function ProfileCreationModal({ isOpen, onClose, initialData, onS
                   <div className="relative group">
                     <div
                       className={cn(
-                        "w-24 h-24 rounded-full overflow-hidden border-2 flex items-center justify-center",
-                        formData.profileImage ? "border-[#FBBA80]" : "border-neutral-600 border-dashed",
+                        "w-28 h-28 rounded-full overflow-hidden border-2 flex items-center justify-center",
+                        formData.profileImage
+                          ? "border-[#FBBA80] "
+                          : "border-neutral-600 border-dashed"
                       )}
                     >
                       {formData.profileImage ? (
@@ -214,16 +225,16 @@ export default function ProfileCreationModal({ isOpen, onClose, initialData, onS
                       onChange={handleImageChange}
                       className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                     />
-                    <div className="absolute -bottom-1 -right-1 bg-[#FBBA80] rounded-full p-1 shadow-lg">
-                      <Upload size={14} className="text-neutral-900" />
-                    </div>
+              
                   </div>
-                  <p className="text-neutral-400 text-xs mt-3">Upload profile picture</p>
+                  <p className="text-neutral-400 text-xs mt-3">
+                    Upload profile picture
+                  </p>
                 </div>
 
                 {/* Full Name */}
-                <div className="space-y-2">
-                  <label htmlFor="fullName" className="text-neutral-200">
+                <div className="space-y-1">
+                  <label htmlFor="fullName" className="text-neutral-300 text-xs">
                     Full Name
                   </label>
                   <Input
@@ -232,13 +243,13 @@ export default function ProfileCreationModal({ isOpen, onClose, initialData, onS
                     value={formData.fullName}
                     onChange={handleInputChange}
                     placeholder="Enter your full name"
-                    className="bg-neutral-700 border-neutral-600 focus:border-[#FBBA80] focus:ring-[#FBBA80]/20 text-white placeholder:text-neutral-400"
+                    className="bg-neutral-700 border-neutral-600 focus:border-[#FBBA80] focus:ring-[#FBBA80]/20 text-white placeholder:text-neutral-400 rounded-xl"
                   />
                 </div>
 
                 {/* Username */}
-                <div className="space-y-2">
-                  <label htmlFor="username" className="text-neutral-200">
+                <div className="space-y-1">
+                  <label htmlFor="username" className="text-neutral-300 text-xs">
                     Username
                   </label>
                   <Input
@@ -247,17 +258,17 @@ export default function ProfileCreationModal({ isOpen, onClose, initialData, onS
                     value={formData.username}
                     onChange={handleInputChange}
                     placeholder="Choose a unique username"
-                    className="bg-neutral-700 border-neutral-600 focus:border-[#FBBA80] focus:ring-[#FBBA80]/20 text-white placeholder:text-neutral-400"
+                    className="bg-neutral-700 border-neutral-600 focus:border-[#FBBA80] focus:ring-[#FBBA80]/20 text-white placeholder:text-neutral-400 rounded-xl"
                   />
                 </div>
 
-                <div className="mt-8 flex justify-between">
+                <div className="mt-16 flex justify-between">
                   <div className="flex gap-2">
                     <Button
                       type="button"
                       onClick={prevStep}
-                      variant="outline"
-                      className="border-neutral-600 text-neutral-300 hover:bg-neutral-700 hover:text-white"
+                      variant="secondary"
+                      className="text-neutral-300  hover:text-white rounded-full"
                     >
                       <ArrowLeft size={16} className="mr-2" /> Back
                     </Button>
@@ -291,16 +302,30 @@ export default function ProfileCreationModal({ isOpen, onClose, initialData, onS
                 className="space-y-6"
               >
                 <div className="p-4 bg-neutral-700/50 rounded-lg border border-neutral-700">
-                  <h3 className="font-medium text-white mb-2">Terms of Service</h3>
+                  <h3 className="font-medium text-white mb-2">
+                    Terms of Service
+                  </h3>
                   <div className="text-sm text-neutral-300 h-32 overflow-y-auto pr-2 custom-scrollbar">
-                    <p className="mb-2">By using our service, you agree to the following terms and conditions:</p>
-                    <p className="mb-2">1. You are responsible for maintaining the confidentiality of your account.</p>
-                    <p className="mb-2">2. You agree not to use the service for any illegal or unauthorized purpose.</p>
                     <p className="mb-2">
-                      3. We reserve the right to modify or terminate the service for any reason, without notice at any
-                      time.
+                      By using our service, you agree to the following terms and
+                      conditions:
                     </p>
-                    <p>4. We reserve the right to refuse service to anyone for any reason at any time.</p>
+                    <p className="mb-2">
+                      1. You are responsible for maintaining the confidentiality
+                      of your account.
+                    </p>
+                    <p className="mb-2">
+                      2. You agree not to use the service for any illegal or
+                      unauthorized purpose.
+                    </p>
+                    <p className="mb-2">
+                      3. We reserve the right to modify or terminate the service
+                      for any reason, without notice at any time.
+                    </p>
+                    <p>
+                      4. We reserve the right to refuse service to anyone for
+                      any reason at any time.
+                    </p>
                   </div>
                 </div>
 
@@ -327,8 +352,8 @@ export default function ProfileCreationModal({ isOpen, onClose, initialData, onS
                     <Button
                       type="button"
                       onClick={prevStep}
-                      variant="outline"
-                      className="border-neutral-600 text-neutral-300 hover:bg-neutral-700 hover:text-white"
+                      variant="secondary"
+                      className="text-neutral-300  hover:text-white rounded-full"
                     >
                       <ArrowLeft size={16} className="mr-2" /> Back
                     </Button>
@@ -363,5 +388,5 @@ export default function ProfileCreationModal({ isOpen, onClose, initialData, onS
         </div>
       </motion.div>
     </div>
-  )
+  );
 }
