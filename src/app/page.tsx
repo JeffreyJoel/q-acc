@@ -5,15 +5,15 @@ import ProjectCard from "@/components/project/ProjectCard";
 import { useState, useMemo } from "react";
 import { useFetchAllProjects } from "@/hooks/useProjects";
 import { IProject } from "@/types/project.type";
+import ProjectCardLoader from "@/components/loaders/ProjectCardLoader";
 
 export default function Home() {
   const [searchText, setSearchText] = useState("");
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
 
-  const { data: allProjects, isLoading, error } = useFetchAllProjects(); // Use the hook
+  const { data: allProjects, isLoading, error } = useFetchAllProjects();
 
   const projects = useMemo(() => allProjects?.projects || [], [allProjects]);
-  console.log(allProjects);
 
   const filteredProjects = useMemo(() => {
     if (!projects) return [];
@@ -35,14 +35,6 @@ export default function Home() {
       return searchMatch && categoryMatch;
     });
   }, [projects, searchText, selectedCategories]);
-
-  if (isLoading) {
-    return (
-      <div className="flex justify-center items-center min-h-screen">
-        <p className="text-xl text-white">Loading projects...</p>
-      </div>
-    );
-  }
 
   if (error) {
     return (
@@ -74,9 +66,17 @@ export default function Home() {
           <h2 className="text-xl font-medium font-tusker-8 text-white mb-6 flex items-center">
             All <span className="text-peach-300 ml-2">Projects</span>
           </h2>
-          {filteredProjects.length > 0 ? (
+          {isLoading ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
-              {filteredProjects.map((project: IProject) => ( // Use IProject type
+              {Array.from({ length: 6 }).map((_, index) => (
+                <ProjectCardLoader key={index} />
+              ))}
+            </div>
+          ) : (
+            <>
+              {filteredProjects.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
+                  {filteredProjects.map((project: IProject) => ( // Use IProject type
                 <ProjectCard key={project.id} project={project} />
               ))}
             </div>
@@ -86,6 +86,8 @@ export default function Home() {
                 No projects match your search criteria.
               </p>
             </div>
+          )}
+            </>
           )}
         </div>
 

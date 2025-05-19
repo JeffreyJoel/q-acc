@@ -235,7 +235,7 @@ export const useTokenPriceRangeStatus = ({
 
 export async function getTokenSupplyDetails(address: string) {
   const contract = new ethers.Contract(address, abi, provider);
-  const price = await contract.getStaticPriceForBuying();
+  // const price = await contract.getStaticPriceForBuying();
   const reserveRatioForBuying = await contract.getReserveRatioForBuying();
   const virtualCollateralSupply = await contract.getVirtualCollateralSupply();
   const virtualIssuanceSupply = await contract.getVirtualIssuanceSupply();

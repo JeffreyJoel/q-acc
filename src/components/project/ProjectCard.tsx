@@ -1,32 +1,98 @@
 import Link from "next/link";
 import type React from "react";
 import { IProject } from "@/types/project.type";
+import { calculateMarketCapChange, getMarketCap } from "@/services/tokenPrice.service";
+import { useEffect } from "react";
+import { useState } from "react";
+import { fetchProjectDonationsById } from "@/services/donation.service";
+import { useFetchActiveRoundDetails, useFetchAllRoundDetails } from "@/hooks/useRounds";
+import { calculateTotalDonations, formatAmount } from "@/helpers/donations";
+import { useFetchPOLPriceSquid } from "@/hooks/useTokens";
+import { Spinner } from "../loaders/Spinner";
 
 interface ProjectCardProps {
   project: IProject;
 }
 
 const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
-  const displayName = project.title || "Untitled Project";
-  const displayImage = project.image || "/placeholder.svg";
-  const displayIcon = project.icon || "/placeholder.svg";
-  const receivedAmountDisplay = project.totalDonations?.toString() || "0";
-  const marketCapDisplay =
-    project.abc?.totalSupply && project.abc?.tokenPrice
-      ? (project.abc.totalSupply * project.abc.tokenPrice).toLocaleString()
-      : "N/A";
+
+  const [maxPOLCap, setMaxPOLCap] = useState(0);
+  const [totalPOLDonated, setTotalPOLDonated] = useState<number>(0);
+  const { data: POLPrice } = useFetchPOLPriceSquid();
+  const { data: activeRoundDetails } = useFetchActiveRoundDetails();
+  const [isTokenListed, setIsTokenListed] = useState(false);
+  const [marketCap, setMarketCap] = useState<number>();
+  const [marketCapLoading, setMarketCapLoading] = useState(false);
+  const [marketCapChangePercentage, setMarketCapChangePercentage] = useState(0);
+
+  const polPriceNumber = Number(POLPrice);
+
+  useEffect(() => {
+    if (project?.id) {
+      const fetchProjectDonations = async () => {
+        const data = await fetchProjectDonationsById(
+          parseInt(project?.id),
+          1000,
+          0,
+        );
+
+        if (activeRoundDetails && data && project?.abc?.fundingManagerAddress) {
+          const { donations, totalCount } = data;
+          setMarketCapLoading(true);
+          const { marketCap: newCap, change24h } =
+            await calculateMarketCapChange(
+              donations,
+              project?.abc?.fundingManagerAddress,
+              activeRoundDetails?.startDate,
+            );
+
+          setMarketCap(newCap * polPriceNumber);
+          setMarketCapChangePercentage(change24h);
+          setMarketCapLoading(false);
+
+          setTotalPOLDonated(calculateTotalDonations(donations));
+        } else if (
+          project.abc?.issuanceTokenAddress &&
+          project.abc?.fundingManagerAddress
+        ) {
+          if (isTokenListed) {
+            setMarketCapLoading(true);
+            const marketCapData = await getMarketCap(
+              isTokenListed,
+              project?.abc.issuanceTokenAddress,
+              project.abc.fundingManagerAddress,
+            );
+            setMarketCap(marketCapData);
+            setMarketCapLoading(false);
+          } else {
+            const { donations, totalCount } = data;
+            const { marketCap: newCap, change24h } =
+              await calculateMarketCapChange(
+                donations,
+                project?.abc?.fundingManagerAddress,
+              );
+            setMarketCap(newCap * polPriceNumber);
+            setMarketCapChangePercentage(change24h);
+          }
+
+          setMarketCapChangePercentage(0);
+        }
+      };
+      fetchProjectDonations();
+    }
+  }, [project, marketCap, activeRoundDetails, isTokenListed]);
 
   return (
     <div className="relative cursor-pointer p-4 w-full h-full rounded-xl bg-neutral-800 overflow-hidden shadow-gray-200">
       <div className="relative h-[550px]">
         <img
-          alt={`${displayName} Cover`}
+          alt={`${project.title} Cover`}
           loading="lazy"
           decoding="async"
           data-nimg="fill"
           className="rounded-xl"
           sizes="100vw"
-          src={displayImage}
+          src={project.image}
           style={{
             position: "absolute",
             height: "100%",
@@ -53,13 +119,13 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
             ></path>
           </svg>
           <img
-            alt={`${displayName} Icon`}
+            alt={`${project.title} Icon`}
             loading="lazy"
             width="50"
             height="50"
             decoding="async"
             data-nimg="1"
-            src={displayIcon}
+            src={project.icon}
             style={{ color: "transparent" }}
           />
           <svg
@@ -91,7 +157,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
         </svg>
         <div className="relative flex flex-col gap-4 font-redHatText">
           <div className="flex flex-col">
-            <h2 className="text-lg font-bold text-white">{displayName}</h2>
+            <h2 className="text-lg font-bold text-white">{project.title}</h2>
             <div className="flex flex-wrap gap-2 mt-2">
               {project.categories?.map((categoryObj, index) => (
                 <span
@@ -116,20 +182,21 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
               <div className="flex flex-col">
                 <span className="text-gray-200 font-bold text-lg">
                   {" "}
-                  ~ $ {receivedAmountDisplay}
+                  ~ $ {formatAmount(project.totalDonations || 0)}
                 </span>
               </div>
             </div>
             <hr />
             <div className="p-2 flex justify-between items-center rounded-lg">
               <span className="text-sm text-gray-300 font-bold">
-                {" "}
-                Market Cap
+                ${project.abc?.tokenTicker} Market Cap
               </span>
               <div className="flex flex-col">
                 <span className="text-white font-bold text-lg text-right">
                   {" "}
-                  $ {marketCapDisplay}
+                 {marketCapLoading ? <Spinner /> : <span>
+                  $ {formatAmount(marketCap)}
+                 </span>}
                 </span>
               </div>
             </div>

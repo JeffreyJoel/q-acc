@@ -22,17 +22,6 @@ export function GeckoTerminalChart({
   );
   const [isTokenListed, setIsTokenListed] = useState<boolean>(false);
 
-  // useEffect(() => {
-  //   const timer = setTimeout(() => {
-  //     setIsLoading(false);
-  //     if (!projectPoolAddress) {
-  //       setError("Chart data not available for this token");
-  //     }
-  //   }, 2000);
-
-  //   return () => clearTimeout(timer);
-  // }, [projectPoolAddress]);
-
   useEffect(() => {
     const fetchPoolAddress = async () => {
       if (tokenAddress) {
@@ -42,7 +31,6 @@ export function GeckoTerminalChart({
         );
         setProjectPoolAddress(poolAddress);
         setIsTokenListed(isListed);
-        console.log("poolAddress", poolAddress);
       }
     };
 
@@ -51,9 +39,7 @@ export function GeckoTerminalChart({
 
 
 
-  const showIframe = projectPoolAddress !== null;
-
-  if (error || !isTokenListed) {
+  if (error) {
     return (
       <Card className="bg-neutral-800 rounded-2xl mb-8">
         <CardContent className="py-6">
@@ -66,10 +52,10 @@ export function GeckoTerminalChart({
       </Card>
     );
   }
-  
 
-  return (
-    <div className="relative my-8">
+  if (isTokenListed && projectPoolAddress) {
+    return (
+      <div className="relative my-8">
       {isLoading && (
         <div className="absolute inset-0 flex justify-center items-center bg-white/80 dark:bg-black/80 z-10">
           <Loader2 className="h-8 w-8 animate-spin text-muted-foreground mr-2" />
@@ -93,6 +79,7 @@ export function GeckoTerminalChart({
           ></iframe>
         </div>
       )}
-    </div>
-  );
+      </div>
+    );
+  }
 }
