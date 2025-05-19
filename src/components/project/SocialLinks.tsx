@@ -15,8 +15,9 @@ import {
   IconBrandReddit,
   IconBrandDiscord,
   IconBrandTelegram,
-  IconWorld, // Placeholder for Farcaster, Lens - replace if specific icons are available
 } from "@tabler/icons-react";
+import { IconFarcaster } from "../icons/IconFarcaster";
+import  IconLens  from "../icons/IconLens";
 
 interface SocialLinksProps {
   socialMedia?: IProjectSocialMedia[];
@@ -36,8 +37,8 @@ const socialIconMap: Record<
   [EProjectSocialMediaType.REDDIT]: { icon: IconBrandReddit, color: "text-orange-500" },
   [EProjectSocialMediaType.DISCORD]: { icon: IconBrandDiscord, color: "text-indigo-500" },
   [EProjectSocialMediaType.TELEGRAM]: { icon: IconBrandTelegram, color: "text-blue-400" },
-  [EProjectSocialMediaType.FARCASTER]: { icon: IconWorld, color: "text-purple-500" },
-  [EProjectSocialMediaType.LENS]: { icon: IconWorld, color: "text-green-500" },
+  [EProjectSocialMediaType.FARCASTER]: { icon: IconFarcaster, color: "text-purple-500" },
+  [EProjectSocialMediaType.LENS]: { icon: IconLens, color: "text-green-500" },
 };
 
 export default function SocialLinks({ socialMedia }: SocialLinksProps) {
@@ -46,13 +47,21 @@ export default function SocialLinks({ socialMedia }: SocialLinksProps) {
   }
 
   return (
-    <div className="flex space-x-3">
+    <div className="flex space-x-3 items-center">
       {socialMedia.map((social) => {
         const SocialIconComponent = socialIconMap[social.type]?.icon;
         const iconColor = socialIconMap[social.type]?.color || "text-white";
 
         if (!SocialIconComponent) {
           return null;
+        }
+
+        let iconRenderSize = 24;
+        if (
+          social.type === EProjectSocialMediaType.WEBSITE ||
+          social.type === EProjectSocialMediaType.X
+        ) {
+          iconRenderSize = 20;
         }
 
         return (
@@ -64,7 +73,7 @@ export default function SocialLinks({ socialMedia }: SocialLinksProps) {
             className="bg-neutral-800 hover:bg-neutral-700 transition-colors p-3 rounded-full"
             aria-label={social.type}
           >
-            <SocialIconComponent size={32} className={`w-6 h-6 ${iconColor}`} />
+            <SocialIconComponent size={iconRenderSize} className={`${iconColor}`} />
           </a>
         );
       })}
