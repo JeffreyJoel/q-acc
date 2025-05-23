@@ -55,6 +55,15 @@ const config: Config = {
           "5": "hsl(var(--chart-5))",
         },
       },
+      keyframes: {
+        "caret-blink": {
+          "0%,70%,100%": { opacity: "1" },
+          "20%,50%": { opacity: "0" },
+        },
+      },
+      animation: {
+        "caret-blink": "caret-blink 1.25s ease-out infinite",
+      },
 	  fontFamily: {
 		'tusker-4': ['"Tusker Grotesk 4000"', 'sans-serif'],
         'tusker-6': ['"Tusker Grotesk 6000"', 'sans-serif'],

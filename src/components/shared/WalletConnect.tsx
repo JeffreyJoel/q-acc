@@ -7,6 +7,7 @@ import { useAccount, useModal, useWallet } from "@getpara/react-sdk";
 import { NavbarButton } from "../ui/resizable-navbar";
 import { para } from "@/client/para";
 import ProfileCreationModal from "@/components/profile/CreateProfile";
+// import { useProfileModal } from "@/contexts/ModalContext";
 
 function WalletConnect() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -15,10 +16,12 @@ function WalletConnect() {
   const { data: account } = useAccount();
   const { data: wallet } = useWallet();
   const { openModal } = useModal();
-
+  // const { openEmailModal } = useProfileModal();
+  
   useEffect(() => {
-    if (account && account.isConnected) {
-      setIsProfileModalOpen(true);
+    if (account && account.isConnected && !account.email) {
+      console.log("account", account);
+      // openEmailModal();
     }
   }, [account]);
 

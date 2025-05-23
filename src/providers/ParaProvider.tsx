@@ -23,8 +23,10 @@ import { polygon, polygonAmoy } from "wagmi/chains";
 
 import { para } from "@/client/para";
 import {
+  cookieStorage,
   createConfig,
   CreateConfigParameters,
+  createStorage,
   http,
   WagmiProvider,
 } from "wagmi";
@@ -75,7 +77,11 @@ const connector = paraConnector({
 
 const wagmiConfigOpts = {
   chains: [polygon, polygonAmoy],
-  // connectors: [connector],
+  ssr: true,
+  storage: createStorage({
+    storage: cookieStorage,
+  }),
+  connectors: [connector],
   transports: {
     [polygon.id]: http(),
     [polygonAmoy.id]: http(),
@@ -101,7 +107,7 @@ export const ParaProviders: React.FC<Props> = ({ children }) => {
               // walletConnectWallet,
               zerionWallet,
               coinbaseWallet,
-              rabbyWallet,
+              rabbyWallet
             ],
             para: para,
           }}
@@ -110,6 +116,7 @@ export const ParaProviders: React.FC<Props> = ({ children }) => {
             para={para}
             authLayout={config.authLayout}
             oAuthMethods={config.oAuthMethods}
+
             externalWallets={config.externalWallets}
             theme={config.theme}
             appName={config.appName}

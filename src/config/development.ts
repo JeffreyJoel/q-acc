@@ -48,7 +48,7 @@ import {
     WPOL_TOKEN_ADDRESS: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
     GRAPHQL_ENDPOINT:
       process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT ||
-      'https://qacc-be.generalmagic.io/graphql',
+      'https://staging.qacc-be.generalmagic.io/graphql',
     AUTH_BASE_ROUTE:
       process.env.NEXT_PUBLIC_AUTH_BASE_ROUTE ||
       'https://auth.serve.giveth.io/v1',

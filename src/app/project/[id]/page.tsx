@@ -28,16 +28,6 @@ export default function ProjectPage({ params }: { params: { id: string } }) {
   //   );
   // }
 
-  // const twitterSocial = project?.socialMedia?.find(
-  //   (s: IProjectSocialMedia) => s.type === EProjectSocialMediaType.X
-  // );
-  // const githubSocial = project?.socialMedia?.find(
-  //   (s: IProjectSocialMedia) => s.type === EProjectSocialMediaType.GITHUB
-  // );
-  // const websiteSocial = project?.socialMedia?.find(
-  //   (s: IProjectSocialMedia) => s.type === EProjectSocialMediaType.WEBSITE
-  // );
-
   return (
     <div className="mt-24 max-w-7xl min-h-screen mx-auto">
       <div className="px-4 sm:px-6 lg:px-8 pt-8">

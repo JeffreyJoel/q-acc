@@ -1,5 +1,5 @@
 import config from '@/config/configuration';
-// import { getCurrentUserToken } from './generateJWT';
+import { getCurrentUserToken } from './generateJWT';
 
 export const requestGraphQL = async <T>(
   query: string,
@@ -11,15 +11,15 @@ export const requestGraphQL = async <T>(
   };
 
   if (options.auth) {
-    // const token = getCurrentUserToken();
+    const token = getCurrentUserToken();
 
-    // if (token) {
-    //   headers = {
-    //     ...headers,
-    //     Authorization: `Bearer ${token}`,
-    //     authVersion: '2',
-    //   };
-    // }
+    if (token) {
+      headers = {
+        ...headers,
+        Authorization: `Bearer ${token}`,
+        authVersion: '2',
+      };
+    }
   }
   const response = await fetch(options.url || config.GRAPHQL_ENDPOINT, {
     method: 'POST',
@@ -37,12 +37,9 @@ export const requestGraphQL = async <T>(
     const errorMessages = errors.map((error: any) => error.message).join(', ');
     console.log('errorMessages', errorMessages);
 
-    // Check if any error message contains "Authentication required."
     if (errorMessages && errorMessages.includes('Authentication required.')) {
-      // Dispatch a custom event to show the sign-in modal
       window.dispatchEvent(new CustomEvent('showSignInModal'));
 
-      // Optionally, you could also throw a specific error or handle it here
       throw new Error('Authentication required. Please sign in.');
     }
 

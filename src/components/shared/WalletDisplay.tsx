@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { ChevronDown, UserCircle2, UserCircleIcon, Wallet } from "lucide-react";
+import { ChevronDown, LogOut, UserCircle2, UserCircleIcon, Wallet } from "lucide-react";
 import Link from "next/link";
-import { useModal } from "@getpara/react-sdk";
+import { useAccount, useModal, useLogout } from "@getpara/react-sdk";
 
 interface WalletDisplayProps {
   walletAddress?: string;
@@ -12,7 +12,7 @@ interface WalletDisplayProps {
 export const WalletDisplay = ({ walletAddress }: WalletDisplayProps) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { openModal } = useModal();
-
+  const { logout } = useLogout();
   const toggleDropdown = () => setIsMenuOpen(!isMenuOpen);
 
   return (
@@ -49,9 +49,13 @@ export const WalletDisplay = ({ walletAddress }: WalletDisplayProps) => {
             <li className="hover:bg-peach-400/10 px-4 py-3 rounded-xl cursor-pointer">
               Do You Need Help?
             </li>
-            {/* <li className="hover:bg-red-600 hover:text-white px-4 py-3 rounded-xl cursor-pointer text-red-600">
-              Sign out
-            </li> */}
+            <li
+              className="hover:bg-peach-400/10 flex items-center gap-2 px-4 py-3 rounded-xl cursor-pointer text-red-600"
+              onClick={() => logout()}
+            >
+              <LogOut className="" />
+              <span className="font-semibold">Sign out</span>
+            </li>
           </ul>
         </div>
       )}
