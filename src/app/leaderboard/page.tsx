@@ -1,4 +1,4 @@
-import { Leaderboard } from "@/components/leaderboard/PointsTable";
+import { PointsTable } from "@/components/leaderboard/PointsTable";
 
 export default function LeaderboardPage() {
   return (
@@ -10,7 +10,7 @@ export default function LeaderboardPage() {
           Climb the ranks, showcase your expertise
           </p>
        </div>
-        <Leaderboard />
+        <PointsTable />
       </div>
     </div>
   );

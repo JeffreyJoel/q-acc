@@ -6,7 +6,7 @@ interface SpinnerProps {
   
   export const Spinner: React.FC<SpinnerProps> = ({
     size = 32,
-    color = 'currentColor',
+    color = 'peach-400',
     secondaryColor = 'white',
   }) => {
     return (
