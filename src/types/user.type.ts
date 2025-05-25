@@ -18,6 +18,7 @@ export interface INewUer {
     location?: string;
     likedProjectsCount?: number;
     donationsCount?: number;
+    totalDonated?: number;
     projectsCount?: number;
     passportScore?: number;
     passportStamps?: number;

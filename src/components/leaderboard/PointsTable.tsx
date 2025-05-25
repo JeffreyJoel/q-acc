@@ -11,6 +11,8 @@ import { ArrowDownUp } from "lucide-react";
 import { Pagination } from "./Pagination";
 import { useFetchUser } from "@/hooks/useFetchUser";
 import { Spinner } from "../loaders/Spinner";
+import { useAccount } from "wagmi";
+import { Address } from "viem";
 
 export function PointsTable() {
   const router = useRouter();
@@ -19,8 +21,9 @@ export function PointsTable() {
   const [sortDirection, setSortDirection] = useState<SortDirection>("ASC");
   const [page, setPage] = useState(0);
   const LIMIT = 15;
+  const { address } = useAccount();
 
-  const { data: user } = useFetchUser();
+  const { data: user } = useFetchUser(!!address, address as Address);
 
   const { data: leaderboardInfo, isLoading } = useFetchLeaderBoard(
     LIMIT,
@@ -30,6 +33,8 @@ export function PointsTable() {
       direction: sortDirection,
     }
   );
+  
+  console.log(leaderboardInfo);
 
   const userInfo = leaderboardInfo?.users?.find(
     (cuser) => cuser.id === user?.id
@@ -45,8 +50,8 @@ export function PointsTable() {
     setPage(0);
   };
 
-  const handleUserClick = (userId: number) => {
-    router.push(`/profile/${userId}`);
+  const handleUserClick = (userAddress: string) => {
+    router.push(`/profile/${userAddress}`);
   };
 
   const total = leaderboardInfo?.totalCount ?? 0;
@@ -103,7 +108,7 @@ export function PointsTable() {
 
         {isLoading && (
           <div className="flex justify-center items-center h-full">
-            <Spinner size={64} />
+            <Spinner size={32} />
           </div>
         )}
 

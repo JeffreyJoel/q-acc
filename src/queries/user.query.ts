@@ -18,6 +18,8 @@ export const GET_USER_BY_ADDRESS = /* GraphQL */ `
       projectsFundedCount
       rank
       skipVerification
+      totalDonated
+      donationsCount
     }
   }
 `;

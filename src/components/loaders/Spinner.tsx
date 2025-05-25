@@ -13,7 +13,7 @@ interface SpinnerProps {
       <div role='status'>
         <svg
           aria-hidden='true'
-          className={`animate-spin fill-${color}`}
+          className={`animate-spin fill-peach-400`}
           width={size}
           height={size}
           viewBox='0 0 100 101'

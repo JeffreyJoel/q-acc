@@ -4,6 +4,7 @@ import { useState } from "react";
 import { ChevronDown, LogOut, UserCircle2, UserCircleIcon, Wallet } from "lucide-react";
 import Link from "next/link";
 import { useAccount, useModal, useLogout } from "@getpara/react-sdk";
+import { shortenAddress } from "@/helpers/address";
 
 interface WalletDisplayProps {
   walletAddress?: string;
@@ -23,7 +24,7 @@ export const WalletDisplay = ({ walletAddress }: WalletDisplayProps) => {
       >
         <UserCircleIcon />
         <span className="text-sm font-medium">
-          {walletAddress || "0x0000...0000"}
+          {walletAddress ? shortenAddress(walletAddress) : "0x0000...0000"}
         </span>
         <ChevronDown className="h-4 w-4" />
       </button>
@@ -40,7 +41,7 @@ export const WalletDisplay = ({ walletAddress }: WalletDisplayProps) => {
           </div>
           <div className="mx-2" />
           <ul className="py-2 px-2 flex flex-col gap-3 text-base text-gray-200">
-            <Link href="/profile">
+            <Link href={`/profile/${walletAddress}`}>
               <li className="hover:bg-peach-400/10 flex items-center gap-2 px-4 py-3 rounded-xl cursor-pointer">
                 <UserCircle2 />
                 My Account

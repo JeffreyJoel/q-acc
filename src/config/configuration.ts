@@ -1,6 +1,6 @@
 import development from './development';
 // import preprod from './preprod';
-// import production from './production';
+import production from './production';
 
 // export const isProduction = process.env.NEXT_PUBLIC_ENV === 'production';
 // export const isPreprod = process.env.NEXT_PUBLIC_ENV === 'preprod';

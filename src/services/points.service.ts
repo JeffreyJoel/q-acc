@@ -20,6 +20,7 @@ export interface ILeaderBoardInfo {
       rank: number;
       name: string;
       email: string;
+      avatar: string;
       qaccPoints: number;
       qaccPointsMultiplier: number;
       projectsFundedCount: number;

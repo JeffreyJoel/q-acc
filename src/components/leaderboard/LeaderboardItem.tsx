@@ -5,14 +5,14 @@ import type { LeaderboardUser } from "@/types/leaderboard";
 
 interface LeaderboardItemProps {
   user: LeaderboardUser;
-  onUserClick?: (id: number) => void;
+  onUserClick?: (userAddress: string) => void;
 }
 
 export function LeaderboardItem({ user, onUserClick }: LeaderboardItemProps) {
   return (
     <div
       className="grid grid-cols-[40px_1fr_120px_120px] sm:grid-cols-[50px_1fr_150px_150px] gap-4 bg-neutral-800 rounded-3xl p-4 cursor-pointer items-center"
-      onClick={() => onUserClick?.(Number(user.id))}
+      onClick={() => onUserClick?.(user.walletAddress)}
     >
       <div className="flex justify-center">
         <div
@@ -30,12 +30,15 @@ export function LeaderboardItem({ user, onUserClick }: LeaderboardItemProps) {
       <div className="flex items-center gap-2 sm:gap-3">
         <div className="relative">
           <Avatar className="h-8 w-8 sm:h-12 sm:w-12 border-2 border-[#3a3a3a]">
-            <AvatarFallback className="text-xs sm:text-base">{user.name.charAt(0)}</AvatarFallback>
+            <AvatarImage src={user.avatar ?? ''} />
+       
+              <AvatarFallback className="text-xs sm:text-base">{user.name?.charAt(0)}</AvatarFallback>
+            
           </Avatar>
         </div>
 
         <div className="flex flex-col">
-          <span className="font-medium text-sm sm:text-lg">{user.name}</span>
+          <span className="font-medium text-sm sm:text-lg">{user?.name}</span>
           <span className="text-xs sm:text-sm text-gray-400">{shortenAddress(user.walletAddress)}</span>
         </div>
       </div>

@@ -6,15 +6,17 @@ import { getLocalStorageToken, signWithEVM } from '@/helpers/generateJWT';
 import { IUser } from '@/types/user.type';
 import { useFetchUser } from './useFetchUser';
 import { useWallet } from '@getpara/react-sdk';
+import { Address } from 'viem';
 
 
 export const useSignUser = (onSigned?: (user: IUser) => void) => {
   const { address, chain, connector } = useAccount();
   const { data: wallet } = useWallet();
   const  chainId  = useChainId();
-  const { refetch } = useFetchUser();
 
   const userAddress = wallet?.address || address;
+
+  const { refetch } = useFetchUser(!!userAddress, userAddress as Address);
 
   return useQuery({
     queryKey: ['token', userAddress],

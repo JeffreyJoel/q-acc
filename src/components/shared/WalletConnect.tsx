@@ -39,10 +39,7 @@ function WalletConnect() {
       {account && account.isConnected ? (
         wallet && (
           <WalletDisplay
-            walletAddress={para.getDisplayAddress(wallet.id, {
-              truncate: true,
-              addressType: wallet.type,
-            })}
+            walletAddress={wallet.address}
           />
         )
       ) : (

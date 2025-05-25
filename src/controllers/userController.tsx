@@ -1,17 +1,17 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useAccount } from 'wagmi';
-import { redirect, useRouter, usePathname } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { fetchGivethUserInfo } from '@/services/user.service';
 import { SignModal } from '@/components/modals/SignModal';
 // import { SanctionModal } from '../Modals/SanctionModal';
 import { useUpdateUser } from '@/hooks/useUpdateUser';
-// import Routes from '@/lib/constants/Routes';
 import { getLocalStorageToken } from '@/helpers/generateJWT';
 import { IUser } from '@/types/user.type';
 import { useFetchUser } from '@/hooks/useFetchUser';
 import { useWallet } from '@getpara/react-sdk';
+import { Address } from 'viem';
 // import { isProductReleased } from '@/config/configuration';
 // import { useAddressWhitelist } from '@/hooks/useAddressWhitelist';
     // import { useFetchSanctionStatus } from '@/hooks/useFetchSanctionStatus';
@@ -22,21 +22,15 @@ export const UserController = () => {
   const [showCompleteProfileModal, setShowCompleteProfileModal] =
     useState(false);
   const [showSignModal, setShowSignModal] = useState(false);
-  const [showSanctionModal, setShowSanctionModal] = useState(false);
-  const [showTermsModal, setShowTermsModal] = useState(false);
   const { address } = useAccount();
-  const router = useRouter();
   const { mutateAsync: updateUser } = useUpdateUser();
-  const { data: user, refetch } = useFetchUser();
+
   const { data: wallet } = useWallet();
   // const useWhitelist = useAddressWhitelist();
-  // const { data: isSanctioned } = useFetchSanctionStatus(address as string);
-  // const { data: isSafeAccount } = useCheckSafeAccount();
   const pathname = usePathname();
-
   const userAddress = wallet?.address || address;
 
-  console.log('user', user);
+  const { data: user, refetch } = useFetchUser(!!userAddress, userAddress as Address);
 
   const onSign = async (newUser: IUser) => {
     console.log('Signed', newUser);

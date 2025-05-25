@@ -5,6 +5,7 @@ export const FETCH_LEADERBOARD = /* GraphQL */ `
         id
         name
         email
+        avatar
         qaccPoints
         qaccPointsMultiplier
         projectsFundedCount

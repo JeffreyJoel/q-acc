@@ -1,10 +1,12 @@
-import ProfileInfo from "@/components/profile/ProfileInfo";
-import ProfileTab from "@/components/profile/ProfileTab";
-export default function ProfilePage() {
+import ProfileDashboardView from "@/components/profile/profile-dashboard/ProfileDashboardView";
+import { Address } from "viem";
+
+export default function ProfilePage({ params }: { params: { id: string } }) {
+  const userAddress = params.id as Address;
+
   return (
     <div className="mt-32 mb-20 max-w-7xl mx-auto px-4 sm:px-6">
-      <ProfileInfo />
-      <ProfileTab />
+      <ProfileDashboardView userAddress={userAddress} />
     </div>
   );
 }

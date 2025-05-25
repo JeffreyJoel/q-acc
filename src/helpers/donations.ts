@@ -32,6 +32,11 @@ export const calculateTotalContributions = (donations: any[]) => {
   return donations.reduce((total, donation) => total + donation.amount, 0);
 };
 
+// Helper function to calculate Total received in USD
+export const calculateTotalContributionsUsd = (donations: any[]) => {
+  return donations.reduce((total, donation) => total + donation.valueUsd, 0);
+};
+
 // Calculate locked reward token amount based on stream data
 export const calculateLockedRewardTokenAmount = (
   rewardTokenAmount: number,
