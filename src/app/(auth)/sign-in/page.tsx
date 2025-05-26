@@ -1,4 +1,3 @@
-import { GalleryVerticalEnd } from "lucide-react";
 
 import { LoginForm } from "@/components/auth/SignInForm";
 import Image from "next/image";
@@ -6,7 +5,7 @@ import Image from "next/image";
 export default function LoginPage() {
   return (
     <div className="grid min-h-svh lg:grid-cols-2">
-      <div className="relative hidden bg-muted lg:flex flex-col items-center justify-center h-full bg-neutral-950">
+      <div className="hidden bg-muted lg:flex flex-col items-center justify-center h-full bg-neutral-950">
         <div className="w-full my-auto flex flex-col justify-center">
           <div className="max-w-xl mx-auto text-white space-y-6">
             <h1 className="text-4xl leading-relaxed font-tusker-8 font-bold mb-8 text-center">

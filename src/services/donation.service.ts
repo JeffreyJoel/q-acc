@@ -112,8 +112,7 @@ export const fetchUserDonations = async (userId: number) => {
     const res = await requestGraphQL<{ donationsByUserId: any }>(
       GET_USER_DONATIONS,
       {
-        userId,
-        take: 50,
+        userId
       },
       {
         auth: true,

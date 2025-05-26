@@ -113,10 +113,10 @@ export const ParaProviders: React.FC<Props> = ({ children }) => {
           }}
         >
           <ParaModal
+            className="bg-red-500"
             para={para}
             authLayout={config.authLayout}
             oAuthMethods={config.oAuthMethods}
-
             externalWallets={config.externalWallets}
             theme={config.theme}
             appName={config.appName}

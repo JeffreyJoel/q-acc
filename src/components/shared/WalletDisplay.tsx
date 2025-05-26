@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { ChevronDown, LogOut, UserCircle2, UserCircleIcon, Wallet } from "lucide-react";
 import Link from "next/link";
-import { useAccount, useModal, useLogout } from "@getpara/react-sdk";
+import { useModal, useLogout } from "@getpara/react-sdk";
 import { shortenAddress } from "@/helpers/address";
 
 interface WalletDisplayProps {
@@ -15,6 +15,10 @@ export const WalletDisplay = ({ walletAddress }: WalletDisplayProps) => {
   const { openModal } = useModal();
   const { logout } = useLogout();
   const toggleDropdown = () => setIsMenuOpen(!isMenuOpen);
+
+  function handleLogout() {
+    logout();
+  }
 
   return (
     <div className="relative inline-block text-left">
@@ -52,7 +56,7 @@ export const WalletDisplay = ({ walletAddress }: WalletDisplayProps) => {
             </li>
             <li
               className="hover:bg-peach-400/10 flex items-center gap-2 px-4 py-3 rounded-xl cursor-pointer text-red-600"
-              onClick={() => logout()}
+              onClick={handleLogout}
             >
               <LogOut className="" />
               <span className="font-semibold">Sign out</span>

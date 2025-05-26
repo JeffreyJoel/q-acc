@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import "@getpara/react-sdk/styles.css";
 import { WalletDisplay } from "./WalletDisplay";
 import { useAccount, useModal, useWallet } from "@getpara/react-sdk";
@@ -12,13 +12,6 @@ function WalletConnect() {
   const { data: account } = useAccount();
   const { data: wallet } = useWallet();
   const { openModal } = useModal();
-  
-  useEffect(() => {
-    if (account && account.isConnected && !account.email) {
-      // openEmailModal();
-    }
-  }, [account]);
-
 
   return (
     <div>

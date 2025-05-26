@@ -4,7 +4,7 @@ export default function ProjectDetailsLoader() {
     <div className="w-full max-w-6xl mx-auto">
       {/* Header banner skeleton */}
       <div className="relative w-full h-64 bg-neutral-800 rounded-t-lg overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-r from-neutral-800 to-neutral-700 animate-pulse"></div>
+        {/* <div className="absolute inset-0 bg-neutral-800 animate-pulse"></div> */}
 
         {/* Logo and tagline skeleton */}
         <div className="absolute bottom-20 left-10 flex items-center gap-4">
@@ -159,20 +159,20 @@ export default function ProjectDetailsLoader() {
 
       {/* What Prismo Is section - NEW */}
       <div className="mt-6">
-        <div className="w-64 h-8 bg-neutral-800 rounded-sm animate-pulse mb-4"></div>
+        <div className="w-64 h-8 bg-neutral-700 rounded-sm animate-pulse mb-4"></div>
         <div className="space-y-3">
           {[1, 2, 3, 4].map((_, i) => (
-            <div key={i} className="w-full h-5 bg-neutral-800 rounded-sm animate-pulse"></div>
+            <div key={i} className="w-full h-5 bg-neutral-700 rounded-sm animate-pulse"></div>
           ))}
         </div>
       </div>
 
       {/* Why Web3 Needs section - NEW */}
       <div className="mt-8 mb-10">
-        <div className="w-80 h-8 bg-neutral-800 rounded-sm animate-pulse mb-4"></div>
+        <div className="w-80 h-8 bg-neutral-700 rounded-sm animate-pulse mb-4"></div>
         <div className="space-y-3">
           {[1, 2, 3, 4, 5].map((_, i) => (
-            <div key={i} className="w-full h-5 bg-neutral-800 rounded-sm animate-pulse"></div>
+            <div key={i} className="w-full h-5 bg-neutral-700 rounded-sm animate-pulse"></div>
           ))}
         </div>
       </div>

@@ -1,6 +1,5 @@
 "use client";
 
-import { Fingerprint } from "lucide-react";
 import { CopyButton } from "../../shared/CopyButton";
 import Image from "next/image";
 import { useFetchUser } from "@/hooks/useFetchUser";
@@ -14,6 +13,8 @@ export default function ProfileInfo({ userAddress }: { userAddress: Address }) {
     !!userAddress,
     userAddress as Address
   );
+
+  console.log(user);
 
   return (
     <div className="p-6 bg-neutral-800 rounded-2xl">

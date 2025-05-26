@@ -24,6 +24,7 @@ export const UserController = () => {
   const [showSignModal, setShowSignModal] = useState(false);
   const { address } = useAccount();
   const { mutateAsync: updateUser } = useUpdateUser();
+  const router = useRouter();
 
   const { data: wallet } = useWallet();
   // const useWhitelist = useAddressWhitelist();
@@ -34,6 +35,7 @@ export const UserController = () => {
 
   const onSign = async (newUser: IUser) => {
     console.log('Signed', newUser);
+    router.push("/");
     setShowSignModal(false);
     if (!newUser?.isSignedIn) return;
 
@@ -104,7 +106,7 @@ export const UserController = () => {
       // Remove stale token if any
       localStorage.removeItem('token');
 
-      setShowSignModal(true);
+      // setShowSignModal(true);
     };
 
     handleAddressCheck();

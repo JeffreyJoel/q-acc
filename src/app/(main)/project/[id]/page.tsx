@@ -20,14 +20,6 @@ import ProjectDetailsLoader from "@/components/loaders/ProjectDetailsLoader";
 export default function ProjectPage({ params }: { params: { id: string } }) {
   const { data: project, isLoading, error } = useFetchProjectBySlug(params.id);
 
-  // if (error || !project) {
-  //   return (
-  //     <div className="mt-24 max-w-7xl mx-auto text-center">
-  //       Failed to load project data. {error?.message}
-  //     </div>
-  //   );
-  // }
-
   return (
     <div className="mt-24 max-w-7xl min-h-screen mx-auto">
       <div className="px-4 sm:px-6 lg:px-8 pt-8">

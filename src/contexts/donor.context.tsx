@@ -39,6 +39,7 @@ import { IUser } from '@/types/user.type';
     loading: boolean;
     error: string | null;
     user: IUser | null;
+    donations: any[];
   }
   
   const DonorContext = createContext<DonorContextType | undefined>(undefined);
@@ -145,6 +146,7 @@ import { IUser } from '@/types/user.type';
         (sum, data) => sum + data.userProjectContributionSumUsd,
         0,
       );
+      console.log(totalSumUsd);
       setTotalUserContributionsUsd(totalSumUsd);
     }, [projectDonorData]);
   
@@ -171,6 +173,7 @@ import { IUser } from '@/types/user.type';
       <DonorContext.Provider
         value={{
           user: user ?? null,
+          donations,
           donationsGroupedByProject,
           projectDonorData,
           totalUserContributions,
