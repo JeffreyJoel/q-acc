@@ -68,7 +68,7 @@ export const UserController = () => {
         console.log('saved');
       } else {
         console.log('No user in giveth data');
-        setShowCompleteProfileModal(true);
+        // setShowCompleteProfileModal(true);
       }
     }
 

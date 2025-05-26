@@ -23,10 +23,10 @@ export const WalletDisplay = ({ walletAddress }: WalletDisplayProps) => {
         className="flex items-center gap-2 bg-neutral-800 px-4 py-3 rounded-full border border-peach-400/30 shadow-sm"
       >
         <UserCircleIcon />
-        <span className="text-sm font-medium">
+        <span className="hidden sm:block text-sm font-medium">
           {walletAddress ? shortenAddress(walletAddress) : "0x0000...0000"}
         </span>
-        <ChevronDown className="h-4 w-4" />
+        <ChevronDown className="h-4 w-4 hidden sm:block" />
       </button>
 
       {isMenuOpen && (

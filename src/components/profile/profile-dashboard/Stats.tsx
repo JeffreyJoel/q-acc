@@ -34,7 +34,7 @@ function Stats() {
         </h2>
         <div className="divide-y divide-neutral-700">
           {Object.entries(donationsGroupedByProject).map(([projectId, donationsArray]: [string, any[]]) => {
-            if (!donationsArray || donationsArray.length === 0) return null;
+            if (!donationsArray || donationsArray.length === 0) return (<p className="text-gray-400 text-center text-xl">You have not supported any projects yet.</p>);
             
             const totalAmountForProject = donationsArray.reduce((sum: number, donation: any) => sum + donation.valueUsd, 0);
             const firstDonation = donationsArray[0];
@@ -74,6 +74,13 @@ function Stats() {
                 title="MULTI-PROJECTS"
                 description="Supported multiple projects in one round!"
               />
+            )
+          }
+          {
+            contributedRoundsCount < 1 && contributedProjectsCount < 1 && (
+              <p className="text-gray-400 text-center text-xl">
+                You have not unlocked any achievements yet.
+              </p>
             )
           }
           {/* <Achievement

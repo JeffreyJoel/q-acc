@@ -16,12 +16,12 @@ import { useAccount } from "@getpara/react-sdk";
 export function NavBar() {
   const navItems = [
     {
-      name: "Projects",
+      name: "Home",
       link: "/",
     },
     {
-      name: "Portfolio",
-      link: "#pricing",
+      name: "Projects",
+      link: "/",
     },
     {
       name: "Leaderboard",
@@ -47,10 +47,13 @@ export function NavBar() {
         <MobileNav>
           <MobileNavHeader>
             <NavbarLogo />
-            <MobileNavToggle
-              isOpen={isMobileMenuOpen}
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            />
+            <div className="flex items-center gap-4">
+              <WalletConnect />
+              <MobileNavToggle
+                isOpen={isMobileMenuOpen}
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              />
+            </div>
           </MobileNavHeader>
 
           <MobileNavMenu
@@ -67,21 +70,9 @@ export function NavBar() {
                 <span className="block">{item.name}</span>
               </a>
             ))}
-            <div className="flex w-full flex-col gap-4">
-              {/* <NavbarButton
-                onClick={() => setIsMobileMenuOpen(false)}
-                variant="secondary"
-                className="w-full"
-              >
-                Login
-              </NavbarButton> */}
-              <NavbarButton  onClick={() => setIsMobileMenuOpen(false)} variant="primary" className="w-full rounded-full bg-peach-400">Sign up</NavbarButton>
-            </div>
           </MobileNavMenu>
         </MobileNav>
       </Navbar>
-
     </div>
   );
 }
-

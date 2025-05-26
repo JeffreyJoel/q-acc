@@ -236,7 +236,7 @@ export const MobileNavMenu = ({
           exit={{ opacity: 0, y: -10 }}
           transition={{ duration: 0.2 }}
           className={cn(
-            "absolute inset-x-0 top-16 z-50 flex w-full flex-col items-start justify-start gap-4 rounded-lg bg-white px-4 py-8 shadow-[0_0_24px_rgba(34,_42,_53,_0.06),_0_1px_1px_rgba(0,_0,_0,_0.05),_0_0_0_1px_rgba(34,_42,_53,_0.04),_0_0_4px_rgba(34,_42,_53,_0.08),_0_16px_68px_rgba(47,_48,_55,_0.05),_0_1px_0_rgba(255,_255,_255,_0.1)_inset] dark:bg-neutral-950",
+            "absolute inset-x-0 top-16 z-50 mt-4 flex w-full flex-col items-start justify-start gap-4 rounded-2xl px-4 py-8 shadow-[0_0_24px_rgba(34,_42,_53,_0.06),_0_1px_1px_rgba(0,_0,_0,_0.05),_0_0_0_1px_rgba(34,_42,_53,_0.04),_0_0_4px_rgba(34,_42,_53,_0.08),_0_16px_68px_rgba(47,_48,_55,_0.05),_0_1px_0_rgba(255,_255,_255,_0.1)_inset] bg-neutral-900",
             className,
           )}
         >
@@ -273,17 +273,27 @@ export const NavbarLogo = () => {
   return (
     <a
       href="/"
-      className="relative z-20 mr-4 flex items-center space-x-2 px-2 py-1 text-sm font-normal text-black"
+      className=" relative z-20 mr-4 items-center space-x-2 px-2 py-1 text-sm font-normal text-black"
     >
       <Image
         src="/images/logos/logo-horisontal-light.svg"
         alt="logo"
         width={100}
         height={100}
-        className="w-[200px] h-auto"
+        className="w-[200px] h-auto hidden sm:block"
+        priority
+      />
+      <Image
+        src="/images/logos/logo-light.png"
+        alt="logo"
+        width={100}
+        height={100}
+        className="w-[100px] h-auto block sm:hidden"
         priority
       />
     </a>
+
+
   );
 };
 
