@@ -1,9 +1,9 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
-    domains: ['gateway.pinata.cloud'],
+    domains: ['gateway.pinata.cloud', 'ipfs.io'],
   },
-  transpilePackages: ["@getpara/react-sdk", "@getpara/*"],
+  transpilePackages: ["@privy-io/react-auth"],
   webpack: (config) => {
     config.externals.push("pino-pretty", "lokijs", "encoding");
     return config;

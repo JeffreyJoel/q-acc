@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useAccount } from 'wagmi';
+import { usePrivy } from '@privy-io/react-auth';
 import { useRouter, usePathname } from 'next/navigation';
 import { fetchGivethUserInfo } from '@/services/user.service';
 import { SignModal } from '@/components/modals/SignModal';
@@ -10,7 +10,6 @@ import { useUpdateUser } from '@/hooks/useUpdateUser';
 import { getLocalStorageToken } from '@/helpers/generateJWT';
 import { IUser } from '@/types/user.type';
 import { useFetchUser } from '@/hooks/useFetchUser';
-import { useWallet } from '@getpara/react-sdk';
 import { Address } from 'viem';
 // import { isProductReleased } from '@/config/configuration';
 // import { useAddressWhitelist } from '@/hooks/useAddressWhitelist';
@@ -22,16 +21,18 @@ export const UserController = () => {
   const [showCompleteProfileModal, setShowCompleteProfileModal] =
     useState(false);
   const [showSignModal, setShowSignModal] = useState(false);
-  const { address } = useAccount();
+  const { user: privyUser, ready, authenticated } = usePrivy();
   const { mutateAsync: updateUser } = useUpdateUser();
   const router = useRouter();
 
-  const { data: wallet } = useWallet();
   // const useWhitelist = useAddressWhitelist();
   const pathname = usePathname();
-  const userAddress = wallet?.address || address;
+  const userAddress = privyUser?.wallet?.address;
 
-  const { data: user, refetch } = useFetchUser(!!userAddress, userAddress as Address);
+  const { data: user, refetch } = useFetchUser(
+    ready && authenticated && !!userAddress,
+    userAddress as Address,
+  );
 
   const onSign = async (newUser: IUser) => {
     console.log('Signed', newUser);
@@ -88,7 +89,7 @@ export const UserController = () => {
   };
 
   useEffect(() => {
-    if (!userAddress) return;
+    if (!ready || !authenticated || !userAddress) return;
     const handleAddressCheck = async () => {
       const localStorageToken = getLocalStorageToken(userAddress);
 
@@ -110,7 +111,7 @@ export const UserController = () => {
     };
 
     handleAddressCheck();
-  }, [userAddress, refetch, user, pathname]);
+  }, [userAddress, refetch, user, pathname, ready, authenticated]);
 
   useEffect(() => {
     const handleShowSignInModal = () => {

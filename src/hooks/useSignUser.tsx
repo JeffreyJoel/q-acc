@@ -5,16 +5,18 @@ import { ethers } from 'ethers';
 import { getLocalStorageToken, signWithEVM } from '@/helpers/generateJWT';
 import { IUser } from '@/types/user.type';
 import { useFetchUser } from './useFetchUser';
-import { useWallet } from '@getpara/react-sdk';
+// import { useWallet } from '@getpara/react-sdk';
+
 import { Address } from 'viem';
 
 
 export const useSignUser = (onSigned?: (user: IUser) => void) => {
   const { address, chain, connector } = useAccount();
-  const { data: wallet } = useWallet();
+  // const { data: wallet } = useWallet();
+  // con
   const  chainId  = useChainId();
 
-  const userAddress = wallet?.address || address;
+  const userAddress =  address;
 
   const { refetch } = useFetchUser(!!userAddress, userAddress as Address);
 

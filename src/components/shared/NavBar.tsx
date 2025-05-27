@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/resizable-navbar";
 import { useState } from "react";
 import WalletConnect from "./WalletConnect";
-import { useAccount } from "@getpara/react-sdk";
+
 export function NavBar() {
   const navItems = [
     {
@@ -28,7 +28,7 @@ export function NavBar() {
       link: "/leaderboard",
     },
   ];
-  const { data: account } = useAccount();
+
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   return (

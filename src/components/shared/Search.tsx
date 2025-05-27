@@ -1,22 +1,32 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Search, X } from "lucide-react"
+import { useState } from "react";
+import { Search, X } from "lucide-react";
 
 const categories = [
   { id: "defi", name: "DeFi" },
-  { id: "gaming", name: "Gaming" },
+  { id: "game", name: "Gaming" },
   { id: "infra", name: "Infrastructure" },
   { id: "dao", name: "DAO" },
   { id: "lending", name: "Lending" },
   { id: "yield", name: "Yield" },
-]
+  { id: "social", name: "Social" },
+  { id: "AI", name: "AI" },
+  { id: "music", name: "Music" },
+];
+
+const seasons = [
+  { id: "1", name: "Season 1" },
+  { id: "2", name: "Season 2" },
+];
 
 interface SearchComponentProps {
-  searchText: string
-  setSearchText: (text: string) => void
-  selectedCategories: string[]
-  setSelectedCategories: (categories: string[]) => void
+  searchText: string;
+  setSearchText: (text: string) => void;
+  selectedCategories: string[];
+  setSelectedCategories: (categories: string[]) => void;
+  selectedSeasons: string[];
+  setSelectedSeasons: (seasons: string[]) => void;
 }
 
 const SearchComponent = ({
@@ -24,22 +34,35 @@ const SearchComponent = ({
   setSearchText,
   selectedCategories,
   setSelectedCategories,
+  selectedSeasons,
+  setSelectedSeasons,
 }: SearchComponentProps) => {
   const toggleCategory = (categoryId: string) => {
     if (selectedCategories.includes(categoryId)) {
-      setSelectedCategories(selectedCategories.filter((id) => id !== categoryId))
+      setSelectedCategories(
+        selectedCategories.filter((id) => id !== categoryId)
+      );
     } else {
-      setSelectedCategories([...selectedCategories, categoryId])
+      setSelectedCategories([...selectedCategories, categoryId]);
     }
-  }
+  };
+
+  const toggleSeason = (seasonId: string) => {
+    if (selectedSeasons.includes(seasonId)) {
+      setSelectedSeasons(selectedSeasons.filter((id) => id !== seasonId));
+    } else {
+      setSelectedSeasons([...selectedSeasons, seasonId]);
+    }
+  };
 
   const clearSearch = () => {
-    setSearchText("")
-    setSelectedCategories([])
-  }
+    setSearchText("");
+    setSelectedCategories([]);
+    setSelectedSeasons([]);
+  };
 
   return (
-    <div className="p-4 mb-8">
+    <div className="p-4 mb-6">
       <div className="flex flex-col gap-6">
         <div className="relative w-full max-w-3xl mx-auto">
           <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
@@ -52,7 +75,9 @@ const SearchComponent = ({
             value={searchText}
             onChange={(e) => setSearchText(e.target.value)}
           />
-           {(searchText || selectedCategories.length > 0) && (
+          {(searchText ||
+            selectedCategories.length > 0 ||
+            selectedSeasons.length > 0) && (
             <button
               onClick={clearSearch}
               className="absolute right-3 top-1/2 -translate-y-1/2 p-1 rounded-full bg-neutral-600 hover:bg-neutral-500 transition-colors"
@@ -63,7 +88,7 @@ const SearchComponent = ({
           )}
         </div>
         <div>
-          <div className="flex flex-wrap justify-center gap-2">
+          <div className="flex max-w-3xl mx-auto flex-wrap justify-center gap-3">
             {categories.map((category) => (
               <button
                 key={category.id}
@@ -77,11 +102,25 @@ const SearchComponent = ({
                 {category.name}
               </button>
             ))}
+
+            {seasons.map((season) => (
+              <button
+                key={season.id}
+                onClick={() => toggleSeason(season.id)}
+                className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+                  selectedSeasons.includes(season.id)
+                    ? "bg-peach-400 text-black"
+                    : "bg-neutral-800 text-neutral-400 hover:bg-peach-400 hover:text-black"
+                }`}
+              >
+                {season.name}
+              </button>
+            ))}
           </div>
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default SearchComponent
+export default SearchComponent;

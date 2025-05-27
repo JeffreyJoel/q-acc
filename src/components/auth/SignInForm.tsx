@@ -3,27 +3,27 @@
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useAccount, useModal } from "@getpara/react-sdk";
+// import { useAccount, useModal } from "@getpara/react-sdk";
 import { redirect, useRouter } from "next/navigation";
 
 export function LoginForm({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<"form">) {
-  const { openModal } = useModal();
-  const { data: account } = useAccount();
+  // const { openModal } = useModal();
+  // const { data: account } = useAccount();
   const router = useRouter();
 
-  if (account && account.isConnected) {
-    // return redirect("/");
-  }
+  // if (account && account.isConnected) {
+  //   // return redirect("/");
+  // }
 
-  function handleSignIn() {
-    openModal();
-    if (account && account.isConnected) {
-      router.push("/");
-    }
-  }
+  // function handleSignIn() {
+  //   openModal();
+  //   if (account && account.isConnected) {
+  //     router.push("/");
+  //   }
+  // }
 
   return (
     <div className={cn("flex flex-col gap-6", className)}>
@@ -47,7 +47,7 @@ export function LoginForm({
         <Button
           variant="secondary"
           className="w-1/2 mx-auto py-6 text-base bg-peach-400 rounded-full border border-peach-400 text-black hover:text-peach-400"
-          onClick={handleSignIn}
+          // onClick={handleSignIn}
         >
           Sign in
         </Button>
