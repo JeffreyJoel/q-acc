@@ -4,7 +4,7 @@ import axios from "axios";
 
 import { Address, erc20Abi, formatUnits, parseUnits } from "viem";
 import { multicall, getBalance, getPublicClient } from "wagmi/actions";
-import { wagmiConfig } from "@/providers/ParaProvider";
+import { config as wagmiConfig } from "@/providers/PrivyProvider";
 
 import config from "@/config/configuration";
 import { SquidTokenType } from "./squidTransactions";

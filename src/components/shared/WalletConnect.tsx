@@ -4,12 +4,10 @@ import { useEffect, useState } from "react";
 import { useLogin, usePrivy } from "@privy-io/react-auth";
 import { WalletDisplay } from "./WalletDisplay";
 import { NavbarButton } from "../ui/resizable-navbar";
-import { useAccount } from "wagmi";
-
 
 function WalletConnect() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const { user, authenticated } = usePrivy();
+  const { user, ready, authenticated } = usePrivy();
 
   const [isClient, setIsClient] = useState(false);
   const { login } = useLogin({});
@@ -20,20 +18,31 @@ function WalletConnect() {
 
   return (
     <div>
-      {  isClient && authenticated && user && user.wallet?.address ? (
-        <WalletDisplay
-          walletAddress={user?.wallet?.address}
-        />
+      {isClient && authenticated && user && user.wallet?.address ? (
+        <WalletDisplay walletAddress={user?.wallet?.address} />
       ) : (
-        <NavbarButton
-          disabled={isLoading}
-          onClick={() => login()}
-          variant="primary"
-          className="rounded-full px-4 py-2 bg-peach-400"
-        >
-          Sign In
-        </NavbarButton>
+        <>
+          {ready ? (
+            <NavbarButton
+              disabled={isLoading}
+              onClick={() => login()}
+              variant="primary"
+              className="rounded-full px-4 py-2 bg-peach-400"
+            >
+              Sign In
+            </NavbarButton>
+          ) : (
+            <NavbarButton
+              disabled={true}
+              variant="primary"
+              className="rounded-full px-4 py-2 bg-peach-400 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Loading...
+            </NavbarButton>
+          )}
+        </>
       )}
+
       {/* <ProfileCreationModal
         isOpen={isProfileModalOpen}
         onClose={handleCloseProfileModal}

@@ -16,10 +16,9 @@ import { WagmiProvider, createConfig } from "@privy-io/wagmi";
 
 const privyConfig: PrivyClientConfig = {
   embeddedWallets: {
-    createOnLogin: "users-without-wallets",
-    requireUserPasswordOnCreate: true
+    createOnLogin: "users-without-wallets"
   },
-  loginMethods: ["wallet", "email", "google"],
+  loginMethods: ["wallet", "email", "google", "twitter"],
   appearance: {
     showWalletLoginFirst: false,
     theme: "dark",
@@ -29,7 +28,7 @@ const privyConfig: PrivyClientConfig = {
   defaultChain: polygon,
 };
 
-const config = createConfig({
+export const config = createConfig({
   chains: [polygon, polygonAmoy],
   connectors: [injected()],
   storage: createStorage({
