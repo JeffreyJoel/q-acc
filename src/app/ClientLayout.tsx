@@ -1,18 +1,18 @@
 "use client";
-import { ParaProviders } from "@/providers/ParaProvider";
 import { ModalProvider } from "@/contexts/ModalContext";
 import { UserController } from "@/controllers/userController";
+import Providers from "@/providers/PrivyRovider";
 export default function ClientLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   return (
-    <ParaProviders>
-      <ModalProvider>
+    <Providers>
+      {/* <ModalProvider> */}
         <div>{children}</div>
-        <UserController />
-      </ModalProvider>
-    </ParaProviders>
+        {/* <UserController /> */}
+      {/* </ModalProvider> */}
+    </Providers>
   );
 }
