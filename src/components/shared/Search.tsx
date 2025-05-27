@@ -5,11 +5,14 @@ import { Search, X } from "lucide-react";
 
 const categories = [
   { id: "defi", name: "DeFi" },
-  { id: "gaming", name: "Gaming" },
+  { id: "game", name: "Gaming" },
   { id: "infra", name: "Infrastructure" },
   { id: "dao", name: "DAO" },
   { id: "lending", name: "Lending" },
   { id: "yield", name: "Yield" },
+  { id: "social", name: "Social" },
+  { id: "AI", name: "AI" },
+  { id: "music", name: "Music" },
 ];
 
 const seasons = [
@@ -59,7 +62,7 @@ const SearchComponent = ({
   };
 
   return (
-    <div className="p-4 mb-8">
+    <div className="p-4 mb-6">
       <div className="flex flex-col gap-6">
         <div className="relative w-full max-w-3xl mx-auto">
           <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
@@ -85,7 +88,7 @@ const SearchComponent = ({
           )}
         </div>
         <div>
-          <div className="flex flex-wrap justify-center gap-2">
+          <div className="flex max-w-3xl mx-auto flex-wrap justify-center gap-3">
             {categories.map((category) => (
               <button
                 key={category.id}

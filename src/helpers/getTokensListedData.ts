@@ -73,7 +73,6 @@ export async function getPoolAddressByPair(
       tokenABC,
       tokenPOL,
     );
-    console.log("poolAddress", poolAddress);
 
     // Validate if a pool exists
     const isListed = poolAddress !== ZeroAddress;

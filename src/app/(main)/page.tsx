@@ -23,21 +23,54 @@ export default function Home() {
       const searchMatch =
         searchText === "" ||
         (project.title &&
-          project.title.toLowerCase().includes(searchText.toLowerCase())) ||
+          (searchText === "AI"
+            ? project.title.includes(searchText)
+            : project.title.toLowerCase().includes(searchText.toLowerCase()))) ||
         (project.description &&
-          project.description
-            .toLowerCase()
-            .includes(searchText.toLowerCase())) ||
+          (searchText === "AI"
+            ? project.description.includes(searchText)
+            : project.description
+                .toLowerCase()
+                .includes(searchText.toLowerCase()))) ||
         (project.categories &&
           project.categories.some((category) =>
-            category.name.toLowerCase().includes(searchText.toLowerCase())
+            searchText === "AI"
+              ? category.name.includes(searchText)
+              : category.name.toLowerCase().includes(searchText.toLowerCase())
           ));
 
       const categoryMatch =
         selectedCategories.length === 0 ||
         (project.categories &&
           project.categories.some((category) =>
-            selectedCategories.includes(category.name)
+            selectedCategories.some((selectedCat) =>
+              selectedCat === "AI"
+                ? category.name.includes(selectedCat)
+                : category.name.toLowerCase().includes(selectedCat.toLowerCase())
+            )
+          )) ||
+        (project.title &&
+          selectedCategories.some((selectedCat) =>
+            project.title &&
+            (selectedCat === "AI"
+              ? project.title.includes(selectedCat)
+              : project.title.toLowerCase().includes(selectedCat.toLowerCase()))
+          )) ||
+        (project.description &&
+          selectedCategories.some((selectedCat) =>
+            project.description &&
+            (selectedCat === "AI"
+              ? project.description.includes(selectedCat)
+              : project.description
+                  .toLowerCase()
+                  .includes(selectedCat.toLowerCase()))
+          )) ||
+        (project.teaser &&
+          selectedCategories.some((selectedCat) =>
+            project.teaser &&
+            (selectedCat === "AI"
+              ? project.teaser.includes(selectedCat)
+              : project.teaser.toLowerCase().includes(selectedCat.toLowerCase()))
           ));
 
       const seasonMatch =
@@ -93,13 +126,9 @@ export default function Home() {
             <>
               {filteredProjects.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
-                  {filteredProjects.map(
-                    (
-                      project: IProject // Use IProject type
-                    ) => (
-                      <ProjectCard key={project.id} project={project} />
-                    )
-                  )}
+                  {filteredProjects.map((project: IProject) => (
+                    <ProjectCard key={project.id} project={project} />
+                  ))}
                 </div>
               ) : (
                 <div className="bg-neutral-800 rounded-xl p-8 text-center mb-16">
