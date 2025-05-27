@@ -6,13 +6,52 @@ import { SearchBar } from "./SearchBar";
 import { LeaderboardItem } from "./LeaderboardItem";
 
 import { useFetchLeaderBoard } from "@/hooks/useFetchLeaderBoard";
-import { SortDirection, SortField } from "@/services/points.service";
+import { SortDirection, SortField, ILeaderBoardInfo } from "@/services/points.service";
 import { ArrowDownUp } from "lucide-react";
 import { Pagination } from "./Pagination";
 import { useFetchUser } from "@/hooks/useFetchUser";
 import { Spinner } from "../loaders/Spinner";
 import { useAccount } from "wagmi";
 import { Address } from "viem";
+
+const LEADERBOARD_STORAGE_KEY = 'leaderboardData';
+const MAX_CACHE_AGE_MS = 1000 * 60 * 7; // 7 minutes (a bit more than refetch interval to allow for active tab)
+
+// Type for the data returned by fetchLeaderBoard and used by the query
+type LeaderboardQueryData = ILeaderBoardInfo['getUsersByQaccPoints'] | undefined;
+
+interface StoredLeaderboardData {
+  timestamp: number;
+  data: LeaderboardQueryData;
+  sortField: SortField;
+  sortDirection: SortDirection;
+}
+
+const getInitialLeaderboardData = (): LeaderboardQueryData => {
+  if (typeof window === 'undefined') {
+    return undefined;
+  }
+  try {
+    const storedItem = sessionStorage.getItem(LEADERBOARD_STORAGE_KEY);
+    if (!storedItem) return undefined;
+
+    const parsedItem: StoredLeaderboardData = JSON.parse(storedItem);
+    // Also check if sort order matches, otherwise initialData might be incorrectly sorted for the first render
+    // This part is tricky if we want to reuse cache across different initial sorts.
+    // For simplicity, let's assume we only use cache if sort is also the same or rely on hook to fetch if sort mismatches.
+    // Or, we could store separate caches per sort order, but that adds complexity.
+
+    if (Date.now() - parsedItem.timestamp < MAX_CACHE_AGE_MS) {
+      // We could also check here if parsedItem.sortField and parsedItem.sortDirection match the initial state
+      // to ensure the cache is relevant for the current view. For now, let's keep it simpler.
+      return parsedItem.data;
+    }
+  } catch (error) {
+    console.error("Error reading leaderboard from session storage:", error);
+    sessionStorage.removeItem(LEADERBOARD_STORAGE_KEY); // Clear corrupted item
+  }
+  return undefined;
+};
 
 export function PointsTable() {
   const router = useRouter();
@@ -24,6 +63,10 @@ export function PointsTable() {
   const FETCH_ALL_LIMIT = 5000;
   const { address } = useAccount();
 
+  // Get initial data from session storage for the hook
+  // Note: This function runs once on component initialization for useState.
+  const [initialData] = useState<LeaderboardQueryData>(() => getInitialLeaderboardData());
+
   const { data: user } = useFetchUser(!!address, address as Address);
 
   const { data: leaderboardInfo, isLoading } = useFetchLeaderBoard(
@@ -32,7 +75,8 @@ export function PointsTable() {
     {
       field: sortField,
       direction: sortDirection,
-    }
+    },
+    initialData // Pass initial data to the hook
   );
 
   const userInfo = leaderboardInfo?.users?.find(
@@ -41,6 +85,11 @@ export function PointsTable() {
 
   useEffect(() => {
     setPage(0);
+    // When sortField or sortDirection changes, the hook will refetch.
+    // Session storage is updated by the hook on successful fetch.
+    // We don't strictly need to clear session storage here if hook handles it,
+    // but if initial sort criteria changes, the cached `initialData` might be for a different sort order.
+    // The hook's queryKey includes sortField/Direction, so it will fetch new data if they change.
   }, [searchQuery, sortField, sortDirection]);
 
   const filteredAndSortedUsers = useMemo(() => {
