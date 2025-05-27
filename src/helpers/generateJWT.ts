@@ -1,7 +1,7 @@
 import { Connector, signMessage } from '@wagmi/core';
 // import { wagmiAdapter } from '@/config/wagmi';
 import config from '@/config/configuration';
-import { wagmiConfig } from '@/providers/ParaProvider';
+import { config as wagmiConfig } from '@/providers/PrivyProvider';
 
 // Generate Nonce
 export const fetchNonce = async (): Promise<string> => {

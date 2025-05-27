@@ -11,7 +11,7 @@ export default function ClientLayout({
     <Providers>
       {/* <ModalProvider> */}
         <div>{children}</div>
-        {/* <UserController /> */}
+        <UserController />
       {/* </ModalProvider> */}
     </Providers>
   );

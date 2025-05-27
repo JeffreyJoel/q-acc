@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { SearchBar } from "./SearchBar";
 import { LeaderboardItem } from "./LeaderboardItem";
@@ -21,24 +21,45 @@ export function PointsTable() {
   const [sortDirection, setSortDirection] = useState<SortDirection>("ASC");
   const [page, setPage] = useState(0);
   const LIMIT = 15;
+  const FETCH_ALL_LIMIT = 5000;
   const { address } = useAccount();
 
   const { data: user } = useFetchUser(!!address, address as Address);
 
   const { data: leaderboardInfo, isLoading } = useFetchLeaderBoard(
-    LIMIT,
-    page * LIMIT,
+    FETCH_ALL_LIMIT,
+    0,
     {
       field: sortField,
       direction: sortDirection,
     }
   );
-  
-  console.log(leaderboardInfo);
 
   const userInfo = leaderboardInfo?.users?.find(
     (cuser) => cuser.id === user?.id
   );
+
+  useEffect(() => {
+    setPage(0);
+  }, [searchQuery, sortField, sortDirection]);
+
+  const filteredAndSortedUsers = useMemo(() => {
+    if (!leaderboardInfo?.users) {
+      return [];
+    }
+
+    let users = [...leaderboardInfo.users];
+
+    if (searchQuery) {
+      users = users.filter(
+        (u) =>
+          u.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          u.walletAddress?.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+    }
+
+    return users;
+  }, [leaderboardInfo?.users, searchQuery, sortField, sortDirection]);
 
   const toggleSort = (field: SortField) => {
     if (sortField === field) {
@@ -47,15 +68,19 @@ export function PointsTable() {
       setSortField(field);
       setSortDirection("DESC");
     }
-    setPage(0);
   };
 
   const handleUserClick = (userAddress: string) => {
     router.push(`/profile/${userAddress}`);
   };
 
-  const total = leaderboardInfo?.totalCount ?? 0;
+  const total = filteredAndSortedUsers.length;
   const totalPages = Math.ceil(total / LIMIT);
+  const paginatedUsers = useMemo(() => {
+    const start = page * LIMIT;
+    const end = start + LIMIT;
+    return filteredAndSortedUsers.slice(start, end);
+  }, [filteredAndSortedUsers, page, LIMIT]);
 
   return (
     <div className="flex flex-col">
@@ -112,7 +137,7 @@ export function PointsTable() {
           </div>
         )}
 
-        {leaderboardInfo?.users.map((item) => (
+        {paginatedUsers.map((item) => (
           <LeaderboardItem
             key={item.id}
             user={item}
