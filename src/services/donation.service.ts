@@ -1,23 +1,23 @@
-import { requestGraphQL } from '@/helpers/request';
-import { SwapData } from '@/helpers/squidTransactions';
+import { requestGraphQL } from "@/helpers/request";
+import { SwapData } from "@/helpers/squidTransactions";
 import {
   GET_PROJECT_DONATIONS_BY_ID,
   SAVE_DONATION,
   GET_PROJECT_DONATIONS_USERS_BY_ID,
   CREATE_DRAFT_DONATION,
   UPDATE_DONATION_STATUS,
-} from '@/queries/project.query';
+} from "@/queries/project.query";
 import {
   GET_USER_DONATIONS,
   GET_USER_DONATIONS_COUNT,
-} from '@/queries/user.query';
+} from "@/queries/user.query";
 
 export const fetchProjectDonationsById = async (
   projectId: number,
   take: number,
   skip: number,
   orderBy?: { field: any; direction: any },
-  term?: string,
+  term?: string
 ) => {
   try {
     const res = await requestGraphQL<{ donationsByProjectId: any }>(
@@ -31,7 +31,7 @@ export const fetchProjectDonationsById = async (
       },
       {
         auth: true,
-      },
+      }
     );
     return res?.donationsByProjectId;
   } catch (error) {
@@ -46,7 +46,7 @@ export const createDraftDonation = async (
   token: string,
   toAddress: string,
   tokenAddress: String,
-  fromTokenAmount: number,
+  fromTokenAmount: number
 ) => {
   try {
     const res = await requestGraphQL<{ createDraftDonation: number }>(
@@ -62,7 +62,7 @@ export const createDraftDonation = async (
       },
       {
         auth: true,
-      },
+      }
     );
     return res?.createDraftDonation;
   } catch (error) {
@@ -80,7 +80,7 @@ export const saveDonations = async (
   tokenAddress: String,
   anonymous: boolean,
   swapData?: SwapData,
-  fromTokenAmount?: number,
+  fromTokenAmount?: number
 ) => {
   try {
     const res = await requestGraphQL<{ createDonation: number }>(
@@ -98,7 +98,7 @@ export const saveDonations = async (
       },
       {
         auth: true,
-      },
+      }
     );
     return res?.createDonation;
   } catch (error) {
@@ -112,11 +112,12 @@ export const fetchUserDonations = async (userId: number) => {
     const res = await requestGraphQL<{ donationsByUserId: any }>(
       GET_USER_DONATIONS,
       {
-        userId
+        userId,
+        take: 50,
       },
       {
         auth: true,
-      },
+      }
     );
     return res?.donationsByUserId;
   } catch (error) {
@@ -134,7 +135,7 @@ export const fetchProjectDonors = async (projectId: number, take?: number) => {
       },
       {
         auth: true,
-      },
+      }
     );
     return res?.donationsByProjectId;
   } catch (error) {
@@ -151,7 +152,7 @@ export const fetchUserDonationsCount = async (userId: number) => {
       },
       {
         auth: true,
-      },
+      }
     );
     return res?.donationsByUserId;
   } catch (error) {
@@ -169,10 +170,10 @@ export const updateDonation = async (status: string, donationId: number) => {
       },
       {
         auth: true,
-      },
+      }
     );
     return res?.updateDonationStatus;
   } catch (error) {
-    console.error(error, 'donation', donationId);
+    console.error(error, "donation", donationId);
   }
 };

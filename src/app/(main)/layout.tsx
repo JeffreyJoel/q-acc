@@ -51,8 +51,6 @@ export default function RootLayout({
     <html lang="en">
       <head>
         <link rel="icon" href="/favicon.ico" />
-        <script src="https://js.stripe.com/v3/"></script>
-        <script src="https://crypto-js.stripe.com/crypto-onramp-outer.js"></script>
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased dark bg-neutral-900`}
