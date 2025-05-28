@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import type React from "react";
 import { IProject } from "@/types/project.type";
@@ -5,7 +7,7 @@ import {
   calculateMarketCapChange,
   getMarketCap,
 } from "@/services/tokenPrice.service";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { useState } from "react";
 import { fetchProjectDonationsById } from "@/services/donation.service";
 import {
@@ -21,11 +23,9 @@ import { useFetchPOLPriceSquid } from "@/hooks/useTokens";
 import { Spinner } from "../loaders/Spinner";
 import { calculateCapAmount } from "@/helpers/round";
 import { getIpfsAddress } from "@/helpers/image";
-import { useRouter } from "next/navigation";
 import { getUpcomingRound } from "@/helpers/date";
 import { getPoolAddressByPair } from "@/helpers/getTokensListedData";
 import config from "@/config/configuration";
-import { Button } from "../ui/button";
 import Image from "next/image";
 
 interface ProjectCardProps {
@@ -33,7 +33,6 @@ interface ProjectCardProps {
 }
 
 const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
-  const router = useRouter();
 
   const [maxPOLCap, setMaxPOLCap] = useState(0);
   const [totalPOLDonated, setTotalPOLDonated] = useState<number>(0);
@@ -52,6 +51,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
 
   const polPriceNumber = Number(POLPrice);
 
+  
   useEffect(() => {
     if (project?.id) {
       const fetchProjectDonations = async () => {
@@ -106,7 +106,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
     }
   }, [project, marketCap, activeRoundDetails, isTokenListed]);
 
-  useEffect(() => {
+  useMemo(() => {
     const updatePOLCap = async () => {
       const { capAmount, totalDonationAmountInRound }: any =
         await calculateCapAmount(activeRoundDetails, Number(project.id), true);
@@ -119,7 +119,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
     updatePOLCap();
   }, [activeRoundDetails, project, progress]);
 
-  useEffect(() => {
+  useMemo(() => {
     const fetchPoolAddress = async () => {
       if (project?.abc?.issuanceTokenAddress) {
         const { price, isListed } = await getPoolAddressByPair(
@@ -139,10 +139,10 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
       }
     };
 
-    fetchPoolAddress(); // Call the async function inside useEffect
+    fetchPoolAddress();
   }, [project?.abc?.issuanceTokenAddress]);
 
-  useEffect(() => {
+  useMemo(() => {
     const calcRemTime = async () => {
       const upcomingRound = await getUpcomingRound(allRounds);
       if (upcomingRound?.startDate) {
