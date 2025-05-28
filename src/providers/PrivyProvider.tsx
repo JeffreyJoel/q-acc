@@ -32,7 +32,7 @@ export const config = createConfig({
   storage: createStorage({
     storage: cookieStorage,
   }),
-  ssr: true,
+  ssr: false,
   transports: {
     [polygon.id]: http(),
     [polygonAmoy.id]: http(),
@@ -50,7 +50,7 @@ export default function Providers(props: {
       config={privyConfig}
     >
       <QueryClientProvider client={queryClient}>
-        <WagmiProvider config={config} reconnectOnMount={false}>
+        <WagmiProvider config={config}>
           {props.children}
         </WagmiProvider>
       </QueryClientProvider>

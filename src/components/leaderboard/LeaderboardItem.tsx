@@ -1,3 +1,5 @@
+"use client";
+
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { shortenAddress } from "@/helpers/address";
 import { roundPoints } from "@/helpers/points";

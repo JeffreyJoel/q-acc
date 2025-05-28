@@ -33,6 +33,7 @@ export const UserController = () => {
     ready && authenticated && !!userAddress,
     userAddress as Address,
   );
+  console.log("user", user);
 
   const onSign = async (newUser: IUser) => {
     console.log('Signed', newUser);
@@ -107,7 +108,7 @@ export const UserController = () => {
       // Remove stale token if any
       localStorage.removeItem('token');
 
-      // setShowSignModal(true);
+      setShowSignModal(true);
     };
 
     handleAddressCheck();

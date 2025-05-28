@@ -1,5 +1,6 @@
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { Address } from 'viem';
+import { getTokenSupplyDetails } from '@/services/tokenPrice.service';
 
 import {
   fetchBalanceWithDecimals,
@@ -188,4 +189,13 @@ export const useTokenUtils = () => {
     truncateToSignificantDigits: (num: number, digits: number) => truncateToSignificantDigits(num, digits),
     AddressZero
   };
+};
+
+export const useTokenSupplyDetails = (contract_address: string) => {
+  return useQuery({
+    queryKey: ['token-supply-details', contract_address],
+    queryFn: async () => {
+      return await getTokenSupplyDetails(contract_address);
+    },
+  });
 };

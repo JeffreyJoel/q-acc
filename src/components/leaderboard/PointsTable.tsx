@@ -13,6 +13,7 @@ import { useFetchUser } from "@/hooks/useFetchUser";
 import { Spinner } from "../loaders/Spinner";
 import { useAccount } from "wagmi";
 import { Address } from "viem";
+import { UserInfo } from "./UserInfo";
 
 const LEADERBOARD_STORAGE_KEY = 'leaderboardData';
 const MAX_CACHE_AGE_MS = 1000 * 60 * 7; // 7 minutes (a bit more than refetch interval to allow for active tab)
@@ -78,11 +79,7 @@ export function PointsTable() {
     },
     initialData // Pass initial data to the hook
   );
-
-  const userInfo = leaderboardInfo?.users?.find(
-    (cuser) => cuser.id === user?.id
-  );
-
+  
   useEffect(() => {
     setPage(0);
     // When sortField or sortDirection changes, the hook will refetch.
@@ -137,14 +134,7 @@ export function PointsTable() {
         <SearchBar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
       </div>
 
-      {userInfo && (
-        <div className="my-6">
-          <h2 className="text-base font-medium mb-3 font-tusker-8">
-            Your Ranking
-          </h2>
-          <LeaderboardItem user={userInfo} onUserClick={handleUserClick} />
-        </div>
-      )}
+      <UserInfo/>
 
       <div className="space-y-3 my-6">
         <h2 className="text-xl font-medium mb-6 font-tusker-8">Leaderboard</h2>
