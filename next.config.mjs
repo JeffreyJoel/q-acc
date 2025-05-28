@@ -3,11 +3,18 @@ const nextConfig = {
   images: {
     domains: ['gateway.pinata.cloud', 'ipfs.io'],
   },
-  transpilePackages: ["@privy-io/react-auth"],
+  // transpilePackages: ["@privy-io/react-auth"],
   webpack: (config) => {
-    config.externals.push("pino-pretty", "lokijs", "encoding");
+    config.snapshot = {
+      ...(config.snapshot ?? {}),
+      // Add all node_modules to managedPaths, EXCEPT wagmi-connector, next/swc (which show
+      // warnings if added). Allows for hot refresh of changes
+      managedPaths: [
+        /^(.+?[\\/]node_modules[\\/](?!(@privy-io[\\/]wagmi-connector|@next|@swc))(@.+?[\\/])?.+?)[\\/]/,
+      ],
+    };
     return config;
-  }
+  },
 
 };
 

@@ -6,8 +6,6 @@ import {
   cookieStorage,
   createStorage,
   http,
-  injected,
-  type State,
 } from "wagmi";
 
 import { PrivyClientConfig, PrivyProvider } from "@privy-io/react-auth";
@@ -16,7 +14,7 @@ import { WagmiProvider, createConfig } from "@privy-io/wagmi";
 
 const privyConfig: PrivyClientConfig = {
   embeddedWallets: {
-    createOnLogin: "users-without-wallets"
+    createOnLogin: "users-without-wallets",
   },
   loginMethods: ["wallet", "email", "google", "twitter"],
   appearance: {
@@ -30,7 +28,7 @@ const privyConfig: PrivyClientConfig = {
 
 export const config = createConfig({
   chains: [polygon, polygonAmoy],
-  connectors: [injected()],
+  // connectors: [injected()],
   storage: createStorage({
     storage: cookieStorage,
   }),
@@ -42,21 +40,20 @@ export const config = createConfig({
 });
 
 export default function Providers(props: {
-    children: ReactNode;
-    initialState?: State;
-  }) {
+  children: ReactNode
+}) {
   const [queryClient] = useState(() => new QueryClient());
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <PrivyProvider
-        appId={process.env.NEXT_PUBLIC_PRIVY_APP_ID || ""}
-        config={privyConfig}
-      >
-        <WagmiProvider config={config} initialState={props.initialState}>
+    <PrivyProvider
+      appId={process.env.NEXT_PUBLIC_PRIVY_APP_ID || ""}
+      config={privyConfig}
+    >
+      <QueryClientProvider client={queryClient}>
+        <WagmiProvider config={config} reconnectOnMount={false}>
           {props.children}
         </WagmiProvider>
-      </PrivyProvider>
-    </QueryClientProvider>
+      </QueryClientProvider>
+    </PrivyProvider>
   );
 }
