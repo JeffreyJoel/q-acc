@@ -90,7 +90,7 @@ const ProjectDonateButton = () => {
             const marketCapData = await getMarketCap(
               isTokenListed,
               projectData?.abc.issuanceTokenAddress,
-              projectData.abc.fundingManagerAddress
+              projectData?.abc?.fundingManagerAddress
             );
             setMarketCap(marketCapData);
           } else {
@@ -114,7 +114,7 @@ const ProjectDonateButton = () => {
     const fetchPoolAddress = async () => {
       if (projectData?.abc?.issuanceTokenAddress) {
         const { price, isListed } = await getPoolAddressByPair(
-          projectData.abc.issuanceTokenAddress,
+          projectData?.abc?.issuanceTokenAddress,
           config.WPOL_TOKEN_ADDRESS
         );
         setIsTokenListed(isListed);
@@ -139,7 +139,7 @@ const ProjectDonateButton = () => {
     const updatePOLCap = async () => {
       if (activeRoundDetails) {
         const { capAmount, totalDonationAmountInRound }: any =
-          await calculateCapAmount(activeRoundDetails, Number(projectData.id));
+          await calculateCapAmount(activeRoundDetails, Number(projectData?.id));
 
         setMaxPOLCap(capAmount);
         let tempprogress = 0;
@@ -159,7 +159,7 @@ const ProjectDonateButton = () => {
     const checkNFT = async () => {
       if (projectData?.abc?.nftContractAddress && address) {
         const res = await checkUserOwnsNFT(
-          projectData.abc.nftContractAddress,
+          projectData?.abc?.nftContractAddress,
           address
         );
         setOwnsNFT(res);
@@ -172,9 +172,9 @@ const ProjectDonateButton = () => {
   const handleSupport = (e: any) => {
     e.stopPropagation();
     if (activeRoundDetails?.__typename === "QfRound") {
-      router.push(`/support/${projectData.slug}`);
+      router.push(`/support/${projectData?.slug}`);
     } else if (ownsNFT) {
-      router.push(`/support/${projectData.slug}`);
+      router.push(`/support/${projectData?.slug}`);
     }
   };
 
@@ -238,12 +238,12 @@ const ProjectDonateButton = () => {
             <img
               className="w-6 h-6 rounded-full"
               src={getIpfsAddress(
-                projectData.abc?.icon! ||
+                projectData?.abc?.icon! ||
                   "Qmeb6CzCBkyEkAhjrw5G9GShpKiVjUDaU8F3Xnf5bPHtm4"
               )}
             />
             <span className="text-gray-400 font-semibold text-sm ">
-              {projectData.abc.tokenTicker} price on Quickswap
+              {projectData?.abc?.tokenTicker} price on Quickswap
             </span>
           </div>
 
@@ -267,7 +267,7 @@ const ProjectDonateButton = () => {
         {/* Market Cap */}
         <div className="flex flex-col gap-2">
           <span className="text-gray-400 font-semibold text-sm">
-            {projectData.abc.tokenTicker} Market Cap
+            {projectData?.abc?.tokenTicker} Market Cap
           </span>
           {!marketCap || marketCap === 0 || marketCapLoading ? (
             <Spinner size={16} />
@@ -337,7 +337,7 @@ const ProjectDonateButton = () => {
         <img
           className="w-6 h-6 rounded-full"
           src={getIpfsAddress(
-            projectData.abc?.icon! ||
+            projectData?.abc?.icon! ||
               "Qmeb6CzCBkyEkAhjrw5G9GShpKiVjUDaU8F3Xnf5bPHtm4"
           )}
         />
@@ -417,7 +417,7 @@ const ProjectDonateButton = () => {
           >
             Get ${projectData?.abc?.tokenTicker} on QuickSwap
           </button>
-        ) : projectData.batchNumbersWithSafeTransactions?.length != 0 ? (
+        ) : projectData?.batchNumbersWithSafeTransactions?.length != 0 ? (
           <button
             className="px-6 py-4 rounded-full text-sm font-bold items-center flex gap-2 bg-peach-400  text-black w-full justify-center "
             disabled={true}

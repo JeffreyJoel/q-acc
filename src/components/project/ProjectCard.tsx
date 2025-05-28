@@ -72,7 +72,6 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
               activeRoundDetails?.startDate
             );
 
-          // console.log(project.title, change24h);
           setMarketCap(newCap * polPriceNumber);
           setMarketCapChangePercentage(change24h);
           setMarketCapLoading(false);
@@ -149,7 +148,6 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
         setRoundStatus("starts");
       } else {
         setRoundStatus("ended");
-        // console.log("No upcoming round.");
       }
     };
     calcRemTime();

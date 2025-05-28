@@ -41,7 +41,6 @@ import {
   
             setProjectData(data);
             setTeamMembers(data.projectData.teamMembers);
-            console.log('DATA', teamMembers);
             setIsLoading(data);
           } catch (err) {}
         };

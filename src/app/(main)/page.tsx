@@ -15,7 +15,6 @@ export default function Home() {
   const { data: allProjects, isLoading, error } = useFetchAllProjects();
 
   const projects = useMemo(() => allProjects?.projects || [], [allProjects]);
-  console.log(projects);
 
   const filteredProjects = useMemo(() => {
     if (!projects) return [];

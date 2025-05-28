@@ -11,6 +11,7 @@ import { getLocalStorageToken } from '@/helpers/generateJWT';
 import { IUser } from '@/types/user.type';
 import { useFetchUser } from '@/hooks/useFetchUser';
 import { Address } from 'viem';
+import { useAccount } from 'wagmi';
 // import { isProductReleased } from '@/config/configuration';
 // import { useAddressWhitelist } from '@/hooks/useAddressWhitelist';
     // import { useFetchSanctionStatus } from '@/hooks/useFetchSanctionStatus';
@@ -24,16 +25,17 @@ export const UserController = () => {
   const { user: privyUser, ready, authenticated } = usePrivy();
   const { mutateAsync: updateUser } = useUpdateUser();
   const router = useRouter();
+  const { isConnected, address } = useAccount();
 
   // const useWhitelist = useAddressWhitelist();
   const pathname = usePathname();
-  const userAddress = privyUser?.wallet?.address;
+  const userAddress = address || privyUser?.wallet?.address;
+
 
   const { data: user, refetch } = useFetchUser(
     ready && authenticated && !!userAddress,
     userAddress as Address,
   );
-  console.log("user", user);
 
   const onSign = async (newUser: IUser) => {
     console.log('Signed', newUser);
@@ -90,7 +92,7 @@ export const UserController = () => {
   };
 
   useEffect(() => {
-    if (!ready || !authenticated || !userAddress) return;
+    if (!ready || !authenticated || !userAddress ) return;
     const handleAddressCheck = async () => {
       const localStorageToken = getLocalStorageToken(userAddress);
 
