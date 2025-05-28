@@ -1,54 +1,81 @@
-import { useQuery } from '@tanstack/react-query';
-import { useAccount, useChainId } from 'wagmi';
-import { ethers } from 'ethers';
+import { useQuery } from "@tanstack/react-query";
+import { useAccount, useChainId } from "wagmi";
+import { ethers } from "ethers";
+import { usePrivy, useWallets } from "@privy-io/react-auth";
 
-import { getLocalStorageToken, signWithEVM } from '@/helpers/generateJWT';
-import { IUser } from '@/types/user.type';
-import { useFetchUser } from './useFetchUser';
-// import { useWallet } from '@getpara/react-sdk';
+import {
+  getLocalStorageToken,
+  signChallengeWithPrivyEmbed,
+  signChallengeWithExternalWallet,
+} from "@/helpers/generateJWT";
+import { IUser } from "@/types/user.type";
+import { useFetchUser } from "./useFetchUser";
 
-import { Address } from 'viem';
-
+import { Address } from "viem";
 
 export const useSignUser = (onSigned?: (user: IUser) => void) => {
-  const { address, chain, connector } = useAccount();
-  // const { data: wallet } = useWallet();
-  // con
-  const  chainId  = useChainId();
+  const { address, chain } = useAccount();
+  const { signMessage: privySignMessage } = usePrivy();
+  const { wallets } = useWallets();
+  const chainId = useChainId();
 
-  const userAddress =  address;
+  const userAddress = address;
 
   const { refetch } = useFetchUser(!!userAddress, userAddress as Address);
 
   return useQuery({
-    queryKey: ['token', userAddress],
+    queryKey: ["token", userAddress],
     queryFn: async () => {
-      if (!userAddress) return null;
+      if (!userAddress || !privySignMessage || !wallets || wallets.length === 0)
+        return null;
 
       // Check if token exists in localStorage
       const localStorageToken = getLocalStorageToken(userAddress);
-      console.log('localStorageToken', localStorageToken);
       if (localStorageToken) {
         const { data: newUser } = await refetch();
         if (newUser) {
-          onSigned?.(newUser); // Pass the latest user data to the callback
+          onSigned?.(newUser);
         }
         return localStorageToken;
       }
-      
-      console.log('chainId', chainId);
-      
+
       // Token generation logic
-      if (!chain?.id || !connector) return null;
+      const currentChainId = chain?.id || chainId;
+      if (!currentChainId) return null;
+
+      // Find the active wallet to check its type
+      const activeWallet = wallets.find(
+        (w) => w.address.toLowerCase() === userAddress.toLowerCase()
+      );
+
+      if (!activeWallet) {
+        console.error("Active wallet not found in Privy's wallet list.");
+        return null;
+      }
+
       try {
         const checkSumAddress = ethers.getAddress(userAddress);
-        const newToken = await signWithEVM(
-          checkSumAddress,
-          chain?.id,
-          connector,
-        );
+        let newToken;
+
+        if (activeWallet.walletClientType === "privy") {
+          // Use Privy's native signing for embedded wallets
+          console.log("Using Privy embedded wallet signing flow");
+          newToken = await signChallengeWithPrivyEmbed(
+            privySignMessage,
+            checkSumAddress,
+            currentChainId
+          );
+        } else {
+          // Use wagmi/ethers for external wallets
+          console.log("Using external wallet signing flow");
+          newToken = await signChallengeWithExternalWallet(
+            checkSumAddress,
+            currentChainId
+          );
+        }
+
         if (newToken) {
-          localStorage.setItem('token', JSON.stringify(newToken));
+          localStorage.setItem("token", JSON.stringify(newToken));
           const { data: newUser } = await refetch();
           if (newUser) {
             onSigned?.(newUser as IUser);
@@ -57,7 +84,7 @@ export const useSignUser = (onSigned?: (user: IUser) => void) => {
         }
         return null;
       } catch (error) {
-        console.log('Error generating token:', error);
+        console.log("Error generating token:", error);
         return null;
       }
     },

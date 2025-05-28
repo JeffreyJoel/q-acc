@@ -60,8 +60,6 @@ const DonarSupportTable = () => {
         setTotalCount(totalCount);
         setPageDonations(donations);
       }
-
-      console.log(pageDonations, 'donations');
     };
 
     fetchProjectDonations();

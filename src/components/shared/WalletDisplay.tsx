@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   ChevronDown,
   LogOut,
@@ -11,6 +11,8 @@ import {
 import Link from "next/link";
 import { useLogout } from "@privy-io/react-auth";
 import { shortenAddress } from "@/helpers/address";
+import { useDisconnect } from "wagmi";
+import { getLocalStorageToken } from "@/helpers/generateJWT";
 // import { WalletsDialog } from "@privy-io/react-auth/ui";
 
 interface WalletDisplayProps {
@@ -19,11 +21,26 @@ interface WalletDisplayProps {
 
 export const WalletDisplay = ({ walletAddress }: WalletDisplayProps) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [hasMounted, setHasMounted] = useState(false);
   const { logout } = useLogout();
+  const { disconnect } = useDisconnect();
   const toggleDropdown = () => setIsMenuOpen(!isMenuOpen);
 
   function handleLogout() {
     logout();
+    disconnect();
+    const localStorageToken = getLocalStorageToken(walletAddress!);
+    if (localStorageToken) {
+      localStorage.removeItem('token');
+    }
+  }
+
+  useEffect(() => {
+    setHasMounted(true);
+  }, []);
+
+  if (!hasMounted) {
+    return null;
   }
 
   return (

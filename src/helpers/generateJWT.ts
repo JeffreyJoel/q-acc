@@ -1,7 +1,8 @@
-import { Connector, signMessage } from '@wagmi/core';
+import { Connector, signMessage as wagmiSignMessage } from '@wagmi/core';
 // import { wagmiAdapter } from '@/config/wagmi';
 import config from '@/config/configuration';
 import { config as wagmiConfig } from '@/providers/PrivyProvider';
+import { Address } from 'viem';
 
 // Generate Nonce
 export const fetchNonce = async (): Promise<string> => {
@@ -46,11 +47,17 @@ export const createSiweMessage = async (
   }
 };
 
-// Get JWT Token
-export const signWithEVM = async (
-  address?: string,
-  chainId?: number,
-  connector?: Connector,
+// Define the type for Privy's signMessage function
+type PrivySignMessageFn = (
+  payload: { message: string },
+  options?: { address?: Address }
+) => Promise<{ signature: string }>;
+
+// Renamed: Signs with Privy's embedded wallet context
+export const signChallengeWithPrivyEmbed = async (
+  privySignMessage: PrivySignMessageFn,
+  address: string,
+  chainId: number,
 ) => {
   const siweMessage: any = await createSiweMessage(
     address!,
@@ -60,13 +67,66 @@ export const signWithEVM = async (
 
   const { message, nonce } = siweMessage;
 
-  const signature = await signMessage(wagmiConfig, {
-    connector: connector,
+  const result = await privySignMessage(
+    { message },
+    { address: address as Address }
+  );
+  const signature = result.signature;
+
+  console.log('Privy Embed Sign:', signature);
+  console.log('Message:', message);
+  console.log('Nonce:', nonce);
+
+  const headers = { 'Content-Type': 'application/json', authVersion: '2' };
+  const body: Record<string, any> = {
+    signature,
+    message,
+    nonce,
+  };
+
+  try {
+    return fetch(`${config.AUTH_BASE_ROUTE}/authentication`, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify(body),
+    }).then(async response => {
+      if (response.ok) {
+        return await response.json();
+      } else {
+        const errorObject = await response.json();
+        const errorMessage =
+          (errorObject.message || errorObject?.errors[0]?.message) ??
+          'An error occurred';
+        return Promise.reject(new Error(errorMessage));
+      }
+    });
+  } catch (error) {
+    return Promise.reject(error);
+  }
+};
+
+// New: Signs with an external wallet via wagmi
+export const signChallengeWithExternalWallet = async (
+  address: string,
+  chainId: number,
+) => {
+  const siweMessage: any = await createSiweMessage(
+    address!,
+    chainId!,
+    'Login into Giveth services',
+  );
+
+  const { message, nonce } = siweMessage;
+
+  // Using @wagmi/core signMessage with wagmiConfig
+  const signature = await wagmiSignMessage(wagmiConfig, {
+    account: address as Address, // Wagmi expects account address
     message: message,
   });
-  console.log('sign', signature);
-  console.log('message', message);
-  console.log('nonce', nonce);
+
+  console.log('External Wallet Sign:', signature);
+  console.log('Message:', message);
+  console.log('Nonce:', nonce);
 
   const headers = { 'Content-Type': 'application/json', authVersion: '2' };
   const body: Record<string, any> = {
