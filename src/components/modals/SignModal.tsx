@@ -24,7 +24,7 @@ export const SignModal: FC<SignModalProps> = props => {
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.95 }}
-        className="bg-[#171717] rounded-3xl w-full max-w-xl overflow-hidden shadow-xl relative"
+        className="bg-neutral-900 rounded-3xl w-full max-w-md overflow-hidden shadow-xl relative"
       >
          <div className="relative px-6 pt-6">
           <button

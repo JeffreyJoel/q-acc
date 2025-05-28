@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useLogin, usePrivy } from "@privy-io/react-auth";
+import { useLogin, useLoginWithEmail, usePrivy } from "@privy-io/react-auth";
 import { WalletDisplay } from "./WalletDisplay";
 import { NavbarButton } from "../ui/resizable-navbar";
 
@@ -15,6 +15,7 @@ function WalletConnect() {
   useEffect(() => {
     setIsClient(true);
   }, []);
+
 
   return (
     <div>

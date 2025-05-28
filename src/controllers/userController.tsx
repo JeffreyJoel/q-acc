@@ -5,10 +5,11 @@ import { usePrivy } from '@privy-io/react-auth';
 import { useRouter, usePathname } from 'next/navigation';
 import { fetchGivethUserInfo } from '@/services/user.service';
 import { SignModal } from '@/components/modals/SignModal';
+import { EmailPromptDialog } from '@/components/modals/EmailPromptDialog';
 // import { SanctionModal } from '../Modals/SanctionModal';
 import { useUpdateUser } from '@/hooks/useUpdateUser';
 import { getLocalStorageToken } from '@/helpers/generateJWT';
-import { IUser } from '@/types/user.type';
+import { IUser, INewUer } from '@/types/user.type';
 import { useFetchUser } from '@/hooks/useFetchUser';
 import { Address } from 'viem';
 import { useAccount } from 'wagmi';
@@ -22,6 +23,7 @@ export const UserController = () => {
   const [showCompleteProfileModal, setShowCompleteProfileModal] =
     useState(false);
   const [showSignModal, setShowSignModal] = useState(false);
+  const [showEmailPromptModal, setShowEmailPromptModal] = useState(false);
   const { user: privyUser, ready, authenticated } = usePrivy();
   const { mutateAsync: updateUser } = useUpdateUser();
   const router = useRouter();
@@ -37,45 +39,55 @@ export const UserController = () => {
     userAddress as Address,
   );
 
-  const onSign = async (newUser: IUser) => {
-    console.log('Signed', newUser);
+  const onSign = async (signedInUser: IUser) => {
+    console.log('Signed', signedInUser);
     router.push("/");
     setShowSignModal(false);
-    if (!newUser?.isSignedIn) return;
+    if (!signedInUser?.isSignedIn) return;
 
-    // Check if user has accepted ToS after signing in
-    // if (!user?.acceptedToS && pathname !== '/tos') {
-    //   setShowTermsModal(true);
-    //   return;
-    // }
+    let currentUserState: IUser | null | undefined = (await refetch()).data;
+    if (!currentUserState) {
+      // If refetch fails, use the signedInUser data as a base, though it might be incomplete
+      // or not reflect the true backend state accurately if only privy data.
+      currentUserState = signedInUser;
+    }
 
-    // Save user info to QAcc if user is Giveth user
-    if (userAddress && !newUser?.fullName && !newUser?.email) {
+    if (userAddress && (!currentUserState?.fullName || !currentUserState?.email)) {
       const givethData = await fetchGivethUserInfo(userAddress);
       console.log('Giveth', givethData);
 
       if (givethData && (givethData.name || givethData.email)) {
-        const _user = {
-          id: givethData.id,
-          email: givethData.email || undefined,
-          fullName: givethData.name,
-          avatar: givethData.avatar,
-          newUser: true,
+        const userUpdateFromGiveth: INewUer = {
+          fullName: givethData.name || currentUserState?.fullName || "",
+          email: givethData.email || currentUserState?.email,
+          avatar: givethData.avatar || currentUserState?.avatar,
+          newUser: !currentUserState?.fullName || !currentUserState?.email,
         };
 
-        await updateUser(_user);
-
-        // Show terms modal if user hasn't accepted ToS
-        // if (!user?.acceptedToS) {
-        //   setShowTermsModal(true);
-        // } else {
-        //   router.push(Routes.VerifyPrivado);
-        // }
-        console.log('saved');
+        await updateUser(userUpdateFromGiveth);
+        // After update, refetch to get the consolidated IUser state
+        const updatedUserData = await refetch();
+        if (updatedUserData.data) {
+            currentUserState = updatedUserData.data;
+        } else {
+            // If refetch fails, optimistically update local state with what we sent
+            // This is a fallback and might not be perfectly accurate if backend did something else
+            currentUserState = {
+                ...currentUserState, // Spread existing IUser fields (like id, isSignedIn etc)
+                fullName: userUpdateFromGiveth.fullName,
+                email: userUpdateFromGiveth.email || "", // IUser expects email to be string
+                avatar: userUpdateFromGiveth.avatar || "", // IUser expects avatar to be string
+                // Note: other IUser fields remain from previous currentUserState
+            } as IUser;
+        }
+        console.log('Giveth info saved');
       } else {
-        console.log('No user in giveth data');
-        // setShowCompleteProfileModal(true);
+        console.log('No new user info in Giveth data');
       }
+    }
+
+    if (!currentUserState?.email) {
+      setShowEmailPromptModal(true);
     }
 
     // if (!isProductReleased) {
@@ -160,6 +172,21 @@ export const UserController = () => {
         isOpen={true}
         onClose={() => setShowSignModal(false)}
         onSign={onSign}
+      />
+    );
+  }
+
+  if (showEmailPromptModal) {
+    return (
+      <EmailPromptDialog
+        isOpen={showEmailPromptModal}
+        onClose={() => {
+          setShowEmailPromptModal(false);
+          // Optionally refetch user data when dialog is closed without submission,
+          // if there's a chance data could have changed by other means or to be safe.
+          // refetch(); 
+        }}
+        currentUser={user}
       />
     );
   }
