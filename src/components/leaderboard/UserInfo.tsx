@@ -15,7 +15,7 @@ export const UserInfo = () => {
     direction: "ASC",
   });
 
-  const userInfo = leaderboardInfo?.users?.find(
+  const userInfo = leaderboardInfo?.users.find(
     (cuser) => cuser.id === user?.id
   );
 

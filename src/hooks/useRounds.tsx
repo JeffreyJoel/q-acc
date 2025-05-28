@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import {
   fetchActiveRoundDetails,
@@ -5,6 +6,9 @@ import {
   fetchProjectRoundRecords,
   fetchQaccRoundStats
 } from '@/services/round.services';
+import { IQfRound } from '@/types/round.type';
+import { getMostRecentEndRound } from '@/helpers/round';
+import { IEarlyAccessRound } from '@/types/round.type';
 
 /**
  * Hook to fetch active round details
@@ -66,4 +70,27 @@ export const useFetchQaccRoundStats = () => {
     staleTime: Infinity,
     gcTime: Infinity,
   });
+};
+
+
+export const useFetchMostRecentEndRound = (
+  activeRoundDetails: IEarlyAccessRound | IQfRound | undefined,
+) => {
+  const [isRoundEnded, setIsRoundEnded] = useState(false);
+  useEffect(() => {
+    const fetchMostRecentEndRound = async () => {
+      const res = await getMostRecentEndRound();
+
+      return res?.__typename === 'QfRound';
+    };
+
+    const getData = async () => {
+      const data = await fetchMostRecentEndRound();
+      setIsRoundEnded(data);
+    };
+
+    getData();
+  }, [activeRoundDetails, isRoundEnded]);
+
+  return isRoundEnded;
 };
