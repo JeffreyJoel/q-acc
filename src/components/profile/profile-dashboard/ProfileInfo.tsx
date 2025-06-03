@@ -7,6 +7,7 @@ import { Address } from "viem";
 import { roundPoints } from "@/helpers/points";
 import { GitcoinVerificationBadge } from "../../verification-badges/GitcoinVerificationBadge";
 import { PrivadoVerificationBadge } from "../../verification-badges/PrivadoVerificationBadge";
+import { useAccount } from "wagmi";
 
 export default function ProfileInfo({ userAddress }: { userAddress: Address }) {
   const { data: user, isLoading } = useFetchUser(
@@ -14,7 +15,8 @@ export default function ProfileInfo({ userAddress }: { userAddress: Address }) {
     userAddress as Address
   );
 
-  console.log(user);
+  const { address: ConnectedUserAddress } = useAccount();
+
 
   return (
     <div className="p-6 bg-neutral-800 rounded-2xl">
@@ -43,7 +45,7 @@ export default function ProfileInfo({ userAddress }: { userAddress: Address }) {
           </div>
         </div>
 
-        {user?.isSignedIn && (
+        {user?.isSignedIn && userAddress === ConnectedUserAddress && (
           <button className="text-peach-400 font-medium hover:text-peach-300 transition-colors">
             Edit Profile
           </button>

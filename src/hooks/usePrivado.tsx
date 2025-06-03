@@ -6,6 +6,8 @@ import config from '@/config/configuration';
 import { requestGraphQL } from '@/helpers/request';
 import { CHECK_USER_PRIVADO_VERIFIED_STATE } from '@/queries/project.query';
 import { useFetchUser } from './useFetchUser';
+import { useState, useEffect } from 'react';
+import { generatePrivadoShortenedUrl } from '@/services/privado.service';
 
 const { chain, contractAddress, requestId } = config.privadoConfig;
 
@@ -91,4 +93,27 @@ export const usePrivado = (userAddress: Address) => {
 
   const isLoading = privadoChainStatus.isLoading || userFetch.isPending;
   return { isVerified, isLoading, error };
+};
+
+
+
+
+export const usePrivadoUrl = () => {
+  const [isLoading, setIsLoading] = useState(false);
+  const [url, setUrl] = useState<string | null>(null);
+  useEffect(() => {
+    const verifyAccount = async () => {
+      try {
+        setIsLoading(true);
+        const url = await generatePrivadoShortenedUrl();
+        if (url) setUrl(url);
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    verifyAccount();
+  }, []);
+  return { isLoading, url };
 };

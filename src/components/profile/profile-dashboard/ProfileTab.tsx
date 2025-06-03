@@ -3,8 +3,17 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@radix-ui/react-tabs";
 import { useState } from "react";
 import Stats from "./Stats";
-export default function ProfileTab() {
+import { MyVerifications } from "./MyVerification";
+import { Address } from "viem";
+import { useAccount } from "wagmi";
+
+interface ProfileTabProps {
+  userAddress: Address;
+}
+
+export default function ProfileTab({ userAddress }: ProfileTabProps) {
   const [activeTab, setActiveTab] = useState("stats");
+  const {address: ConnectedUserAddress} = useAccount();
 
   return (
     <div className="mt-12 rounded-2xl">
@@ -33,6 +42,7 @@ export default function ProfileTab() {
           >
             My Tokens
           </TabsTrigger>
+          {userAddress === ConnectedUserAddress && (
           <TabsTrigger
             value="verifications"
             className={`px-6 py-3 rounded-full ${
@@ -41,9 +51,10 @@ export default function ProfileTab() {
                 : "bg-transparent"
             }`}
             onClick={() => setActiveTab("verifications")}
-          >
-            My Verifications
-          </TabsTrigger>
+            >
+              My Verifications
+            </TabsTrigger>
+          )}
         </TabsList>
 
         <TabsContent value="stats" className="">
@@ -56,11 +67,11 @@ export default function ProfileTab() {
           </p>
         </TabsContent>
 
-        <TabsContent value="verifications" className="">
-          <p className="text-gray-400 text-center text-xl my-20">
-            No verifications yet.
-          </p>
-        </TabsContent>
+        {userAddress === ConnectedUserAddress && (
+          <TabsContent value="verifications" className="">
+            <MyVerifications />
+          </TabsContent>
+        )}
       </Tabs>
     </div>
   );

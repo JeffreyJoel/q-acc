@@ -11,7 +11,7 @@ export enum GitcoinVerificationStatus {
   LOW_SCORE,
 }
 
-export const useGitcoinScore = (userAddress: string) => {
+export const useGitcoinScore = (userAddress: Address) => {
   const [status, setStatus] = useState(GitcoinVerificationStatus.NOT_CHECKED);
   const [userGitcoinScore, setUserGitcoinScore] = useState(0);
   const { data: user, isLoading: isUserLoading, isSuccess } = useFetchUser(!!userAddress, userAddress as Address);

@@ -14,7 +14,7 @@ export default function ProfileDashboardView({ userAddress }: ProfileViewProps) 
     <>
       <DonorProvider address={userAddress}>
         <ProfileInfo userAddress={userAddress} />
-        <ProfileTab />
+        <ProfileTab userAddress={userAddress} />
       </DonorProvider>
     </>
   );
