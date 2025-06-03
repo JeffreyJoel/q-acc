@@ -14,7 +14,7 @@ import { useFetchUser } from '@/hooks/useFetchUser';
 import { Address } from 'viem';
 import { useAccount } from 'wagmi';
 // import { isProductReleased } from '@/config/configuration';
-// import { useAddressWhitelist } from '@/hooks/useAddressWhitelist';
+import { useAddressWhitelist } from '@/hooks/useAddressWhitelist';
     // import { useFetchSanctionStatus } from '@/hooks/useFetchSanctionStatus';
     // import { useCheckSafeAccount } from '@/hooks/useCheckSafeAccount';
     // import { TermsConditionModal } from '../Modals/TermsConditionModal';
@@ -29,7 +29,7 @@ export const UserController = () => {
   const router = useRouter();
   const { isConnected, address } = useAccount();
 
-  // const useWhitelist = useAddressWhitelist();
+  const useWhitelist = useAddressWhitelist();
   const pathname = usePathname();
   const userAddress = address || privyUser?.wallet?.address;
 
@@ -95,12 +95,12 @@ export const UserController = () => {
     // }
 
     // Check if user is whitelisted
-    // if (!!useWhitelist.data) {
-    //   const isUserCreatedProject = true;
-    //   if (!isUserCreatedProject) {
-    //     router.push(Routes.Create); //TODO: should we redirect or not
-    //   }
-    // }
+    if (!!useWhitelist.data) {
+      const isUserCreatedProject = true;
+      if (!isUserCreatedProject) {
+        // router.push(Routes.Create); //TODO: should we redirect or not
+      }
+    }
   };
 
   useEffect(() => {

@@ -159,3 +159,26 @@ export interface IProject {
   socialMedia?: IProjectSocialMedia[];
   seasonNumber: number;
 }
+
+export interface ProjectFormData {
+  projectName: string;
+  projectTeaser: string;
+  projectDescription: string;
+  website: string;
+  facebook: string;
+  twitter: string;
+  linkedin: string;
+  discord: string;
+  telegram: string;
+  instagram: string;
+  reddit: string;
+  youtube: string;
+  farcaster: string;
+  lens: string;
+  github: string;
+  projectAddress: string;
+  addressConfirmed: boolean;
+  logo: string | null;
+  banner: string | null;
+  team: TeamMember[];
+}
