@@ -98,7 +98,7 @@ export const Dropzone: FC<DropzoneProps> = ({ name, rules, onDrop }) => {
 
   return formValue ? (
     <div className='flex flex-col gap-6'>
-      <div className='py-14 border-[1px] border-dashed border-giv-500 p-4 rounded-2xl text-center bg-gray-100 text-gray-400 cursor-pointer'>
+      <div className='py-14 border-[1px] border-dashed border-neutral-700 p-4 rounded-2xl text-center bg-neutral-900 text-neutral-400 cursor-pointer'>
         <img
           src={formValue}
           alt='Selected Image'
@@ -116,15 +116,15 @@ export const Dropzone: FC<DropzoneProps> = ({ name, rules, onDrop }) => {
               setValue(name, null);
               setSelectedImage(null);
             }}
-            className='px-2 text-xs text-pink-500 rounded border-none flex gap-1 items-center'
+            className='px-2 text-xs text-peach-400 rounded border-none flex gap-1 items-center'
           >
             <IconX size={8} />
             <span>Delete</span>
           </button>
         </div>
-        <div className='relative w-full bg-gray-200 h-2 rounded-lg overflow-hidden mb-4'>
+        <div className='relative w-full bg-neutral-900 h-2 rounded-lg overflow-hidden mb-4'>
           <div
-            className='absolute top-0 left-0 h-full bg-giv-500 transition-all'
+            className='absolute top-0 left-0 h-full bg-neutral-700 transition-all'
             style={{ width: `${100}%` }}
           ></div>
         </div>
@@ -134,7 +134,7 @@ export const Dropzone: FC<DropzoneProps> = ({ name, rules, onDrop }) => {
     <>
       <div
         {...getRootProps()}
-        className={`py-14 border-[1px] border-dashed border-giv-500 p-4 rounded-2xl text-center bg-gray-100 text-gray-400 cursor-pointer ${
+        className={`py-14 border-[1px] border-dashed border-neutral-700 p-4 rounded-2xl text-center bg-neutral-900 text-neutral-400 cursor-pointer ${
           isLoading ? 'cursor-not-allowed opacity-50' : ''
         }`}
       >
@@ -186,15 +186,15 @@ export const Dropzone: FC<DropzoneProps> = ({ name, rules, onDrop }) => {
             <button
               type='button'
               onClick={ipfsHash ? deleteUploadedImage : cancelUpload}
-              className='px-2 text-xs text-pink-500 rounded border-none flex gap-1 items-center'
+              className='px-2 text-xs text-peach-400 rounded border-none flex gap-1 items-center'
             >
               <IconX size={8} />
               {ipfsHash ? <span>Delete</span> : <span>Cancel Upload</span>}
             </button>
           </div>
-          <div className='relative w-full bg-gray-200 h-2 rounded-lg overflow-hidden mb-4'>
+          <div className='relative w-full bg-neutral-900 h-2 rounded-lg overflow-hidden mb-4'>
             <div
-              className='absolute top-0 left-0 h-full bg-giv-500 transition-all'
+              className='absolute top-0 left-0 h-full bg-neutral-700 transition-all'
               style={{ width: `${uploadProgress}%` }}
             ></div>
           </div>

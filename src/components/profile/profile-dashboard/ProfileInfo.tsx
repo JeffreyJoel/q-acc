@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { CopyButton } from "../../shared/CopyButton";
 import Image from "next/image";
 import { useFetchUser } from "@/hooks/useFetchUser";
@@ -12,27 +12,28 @@ import { useAccount } from "wagmi";
 import { ProjectCreationModal } from "../../project/create/ProjectCreationModal";
 import { ProjectFormData } from "../../project/create/ProjectCreationForm";
 import { useRouter } from "next/navigation";
+import { useModal } from "@/contexts/ModalContext";
+import { useAddressWhitelist } from "@/hooks/useAddressWhitelist";
+import { getIpfsAddress } from "@/helpers/image";
 
 export default function ProfileInfo({ userAddress }: { userAddress: Address }) {
+  const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
+  const [isUserLoggedIn, setIsUserLoggedIn] = useState(false);
+
   const { data: user, isLoading } = useFetchUser(
     !!userAddress,
     userAddress as Address
   );
-  const { address: ConnectedUserAddress } = useAccount();
-  const router = useRouter();
-  const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
+  const useWhitelist = useAddressWhitelist();
+  const { address: ConnectedUserAddress, isConnected } = useAccount();
 
   const handleProjectSuccess = (projectData: ProjectFormData) => {
-    console.log('Project created successfully:', projectData);
-    // You can add additional success handling here, such as:
-    // - Show a success toast/notification
-    // - Redirect to the new project page
-    // - Refresh the user's project list
-    // - Update the UI to reflect the new project
-    
+    console.log("Project created successfully:", projectData);
     // Example: redirect to projects page or show success message
     // router.push('/projects'); // uncomment if you want to redirect
   };
+
+  const { openUpdateProfileModal } = useModal();
 
   const openProjectModal = () => {
     setIsProjectModalOpen(true);
@@ -42,6 +43,21 @@ export default function ProfileInfo({ userAddress }: { userAddress: Address }) {
     setIsProjectModalOpen(false);
   };
 
+  useEffect(() => {
+    if (isConnected && userAddress === ConnectedUserAddress) {
+      setIsUserLoggedIn(true);
+    }
+  }, [isConnected, userAddress, ConnectedUserAddress]);
+
+  console.log(user);
+
+  let avatar;
+  if (user?.avatar && !user.avatar.includes("https://gateway.pinata.cloud")) {
+    avatar = getIpfsAddress(user.avatar);
+  } else {
+    avatar = user?.avatar;
+  }
+
   return (
     <>
       <div className="p-6 bg-neutral-800 rounded-2xl">
@@ -49,7 +65,7 @@ export default function ProfileInfo({ userAddress }: { userAddress: Address }) {
           <div className="flex items-center">
             <div className="w-[140px] h-[140px] bg-black rounded-lg overflow-hidden mr-4">
               <img
-                src={user?.avatar || "/images/user.png"}
+                src={avatar || "/images/user.png"}
                 alt="User avatar"
                 className="w-full h-full object-cover"
               />
@@ -63,26 +79,33 @@ export default function ProfileInfo({ userAddress }: { userAddress: Address }) {
                 <span className="font-mono">
                   {" "}
                   {userAddress.slice(0, 8)}...
-                  {userAddress.slice(userAddress.length - 8, userAddress.length)}
+                  {userAddress.slice(
+                    userAddress.length - 8,
+                    userAddress.length
+                  )}
                   <CopyButton text={userAddress} />
                 </span>
               </div>
             </div>
           </div>
-
-          {userAddress === ConnectedUserAddress && (
-            <div className="flex gap-3">
-              <button className="text-peach-400 font-medium hover:text-peach-300 transition-colors">
+          <div className="flex gap-3">
+            {isUserLoggedIn && (
+              <button
+                className="text-peach-400 font-medium hover:text-peach-300 transition-colors"
+                onClick={() => openUpdateProfileModal(user)}
+              >
                 Edit Profile
               </button>
-              <button 
+            )}
+            {isUserLoggedIn && useWhitelist.data && (
+              <button
                 onClick={openProjectModal}
                 className="bg-peach-400 text-black px-4 py-2 rounded-md font-medium hover:bg-peach-300 transition-colors"
               >
                 Create Project
               </button>
-            </div>
-          )}
+            )}
+          </div>
         </div>
 
         <div className="mt-8 mb-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
