@@ -1,13 +1,13 @@
-import { FC, useState } from 'react';
-import { useAccount } from 'wagmi';
-import { useRouter } from 'next/navigation';
-import useRemainingTime from '@/hooks/useRemainingTime';
-import { Button } from '@/components/ui/button';
-import { getAdjustedEndDate } from '@/helpers/date';
-import { useFetchActiveRoundDetails } from '@/hooks/useRounds';
-// import { NFTModal } from '@/components/modals/NFTModal';
-import { checkUserOwnsNFT } from '@/helpers/token';
-import { IProject } from '@/types/project.type';
+import { FC, useState } from "react";
+import { useAccount } from "wagmi";
+import { useRouter } from "next/navigation";
+import useRemainingTime from "@/hooks/useRemainingTime";
+import { Button } from "@/components/ui/button";
+import { getAdjustedEndDate } from "@/helpers/date";
+import { useFetchActiveRoundDetails } from "@/hooks/useRounds";
+import { useModal } from "@/contexts/ModalContext";
+import { checkUserOwnsNFT } from "@/helpers/token";
+import { IProject } from "@/types/project.type";
 
 interface ISupportButtonProps {
   project: IProject;
@@ -18,29 +18,32 @@ export const SupportButton: FC<ISupportButtonProps> = ({
   project,
   disabled,
 }) => {
-  const [isModalOpen, setModalOpen] = useState(false);
   const { data: activeRoundDetails } = useFetchActiveRoundDetails();
   const { address } = useAccount();
   const router = useRouter();
+  const { openInfoModal } = useModal();
 
   const adjustedEndDate = getAdjustedEndDate(activeRoundDetails?.endDate);
   const remainingTime = useRemainingTime(
     activeRoundDetails?.startDate,
-    adjustedEndDate,
+    adjustedEndDate
   );
   const handleSupport = (e: any) => {
     e.stopPropagation();
     async function checkUser() {
-      if (activeRoundDetails?.__typename !== 'QfRound') {
+      if (activeRoundDetails?.__typename !== "QfRound") {
         console.log(activeRoundDetails);
         const res = await checkUserOwnsNFT(
-          project?.abc?.nftContractAddress || '',
-          address || '',
+          project?.abc?.nftContractAddress || "",
+          address || ""
         );
         if (res) {
           router.push(`/support/${project.slug}`);
         } else {
-          setModalOpen(true);
+          openInfoModal(
+            "Missing Required NFT",
+            "You're logged in with an address that does not have the early-access NFT for this q/acc project. Early access is invite-only, and you need to be invited directly by the project team."
+          );
         }
       } else {
         router.push(`/support/${project.slug}`);
@@ -50,23 +53,19 @@ export const SupportButton: FC<ISupportButtonProps> = ({
   };
   return (
     <>
-      {/* <NFTModal
-        isOpen={isModalOpen}
-        onClose={() => setModalOpen(false)}
-        showCloseButton={true}
-      /> */}
-      <Button
-        // color={ButtonColor.Giv}
-        className={`w-full justify-center opacity-80 ${remainingTime === 'Time is up!' ? '' : 'hover:opacity-100'}`}
+      <button
+        className={
+          "cursor-pointer px-6 py-4 rounded-full text-sm font-bold items-center flex gap-2 bg-peach-400  text-black w-full justify-center"
+        }
         onClick={handleSupport}
         disabled={
-          remainingTime === 'Time is up!' ||
-          remainingTime === '--:--:--' ||
+          remainingTime === "Time is up!" ||
+          remainingTime === "--:--:--" ||
           disabled
         }
       >
         Buy Token
-      </Button>
+      </button>
     </>
   );
 };

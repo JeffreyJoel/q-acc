@@ -9,39 +9,24 @@ import { roundPoints } from "@/helpers/points";
 import { GitcoinVerificationBadge } from "../../verification-badges/GitcoinVerificationBadge";
 import { PrivadoVerificationBadge } from "../../verification-badges/PrivadoVerificationBadge";
 import { useAccount } from "wagmi";
-import { ProjectCreationModal } from "../../project/create/ProjectCreationModal";
-import { ProjectFormData } from "../../project/create/ProjectCreationForm";
-import { useRouter } from "next/navigation";
 import { useModal } from "@/contexts/ModalContext";
-import { useAddressWhitelist } from "@/hooks/useAddressWhitelist";
 import { getIpfsAddress } from "@/helpers/image";
+import { CreateProjectButton } from "../../project/create/CreateProjectButton";
 
 export default function ProfileInfo({ userAddress }: { userAddress: Address }) {
-  const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
   const [isUserLoggedIn, setIsUserLoggedIn] = useState(false);
 
   const { data: user, isLoading } = useFetchUser(
     !!userAddress,
     userAddress as Address
   );
-  const useWhitelist = useAddressWhitelist();
   const { address: ConnectedUserAddress, isConnected } = useAccount();
-
-  const handleProjectSuccess = (projectData: ProjectFormData) => {
-    console.log("Project created successfully:", projectData);
-    // Example: redirect to projects page or show success message
-    // router.push('/projects'); // uncomment if you want to redirect
-  };
 
   const { openUpdateProfileModal } = useModal();
 
-  const openProjectModal = () => {
-    setIsProjectModalOpen(true);
-  };
-
-  const closeProjectModal = () => {
-    setIsProjectModalOpen(false);
-  };
+  // const openProjectCreation = () => {
+  //   router.push('/project/create');
+  // };
 
   useEffect(() => {
     if (isConnected && userAddress === ConnectedUserAddress) {
@@ -97,13 +82,8 @@ export default function ProfileInfo({ userAddress }: { userAddress: Address }) {
                 Edit Profile
               </button>
             )}
-            {isUserLoggedIn && useWhitelist.data && (
-              <button
-                onClick={openProjectModal}
-                className="bg-peach-400 text-black px-4 py-2 rounded-md font-medium hover:bg-peach-300 transition-colors"
-              >
-                Create Project
-              </button>
+            {isUserLoggedIn && (
+              <CreateProjectButton className="bg-peach-400 text-black px-4 py-2 rounded-md font-medium hover:bg-peach-300 transition-colors" />
             )}
           </div>
         </div>
@@ -131,13 +111,6 @@ export default function ProfileInfo({ userAddress }: { userAddress: Address }) {
           </div>
         </div>
       </div>
-
-      {/* Project Creation Modal */}
-      <ProjectCreationModal
-        isOpen={isProjectModalOpen}
-        onClose={closeProjectModal}
-        onSuccess={handleProjectSuccess}
-      />
     </>
   );
 }

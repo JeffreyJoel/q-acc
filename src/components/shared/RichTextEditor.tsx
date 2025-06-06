@@ -184,16 +184,17 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
   return (
     <div>
       {label && (
-        <label className='block text-sm font-medium text-gray-700'>
+        <label className='block text-sm font-medium text-neutral-300'>
           {label}
         </label>
       )}
       <div
         ref={editorRef}
-        style={{ height: '400px', border: '1px solid #ccc' }}
+        className='col-span-4 rounded-xl border border-neutral-700 focus:ring-peach-400 focus:border-peach-400 outline-none'
+        style={{ height: '400px' }}
       ></div>
       {description && (
-        <p className='text-sm text-gray-500 mt-1'>{description}</p>
+        <p className='text-sm text-neutral-400 mt-1'>{description}</p>
       )}
       {/* {maxLength && (
         <div className='text-right text-sm text-gray-500 mt-1'>

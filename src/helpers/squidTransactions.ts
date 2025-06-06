@@ -1,8 +1,30 @@
 import axios from 'axios';
-import { ethers } from 'ethers';
+import { BrowserProvider, ethers, JsonRpcSigner } from 'ethers';
 import config from '@/config/configuration';
-// import { getEthersSigner } from '@/helpers/ethers';
+import { getConnectorClient } from 'wagmi/actions';
+import { Account, Chain, Transport } from 'viem';
+import { Client } from 'viem';
+import { config as wagmiConfig } from '@/providers/PrivyProvider';
 const integratorId: string = config.SQUID_INTEGRATOR_ID;
+
+
+export function clientToSigner(client: Client<Transport, Chain, Account>) {
+  const { account, chain, transport } = client;
+  const network = {
+    chainId: chain.id,
+    name: chain.name,
+    ensAddress: chain.contracts?.ensRegistry?.address,
+  };
+  const provider = new BrowserProvider(transport, network);
+  const signer = new JsonRpcSigner(provider, account.address);
+  return signer;
+}
+export async function getEthersSigner({ chainId }: { chainId?: string } = {}) {
+  const client = await getConnectorClient(wagmiConfig, {
+    chainId: chainId ? Number(chainId) as 137 | 80002 : undefined,
+  });
+  return clientToSigner(client);
+}
 
 export type SquidTokenType = {
   symbol: string;
@@ -88,34 +110,34 @@ export const getRoute = async (params: any) => {
   }
 };
 
-// export const approveSpending = async (
-//   transactionRequestTarget: string,
-//   fromToken: string,
-//   fromAmount: string,
-// ) => {
-//   const erc20Abi = [
-//     'function approve(address spender, uint256 amount) public returns (bool)',
-//   ];
+export const approveSpending = async (
+  transactionRequestTarget: string,
+  fromToken: string,
+  fromAmount: string,
+) => {
+  const erc20Abi = [
+    'function approve(address spender, uint256 amount) public returns (bool)',
+  ];
 
-//   // let provider = new ethers.BrowserProvider(window.ethereum);
-//   // let signer = await provider.getSigner();
-//   const signer = await getEthersSigner();
-//   const tokenContract = new ethers.Contract(fromToken, erc20Abi, signer);
+  // let provider = new ethers.BrowserProvider(window.ethereum);
+  // let signer = await provider.getSigner();
+  const signer = await getEthersSigner();
+  const tokenContract = new ethers.Contract(fromToken, erc20Abi, signer);
 
-//   try {
-//     const tx = await tokenContract.approve(
-//       transactionRequestTarget,
-//       fromAmount,
-//     );
-//     await tx.wait();
-//     console.log(
-//       `Approved ${fromAmount} tokens for ${transactionRequestTarget}`,
-//     );
-//   } catch (error) {
-//     console.error('Approval failed:', error);
-//     throw error;
-//   }
-// };
+  try {
+    const tx = await tokenContract.approve(
+      transactionRequestTarget,
+      fromAmount,
+    );
+    await tx.wait();
+    console.log(
+      `Approved ${fromAmount} tokens for ${transactionRequestTarget}`,
+    );
+  } catch (error) {
+    console.error('Approval failed:', error);
+    throw error;
+  }
+};
 
 export const getStatus = async (params: any) => {
   try {

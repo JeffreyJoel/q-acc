@@ -73,9 +73,9 @@
   }
 }
 
-span{
-  background-color: transparent !important;
-}
+/* span{
+  background-color: transparent ;
+} */
 
 @font-face {
   font-family: "Tusker Grotesk 4000";
@@ -123,4 +123,8 @@ span{
   font-weight: 700;
   font-display: auto;
   src: url("/fonts/TuskerGrotesk-8700Bold.woff2") format("woff2");
+}
+
+.ql-toolbar.ql-snow{
+  border-color:var(--neutral-800) !important;
 }

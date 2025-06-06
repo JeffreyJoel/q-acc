@@ -10,5 +10,7 @@ export const useAddressWhitelist = () => {
     queryFn: async () => {
       return checkWhitelist(address);
     },
+    enabled: !!address,
+    staleTime: 1000 * 60 * 5, // 5 minutes
   });
 };

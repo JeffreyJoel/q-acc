@@ -53,7 +53,7 @@ export const Dropzone: FC<DropzoneProps> = ({ name, rules, onDrop }) => {
       if (ipfsHash) {
         onDrop(name, file, ipfsHash);
         setIpfsHash(ipfsHash);
-        setValue(name, getIpfsAddress(ipfsHash), { shouldValidate: true }); // Set value and trigger validation
+        setValue(name, getIpfsAddress(ipfsHash), { shouldValidate: false }); // Set value without triggering validation immediately
       }
     },
     [onDrop, setValue, name],
@@ -149,6 +149,7 @@ export const Dropzone: FC<DropzoneProps> = ({ name, rules, onDrop }) => {
               return true;
             },
           })}
+          type="hidden"
           value={ipfsHash || ''}
           className='hidden'
           readOnly
