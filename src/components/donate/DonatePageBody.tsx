@@ -24,7 +24,7 @@ import debounce from "lodash/debounce";
 
 import { IconRefresh, IconCalendarClock, IconShare } from "@tabler/icons-react";
 
-// import DonateSuccessPage from './DonateSuccessPage';
+import DonateSuccessPage from './DonateSuccessPage';
 // import { Button, ButtonColor } from '../Button';
 
 import {
@@ -59,10 +59,10 @@ import { EligibilityCheckToast } from "./EligibilityCheckToast";
 import { GitcoinEligibilityModal } from "../modals/GitcoinEligibilityModal";
 import { fetchProjectUserDonationCapKyc } from "@/services/user.service";
 // import { TermsConditionModal } from '../Modals/TermsConditionModal';
-// import SelectChainModal, {
-//   POLYGON_POS_CHAIN_ID,
-//   POLYGON_POS_CHAIN_IMAGE,
-// } from './SelectChainModal';
+import SelectChainModal, {
+  POLYGON_POS_CHAIN_ID,
+  POLYGON_POS_CHAIN_IMAGE,
+} from '@/components/modals/SelectChainModal';
 import {
   approveSpending,
   convertToTokenUnits,
@@ -73,7 +73,6 @@ import {
 } from "@/helpers/squidTransactions";
 import { useFetchPOLPriceSquid } from "@/hooks/useTokens";
 import { UserCapUpdateModal } from "../modals/UserCapUpdateModal";
-import { POLYGON_POS_CHAIN_IMAGE } from "../project/project-details/ProjectDonationTable";
 import { Button } from "../ui/button";
 import { InfoModal } from "../modals/InfoModal";
 
@@ -101,10 +100,10 @@ const PercentageButton = ({
   return (
     <span
       onClick={() => handleClick(percentage)}
-      className={`flex justify-center px-4 py-2 border text-sm rounded-3xl cursor-pointer ${
+      className={`flex justify-center px-4 py-2 border text-sm rounded-3xl cursor-pointer transition-colors ${
         isSelected
           ? "bg-peach-400 text-black border-peach-400"
-          : "bg-peach-400/10 text-peach-400"
+          : "bg-peach-400/10 text-peach-400 border-peach-400/20 hover:bg-peach-400/20"
       }`}
     >
       {percentage === 100 ? "MAX" : `${percentage}%`}
@@ -167,8 +166,8 @@ const DonatePageBody: React.FC<DonatePageBodyProps> = ({ setIsConfirming }) => {
     id: string | null;
     imageUrl: string;
   }>({
-    id: chain?.id?.toString() || "137",
-    imageUrl: POLYGON_POS_CHAIN_IMAGE, // Replace with actual URL
+    id: POLYGON_POS_CHAIN_ID,
+    imageUrl: POLYGON_POS_CHAIN_IMAGE,
   });
   const [selectedToken, setSelectedToken] = useState<SquidTokenType>({
     symbol: "POL",
@@ -224,9 +223,8 @@ const DonatePageBody: React.FC<DonatePageBodyProps> = ({ setIsConfirming }) => {
     setShowChainTokenModal(false);
   };
 
-  const handleShare = () => {
-    openShareModal();
-  };
+
+  console.log(activeRoundDetails);
 
   const getDonationCap: any = async () => {
     if (projectData?.id) {
@@ -486,7 +484,7 @@ const DonatePageBody: React.FC<DonatePageBodyProps> = ({ setIsConfirming }) => {
   useEffect(() => {
     if (projectData?.seasonNumber === 1) {
       const message =
-        "Season 1 tokens are locked for 10 months with a 5 month cliff. Tokens are locked completely for 5 months, and then unlocked gradually in a 5 month stream. The shorter vesting is to ensure  tokens bought through q/acc always unlock before the Project’s vesting completes.";
+        "Season 1 tokens are locked for 10 months with a 5 month cliff. Tokens are locked completely for 5 months, and then unlocked gradually in a 5 month stream. The shorter vesting is to ensure  tokens bought through q/acc always unlock before the Project's vesting completes.";
       const toolTip =
         "Tokens are locked for a period of time followed by an unlock stream over another period of time. The cliff is when tokens begin to unlock, in a stream, until the last day of the schedule.";
 
@@ -768,7 +766,7 @@ const DonatePageBody: React.FC<DonatePageBodyProps> = ({ setIsConfirming }) => {
 
   const handleRefetch = async () => {
     await getTokenDetails();
-    console.log("Refetched", parseFloat(tokenDetails.formattedBalance));
+    console.log("Refetched", parseFloat(tokenDetails?.formattedBalance));
   };
 
   const fetchRoute = (inputAmount: number) => {
@@ -862,13 +860,14 @@ const DonatePageBody: React.FC<DonatePageBodyProps> = ({ setIsConfirming }) => {
 
   if (isConfirmed && donationId) {
     return (
-      <div>Donate Success</div>
-      //   <DonateSuccessPage
-      //     transactionHash={hash}
-      //     round={activeRoundDetails?.__typename}
-      //     donationId={donationId}
-      //     status={status}
-      //   />
+      <div>
+        <DonateSuccessPage
+          transactionHash={hash}
+          round={activeRoundDetails?.__typename}
+          donationId={donationId}
+          status={status}
+        />
+      </div>
     );
   }
 
@@ -878,7 +877,7 @@ const DonatePageBody: React.FC<DonatePageBodyProps> = ({ setIsConfirming }) => {
   const percentages = [25, 50, 100];
 
   return (
-    <div className="bg-neutral-900 w-full mb-10">
+    <div className="bg-transparent w-full mb-10">
       <GitcoinEligibilityModal
         isOpen={showGitcoinModal}
         onClose={() => setShowGitcoinModal(false)}
@@ -893,25 +892,25 @@ const DonatePageBody: React.FC<DonatePageBodyProps> = ({ setIsConfirming }) => {
         isOpen={showTermsConditionModal}
         onClose={() => setShowTermsConditionModal(false)}
       /> */}
-      {/* <SelectChainModal
+      <SelectChainModal
         isOpen={showChainTokenModal}
         onClose={() => setShowChainTokenModal(false)}
         onSelection={handleChainTokenSelection}
-      /> */}
+      />
       <UserCapUpdateModal
         isOpen={showUserCapModal}
         onClose={() => setshowUserCapModal(false)}
         userDonationCap={userDonationCap}
         selectedTokenSymbol={selectedToken.symbol}
       />
-      <div className="container w-full flex  flex-col lg:flex-row gap-10 ">
-        <div className="p-6 lg:w-2/3 flex flex-col gap-8 bg-neutral-800 text-neutral-100 rounded-2xl shadow-[0px 3px 20px 0px rgba(212, 218, 238, 0.40)] font-redHatText">
+      <div className="container mx-auto  w-full flex  flex-col lg:flex-row gap-10 ">
+        <div className="p-6 lg:w-2/3 flex flex-col gap-8 bg-neutral-800 text-foreground rounded-2xl border shadow-lg ">
           <EligibilityCheckToast />
-          <div className="flex flex-col md:flex-row text-neutral-100 font-redHatText gap-4">
-            <div className="flex  justify-between p-2 w-fit md:w-2/3 lg:w-fit bg-[#EBECF2]  rounded-lg  items-center">
+          <div className="flex flex-col md:flex-row text-foreground  gap-4">
+            <div className="flex  justify-between p-2 w-fit md:w-2/3 lg:w-fit bg-muted rounded-lg  items-center">
               <span
                 className={`flex gap-2 items-center  ${
-                  inputBalanceError ? "text-[#E6492D]" : "text-black"
+                  inputBalanceError ? "text-destructive" : "text-foreground"
                 } `}
               >
                 Available in your wallet:
@@ -923,7 +922,7 @@ const DonatePageBody: React.FC<DonatePageBodyProps> = ({ setIsConfirming }) => {
                         2
                       )} ${selectedToken?.symbol}`}
                 </span>
-                <button onClick={handleRefetch}>
+                <button onClick={handleRefetch} className="hover:text-peach-400 transition-colors">
                   <IconRefresh size={16} />
                 </button>
               </span>
@@ -942,16 +941,16 @@ const DonatePageBody: React.FC<DonatePageBodyProps> = ({ setIsConfirming }) => {
           </div>
           {/* Input Box */}
 
-          <div className="flex flex-col gap-2 font-redHatText">
-            <div className="border rounded-lg flex relative  ">
+          <div className="flex flex-col gap-2 ">
+            <div className="border border-neutral-600 rounded-xl flex relative">
               <div
-                className="md:w-[40%] flex gap-4 p-4 border  justify-between items-center cursor-pointer"
+                className="md:w-[40%] flex gap-4 p-4 border-r border-r-neutral-600 bg-neutral-700/50  justify-between items-center cursor-pointer hover:bg-muted/50 transition-colors"
                 onClick={() => setShowChainTokenModal(true)}
               >
                 <div className="flex gap-2 items-center">
                   <div className="flex relative px-2">
                     <div className="flex items-center">
-                      <div className="w-6 h-6  absolute right-6 p-[2px] bg-[#F7F7F9] rounded-full">
+                      <div className="w-6 h-6  absolute right-6 p-[2px] rounded-full">
                         <img
                           className="rounded-full  w-full"
                           src={
@@ -960,7 +959,7 @@ const DonatePageBody: React.FC<DonatePageBodyProps> = ({ setIsConfirming }) => {
                           alt="Chain Logo"
                         />
                       </div>
-                      <div className="w-6 h-6 z-10 p-[2px] bg-[#F7F7F9] rounded-full">
+                      <div className="w-6 h-6 z-10 p-[2px] bg-background rounded-full">
                         <img
                           className="rounded-full  w-full"
                           src={
@@ -972,7 +971,7 @@ const DonatePageBody: React.FC<DonatePageBodyProps> = ({ setIsConfirming }) => {
                     </div>
                   </div>
 
-                  <h1 className=" font-medium text-[#1D1E1F] font-redHatText">
+                  <h1 className="font-medium text-foreground ">
                     {selectedToken?.symbol}
                   </h1>
                 </div>
@@ -986,7 +985,7 @@ const DonatePageBody: React.FC<DonatePageBodyProps> = ({ setIsConfirming }) => {
                   >
                     <path
                       d="M4.14279 6.126L7.55548 10.7619C7.61049 10.8366 7.67873 10.8965 7.75551 10.9376C7.8323 10.9787 7.91581 11 8.00032 11C8.08483 11 8.16835 10.9787 8.24513 10.9376C8.32191 10.8965 8.39015 10.8366 8.44516 10.7619L11.8579 6.126C12.1835 5.6835 11.9135 5 11.413 5H4.58665C4.08614 5 3.81612 5.6835 4.14279 6.126Z"
-                      fill="#1D1E1F"
+                      fill="currentColor"
                     />
                   </svg>
                 </div>
@@ -996,11 +995,11 @@ const DonatePageBody: React.FC<DonatePageBodyProps> = ({ setIsConfirming }) => {
                 value={inputAmount}
                 type="number"
                 disabled={isConfirming}
-                className="w-full  text-sm  md:text-base border rounded-r-lg  px-4"
+                className="w-full text-sm md:text-base border-0 rounded-r-lg px-4 bg-neutral-700/50 text-foreground focus:ring-2 focus:ring-peach-400 focus:outline-none"
                 onWheel={(e: any) => e.target.blur()}
               />
 
-              <span className="absolute text-sm  md:text-base top-0 right-0 h-full flex items-center pr-5 text-gray-400 pointer-events-none">
+              <span className="absolute text-sm  md:text-base top-0 right-0 h-full flex items-center pr-5 text-muted-foreground pointer-events-none">
                 ~ ${" "}
                 {inputAmount === ""
                   ? 0
@@ -1009,18 +1008,18 @@ const DonatePageBody: React.FC<DonatePageBodyProps> = ({ setIsConfirming }) => {
                     )}
               </span>
             </div>
-            {/* Avaliable token */}
+            {/* Available token */}
             <div className="flex md:flex-row flex-col justify-between">
               <div className="flex gap-1">
                 <div
-                  className={` flex  ${
-                    userDonationCapError ? "text-[#E6492D]" : "text-black"
+                  className={`flex ${
+                    userDonationCapError ? "text-destructive" : "text-foreground"
                   }`}
                 >
                   Your remaining cap for this project:&nbsp;
                   <span
                     onClick={handleRemainingCapClick}
-                    className="font-medium cursor-pointer  flex gap-2 hover:underline"
+                    className="font-medium cursor-pointer flex gap-2 hover:underline hover:text-peach-400 transition-colors"
                   >
                     {userDonationCap !== null && userDonationCap !== undefined
                       ? truncateToSignificantDigits(userDonationCap, 2)
@@ -1028,7 +1027,7 @@ const DonatePageBody: React.FC<DonatePageBodyProps> = ({ setIsConfirming }) => {
                     {selectedToken?.symbol}
                     <div className="relative group">
                       <IconCalendarClock />
-                      <div className="absolute w-[200px] z-50 mb-2 left-[-60px] hidden group-hover:block bg-gray-800 text-white text-xs rounded py-1 px-2">
+                      <div className="absolute w-[200px] z-50 mb-2 left-[-60px] hidden group-hover:block bg-popover text-popover-foreground text-xs rounded py-1 px-2 border shadow-md">
                         Caps are set at the start of the round in POL.
                       </div>
                     </div>
@@ -1038,7 +1037,7 @@ const DonatePageBody: React.FC<DonatePageBodyProps> = ({ setIsConfirming }) => {
 
               <div>
                 {inputErrorMessage && (
-                  <span className="text-[#E6492D] flex gap-1 items-center">
+                  <span className="text-destructive flex gap-1 items-center">
                     <IconAlertTriangle />
                     {inputErrorMessage}
                     Minimum contribution: 5 POL
@@ -1047,14 +1046,14 @@ const DonatePageBody: React.FC<DonatePageBodyProps> = ({ setIsConfirming }) => {
 
                 <h2
                   className={`flex gap-1 items-center ${
-                    inputErrorMessage ? "text-[#E6492D]" : "text-[#303B72]"
+                    inputErrorMessage ? "text-destructive" : "text-muted-foreground"
                   }`}
                 >
                   {inputErrorMessage && <IconAlertTriangle />}
                   Minimum contribution:{" "}
                   <span
-                    className={` font-medium ${
-                      inputErrorMessage ? "text-[#E6492D]" : "text-[#303B72]"
+                    className={`font-medium ${
+                      inputErrorMessage ? "text-destructive" : "text-foreground"
                     }`}
                   >
                     {minimumContributionAmount || 20} {selectedToken.symbol}
@@ -1066,40 +1065,39 @@ const DonatePageBody: React.FC<DonatePageBodyProps> = ({ setIsConfirming }) => {
 
           {/* Token Lock Schedule */}
 
-          <div className="flex flex-col p-4 border-[1px] border-[#D7DDEA] rounded-lg  gap-2">
+          <div className="flex flex-col p-4 border border-border rounded-lg gap-2 bg-muted/30">
             <div className="flex gap-2 items-center">
-              <span className="font-medium  font-redHatText text-[#1D1E1F]">
+              <span className="font-medium  text-foreground">
                 Token Unlock Schedule{" "}
               </span>
               <div className="relative group">
                 <IconCalendarClock />
-                <div className="absolute w-[200px] z-50 mb-2 left-[-60px] hidden group-hover:block bg-gray-800 text-white text-xs rounded py-1 px-2">
+                <div className="absolute w-[200px] z-50 mb-2 left-[-60px] hidden group-hover:block bg-popover text-popover-foreground text-xs rounded py-1 px-2 border shadow-md">
                   <h3 className="font-bold">Token Unlock Schedule</h3>
                   {tokenSchedule.toolTip}
                 </div>
               </div>
             </div>
 
-            <hr />
-            <h2 className="text-[#4F576A]">{tokenSchedule.message}</h2>
+            <hr className="border-border" />
+            <h2 className="text-muted-foreground">{tokenSchedule.message}</h2>
           </div>
 
           {/* Donate Button */}
 
           <div className="flex flex-col">
-            <button
+            <Button
               onClick={handleDonateClick}
               disabled={!isConnected || donateDisabled || squidRouteLoading}
-              // loading={isConfirming || squidRouteLoading || isButtonLoading}
-              // color={ButtonColor.Giv}
-              className="text-white justify-center"
+              className="w-full bg-peach-400 hover:bg-peach-300 text-black font-medium py-3 rounded-lg transition-colors"
+              size="lg"
             >
               {isConnected
                 ? squidRouteLoading
                   ? "Getting Swap Routes"
                   : "Buy Token"
                 : "Connect Wallet"}
-            </button>
+            </Button>
             <FlashMessage
               message={flashMessage}
               onClose={() => setFlashMessage("")}
@@ -1107,7 +1105,7 @@ const DonatePageBody: React.FC<DonatePageBodyProps> = ({ setIsConfirming }) => {
           </div>
           <div className="flex flex-col gap-4">
             {/* Terms of Service */}
-            {/* <label className='flex gap-2 items-center p-4 bg-[#EBECF2] rounded-2xl w-full cursor-pointer'>
+            {/* <label className='flex gap-2 items-center p-4 bg-muted rounded-2xl w-full cursor-pointer'>
               <div>
                 <input
                   type='checkbox'
@@ -1115,12 +1113,12 @@ const DonatePageBody: React.FC<DonatePageBodyProps> = ({ setIsConfirming }) => {
                   onChange={event => handleAcceptTerms(event)}
                 />
               </div>
-              <div className='flex flex-col text-[#1D1E1F] '>
+              <div className='flex flex-col text-foreground '>
                 <h2 className='text-base'>
                   I have read and agree to the{' '}
                   <Link
                     href='https://giveth.notion.site/Terms-and-Conditions-10a3ab28d48c8058af3cd37455b591c5'
-                    className='text-pink-500 font-semibold'
+                    className='text-peach-400 font-semibold hover:underline'
                     target='_blank'
                   >
                     Terms of Service.
@@ -1129,7 +1127,7 @@ const DonatePageBody: React.FC<DonatePageBodyProps> = ({ setIsConfirming }) => {
               </div>
             </label> */}
 
-            {/* Make it Anoynmous */}
+            {/* Make it Anonymous */}
             <div
               className="flex gap-2 p-2 cursor-pointer"
               onClick={() => setAnoynmous(!anoynmous)}
@@ -1139,11 +1137,12 @@ const DonatePageBody: React.FC<DonatePageBodyProps> = ({ setIsConfirming }) => {
                   type="checkbox"
                   checked={anoynmous}
                   onChange={() => setAnoynmous(!anoynmous)}
+                  className="accent-peach-400"
                 />
               </div>
-              <div className="flex flex-col text-[#1D1E1F]">
+              <div className="flex flex-col text-foreground">
                 <h2 className="text-base">Make it anonymous</h2>
-                <p className="text-xs">
+                <p className="text-xs text-muted-foreground">
                   By checking this, we won't show your name and profile
                   information associated with this contribution on public pages.
                 </p>
@@ -1152,7 +1151,7 @@ const DonatePageBody: React.FC<DonatePageBodyProps> = ({ setIsConfirming }) => {
           </div>
         </div>
 
-        <div className="p-6 flex flex-col gap-8 h-fit lg:w-1/2 bg-white rounded-2xl shadow-[0px 3px 20px 0px rgba(212, 218, 238, 0.40)]  font-redHatText">
+        <div className="p-6 flex flex-col gap-8 h-fit lg:w-1/2 bg-neutral-800 rounded-2xl border shadow-lg ">
           {/* Project Banner */}
           <div
             className="w-full h-[250px] bg-cover bg-center rounded-3xl relative"
@@ -1161,7 +1160,7 @@ const DonatePageBody: React.FC<DonatePageBodyProps> = ({ setIsConfirming }) => {
             }}
           >
             <div className=" flex flex-col absolute  bottom-[24px] left-[24px] md:bottom-[24px] md:left-[24px] gap-2">
-              <div className="border rounded-md bg-white p-1 block w-fit">
+              <div className="border border-border rounded-md bg-background p-1 block w-fit">
                 <Image
                   src={projectData?.icon || "/images/project-card/logo.svg"}
                   alt=""
@@ -1179,9 +1178,9 @@ const DonatePageBody: React.FC<DonatePageBodyProps> = ({ setIsConfirming }) => {
 
           {/* Percentage Bar */}
 
-          {/* <div className='flex flex-col gap-2  px-4 py-4 bg-[#F7F7F9] rounded-lg'>
+          {/* <div className='flex flex-col gap-2  px-4 py-4 bg-muted rounded-lg'>
             <div
-              className={`px-2 py-[2px] rounded-md  w-fit flex gap-2 font-redHatText text-xs font-medium ${progress === 100 ? 'bg-[#5326EC] text-white' : 'bg-[#F7F7F9] text-[#1D1E1F]'} `}
+              className={`px-2 py-[2px] rounded-md  w-fit flex gap-2  text-xs font-medium ${progress === 100 ? 'bg-peach-400 text-black' : 'bg-muted text-foreground'} `}
             >
               {progress === 0 ? (
                 'Getting started !'
@@ -1192,7 +1191,7 @@ const DonatePageBody: React.FC<DonatePageBodyProps> = ({ setIsConfirming }) => {
                   {progress} % collected
                   <div className='relative group'>
                     <IconCalendarClock />
-                    <div className='absolute w-[200px] z-50 mb-2 left-[-60px] hidden group-hover:block bg-gray-800 text-white text-xs rounded py-1 px-2'>
+                    <div className='absolute w-[200px] z-50 mb-2 left-[-60px] hidden group-hover:block bg-popover text-popover-foreground text-xs rounded py-1 px-2 border shadow-md'>
                       Bonding curves have a mint price and a burn price. This
                       shows the mint price.
                     </div>
@@ -1201,12 +1200,12 @@ const DonatePageBody: React.FC<DonatePageBodyProps> = ({ setIsConfirming }) => {
               )}
             </div>
             <ProgressBar progress={progress} isStarted={false} />
-            <div className='flex justify-between px-2 font-redHatText  font-medium items-center'>
-              <span className='text-[#A5ADBF] text-xs'>
+            <div className='flex justify-between px-2   font-medium items-center'>
+              <span className='text-muted-foreground text-xs'>
                 {' '}
                 Cumulative Round Cap
               </span>
-              <span className='text-[#1D1E1F]'>
+              <span className='text-foreground'>
                 {formatAmount(maxPOLCap)} POL
               </span>
             </div>
@@ -1214,25 +1213,25 @@ const DonatePageBody: React.FC<DonatePageBodyProps> = ({ setIsConfirming }) => {
 
           {/* Project Details */}
           <div className="flex flex-col gap-6">
-            <div className="flex flex-col font-redHatText">
-              <h2 className="text-sm text-[#82899A] bg-[#F7F7F9] rounded-md p-1 w-fit">
+            <div className="flex flex-col ">
+              <h2 className="text-sm text-neutral-300 bg-neutral-700 rounded-md p-1 w-fit">
                 Total amount received
               </h2>
               <div className="flex gap-2 items-center">
-                <h1 className="text-4xl font-extrabold p-2">
+                <h1 className="text-4xl font-extrabold p-2 text-foreground">
                   ~ ${" "}
                   {formatAmount(
                     Math.round(totalPOLDonated * Number(POLPrice) * 100) / 100
                   )}
                 </h1>
-                <h2 className="text-[#1D1E1F] font-medium">
+                <h2 className="text-foreground font-medium">
                   {formatAmount(totalPOLDonated)} POL
                 </h2>
               </div>
 
-              <p className="text-[#82899A]">
+              <p className="text-muted-foreground">
                 From{" "}
-                <span className="font-medium text-[#1D1E1F]">
+                <span className="font-medium text-foreground">
                   {uniqueDonars}
                 </span>{" "}
                 supporters
@@ -1258,23 +1257,23 @@ const DonatePageBody: React.FC<DonatePageBodyProps> = ({ setIsConfirming }) => {
                 </span>
                 <div className='relative group'>
                   <IconCalendarClock />
-                  <div className='absolute w-[200px] z-50 mb-2 left-[-60px] hidden group-hover:block bg-gray-800 text-white text-xs rounded py-1 px-2'>
+                  <div className='absolute w-[200px] z-50 mb-2 left-[-60px] hidden group-hover:block bg-popover text-popover-foreground text-xs rounded py-1 px-2 border shadow-md'>
                     The mint value of the {projectData?.abc?.tokenTicker} token
                     will be within this range, based on the amount of POL this
                     project receives.
                   </div>
                 </div>
               </div>
-              <div className='flex gap-8 font-redHatText'>
+              <div className='flex gap-8 '>
                 {tokenPriceRangeStatus.isSuccess &&
                 tokenPriceRangeStatus.data?.isPriceUpToDate ? (
                   <>
                     <h2 className='flex gap-1 items-center'>
-                      <span className='text-base font-medium text-[#4F576A]'>
+                      <span className='text-base font-medium text-muted-foreground'>
                         {tokenPriceRange.min.toFixed(2)} -{' '}
                         {tokenPriceRange.max.toFixed(2)}
                       </span>
-                      <span className='text-xs text-[#82899A]'>POL</span>
+                      <span className='text-xs text-muted-foreground'>POL</span>
                     </h2>
                     <h2>
                       <span>
@@ -1292,10 +1291,10 @@ const DonatePageBody: React.FC<DonatePageBodyProps> = ({ setIsConfirming }) => {
                 ) : (
                   <>
                     <h2 className='flex gap-1 items-center'>
-                      <span className='text-base font-medium text-[#4F576A]'>
+                      <span className='text-base font-medium text-muted-foreground'>
                         ---
                       </span>
-                      <span className='text-xs text-[#82899A]'>POL</span>
+                      <span className='text-xs text-muted-foreground'>POL</span>
                     </h2>
                     <h2>
                       <span>~$ ---</span>
@@ -1309,10 +1308,10 @@ const DonatePageBody: React.FC<DonatePageBodyProps> = ({ setIsConfirming }) => {
             <div className="flex  flex-wrap  gap-2 justify-between">
               <div className="flex gap-2">
                 <IconTotalSupply />
-                <span className="font-medium text-[#4F576A]">Total Supply</span>
+                <span className="font-medium text-muted-foreground">Total Supply</span>
               </div>
 
-              <h3 className="font-medium text-[#1D1E1F]">
+              <h3 className="font-medium text-foreground">
                 {formatAmount(projectData?.abc?.totalSupply) || "---"}{" "}
                 {projectData?.abc?.tokenTicker}
               </h3>
@@ -1324,17 +1323,18 @@ const DonatePageBody: React.FC<DonatePageBodyProps> = ({ setIsConfirming }) => {
       {activeRoundDetails?.__typename === "EarlyAccessRound" ? (
         ""
       ) : (
-        <div className="flex flex-col items-center  gap-6 mt-20 p-5 font-redHatText">
-          <h1 className=" text-center text-xl  text-[#1D1E1F]">
+        <div className="flex flex-col items-center  gap-6 mt-20 p-5 ">
+          <h1 className=" text-center text-xl  text-foreground">
             Want to spread the word about this project? Tell others now.
           </h1>
-          <span
+          <Button
             onClick={() => setIsShareModalOpen(true)}
-            className="text-xs cursor-pointer flex gap-2 font-medium text-pink-500 px-[15px] py-2 bg-white w-[220px] h-[48px] justify-center items-center rounded-full"
+            variant="outline"
+            className="border-peach-400 text-peach-400 hover:bg-peach-400 hover:text-black rounded-full px-8 py-3 font-medium transition-colors"
           >
-            <IconShare size={16} />
+            <IconShare size={16} className="mr-2" />
             Share
-          </span>
+          </Button>
           <ShareProjectModal
             isOpen={isShareModalOpen}
             onClose={closeShareModal}

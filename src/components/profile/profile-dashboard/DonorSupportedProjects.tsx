@@ -148,6 +148,7 @@ const DonarSupportedProjects = ({
                     alt={`${social.type} icon`}
                     width={24}
                     height={24}
+                    className='filter invert'
                   />
                 </Link>
               );
@@ -159,12 +160,12 @@ const DonarSupportedProjects = ({
               <Link
                 target='_blank'
                 href={website}
-                className='w-full py-2 px-4 border border-giv-500 rounded-3xl flex justify-center flex-1'
+                className='w-full py-2 px-4 border border-peach-300 rounded-3xl flex justify-center flex-1'
               >
                 <div>
-                  <span className='flex gap-4 text-giv-500 font-bold'>
+                  <span className='flex gap-4 text-peach-300 font-bold'>
                     Website
-                    <IconViewTransaction color='#5326EC' />
+                    <IconViewTransaction color='#FCD1AA' />
                   </span>
                 </div>{' '}
               </Link>
@@ -245,7 +246,7 @@ const DonarSupportedProjects = ({
               <span className='font-medium text-neutral-200'>
                 ~ $ {formatAmount(totalContributions * POLPrice) || 0}
               </span>
-              <span className='font-medium text-[#82899A]'>
+              <span className='font-medium text-neutral-400'>
                 {formatAmount(totalContributions) || 0} POL{' '}
               </span>
             </div>
@@ -350,16 +351,16 @@ const DonarSupportedProjects = ({
             <div className='flex justify-between p-2'>
               <div className='flex gap-2'>
                 <IconMinted size={24} />
-                <span className='text-[#4F576A] font-medium '>
+                <span className='text-neutral-300 font-medium '>
                   Your project tokens{' '}
                 </span>
               </div>
               <div className='flex gap-1'>
-                <span className='font-medium text-[#1D1E1F]'>
+                <span className='font-medium text-neutral-200'>
                   {formatAmount(totalRewardTokens) || '---'}{' '}
                   {project.abc?.tokenTicker}
                 </span>
-                <span className='font-medium text-[#82899A]'>
+                <span className='font-medium text-neutral-400'>
                   ~{' '}
                   {formatAmount(totalRewardTokens * (currentTokenPrice || 0)) ||
                     '---'}{' '}
@@ -368,10 +369,10 @@ const DonarSupportedProjects = ({
               </div>
             </div>
 
-            <div className='flex flex-col md:flex-row gap-3 justify-between p-[16px_8px] bg-[#EBECF2] rounded-md'>
+            <div className='flex flex-col md:flex-row gap-3 justify-between p-[16px_8px] bg-neutral-700/50 rounded-md'>
               <div className='flex gap-2'>
                 <IconAvailableTokens size={24} />
-                <span className='font-medium text-[#1D1E1F]'>
+                <span className='font-medium text-neutral-300'>
                   Available to claim
                 </span>
                 <div className='relative group'>
@@ -383,13 +384,13 @@ const DonarSupportedProjects = ({
                   </div>
                 </div>
               </div>
-              <div className='flex gap-1 font-medium text-[#1D1E1F]'>
+              <div className='flex gap-1 font-medium text-neutral-300'>
                 <span>
                   {totalClaimableRewardTokens !== null
                     ? `${formatAmount(totalClaimableRewardTokens)} ${project.abc?.tokenTicker || ''}`
                     : '---'}
                 </span>
-                <span className='text-[#82899A]'>
+                <span className='text-neutral-400'>
                   ~{' '}
                   {totalClaimableRewardTokens !== null
                     ? formatAmount(

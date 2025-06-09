@@ -37,7 +37,7 @@ export const UserController = () => {
 
   const onSign = async (signedInUser: IUser) => {
     console.log("Signed", signedInUser);
-    router.push("/");
+    // router.push("/");
     setShowSignModal(false);
     if (!signedInUser?.isSignedIn) return;
 
@@ -124,25 +124,22 @@ export const UserController = () => {
     handleAddressCheck();
   }, [
     userAddress,
-    refetch,
     user,
-    pathname,
     ready,
-    authenticated,
-    openSignModal,
+    authenticated
   ]);
 
-  useEffect(() => {
-    const handleShowSignInModal = () => {
-      openSignModal();
-    };
+  // useEffect(() => {
+  //   const handleShowSignInModal = () => {
+  //     openSignModal();
+  //   };
 
-    window.addEventListener("showSignInModal", handleShowSignInModal);
+  //   window.addEventListener("showSignInModal", handleShowSignInModal);
 
-    return () => {
-      window.removeEventListener("showSignInModal", handleShowSignInModal);
-    };
-  }, [openSignModal, openUpdateProfileModal, user]);
+  //   return () => {
+  //     window.removeEventListener("showSignInModal", handleShowSignInModal);
+  //   };
+  // }, [openSignModal, openUpdateProfileModal, user]);
 
   return null;
 };

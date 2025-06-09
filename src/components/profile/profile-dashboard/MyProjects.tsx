@@ -374,13 +374,14 @@ const MyProjects = () => {
                       key={social.link}
                       href={social.link}
                       target='_blank'
-                      className='p-2 rounded-lg border-neutral-600 border'
+                      className='p-2 rounded-lg border-neutral-100 border'
                     >
                       <Image
                         src={`/images/icons/social/${social.type.toLowerCase()}.svg`}
                         alt={`${social.type} icon`}
                         width={24}
                         height={24}
+                        className='filter invert'
                       />
                     </Link>
                   );
@@ -523,7 +524,7 @@ const MyProjects = () => {
             )} */}
             <div className='flex  flex-col gap-2 md:flex-row justify-between pb-4 pt-2 border-b border-neutral-700'>
               <div className='flex gap-2'>
-                <IconTotalSupply color='#F5F5F5' />
+                <IconTotalSupply />
                 <span className='text-neutral-300 font-medium'>Total supply</span>
               </div>
               <span className='text-neutral-100 font-medium'>
@@ -536,7 +537,7 @@ const MyProjects = () => {
 
             <div className='flex justify-between py-2'>
               <div className='flex gap-2'>
-                <IconTotalDonars color='#F5F5F5' />
+                <IconTotalDonars />
                 <span className='text-neutral-300 font-medium'>
                   Total supporters
                 </span>
@@ -546,7 +547,7 @@ const MyProjects = () => {
 
             <div className='flex  flex-col md:flex-row gap-2 justify-between py-2 border-b border-neutral-700'>
               <div className='flex gap-2'>
-                <IconMinted color='#F5F5F5' />
+                <IconMinted />
                 <span className='text-neutral-300 font-medium'>
                   Tokens minted to supporters
                 </span>

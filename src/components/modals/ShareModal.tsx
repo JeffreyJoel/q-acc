@@ -68,17 +68,17 @@ export const ShareProjectModal: FC<ShareProjectModalProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent>
+      <DialogContent className="bg-neutral-900 rounded-3xl w-full max-w-lg">
         <DialogHeader>
           <DialogTitle>Share</DialogTitle>
         </DialogHeader>
 
         <div className="flex flex-col gap-5 font-redHatText">
-          <h1 className="text-[#1D1E1F] font-bold text-[25px] text-center">
+          <h1 className="text-neutral-100 font-bold text-[25px] text-center">
             Share this with your friend!
           </h1>
           <div className="flex justify-center gap-3">
-            <div className="border rounded-lg p-2 flex items-center">
+            <div className="border border-neutral-200 rounded-lg p-2 flex items-center">
               <TwitterShareButton
                 title={shareMessage || ""}
                 url={copyLink || ""}
@@ -86,7 +86,7 @@ export const ShareProjectModal: FC<ShareProjectModalProps> = ({
                 <IconX size={24} />
               </TwitterShareButton>
             </div>
-            <div className="border rounded-lg p-2 flex items-center">
+            <div className="border border-neutral-200 rounded-lg p-2 flex items-center">
               <LinkedinShareButton
                 summary={shareMessage}
                 title={shareMessage}
@@ -95,7 +95,7 @@ export const ShareProjectModal: FC<ShareProjectModalProps> = ({
                 <IconLinkedin size={24} />
               </LinkedinShareButton>
             </div>
-            <div className="border rounded-lg p-2 flex items-center">
+            <div className="border border-neutral-200 rounded-lg p-2 flex items-center">
               <FacebookShareButton
                 title={shareMessage || ""}
                 url={copyLink || ""}
@@ -104,7 +104,7 @@ export const ShareProjectModal: FC<ShareProjectModalProps> = ({
                 <IconFacebook size={24} />
               </FacebookShareButton>
             </div>
-            <div className="border rounded-lg p-2 flex items-center">
+            <div className="border border-neutral-200 rounded-lg p-2 flex items-center">
               <Link
                 href={`https://warpcast.com/~/compose?embeds[]=${copyLink}&text=${shareMessage}`}
                 target="_blank"
@@ -114,16 +114,16 @@ export const ShareProjectModal: FC<ShareProjectModalProps> = ({
             </div>
           </div>
           <div className="flex justify-center">
-            <p className="text-[#1D1E1F] font-medium text-xl text-center">
+            <p className="text-neutral-200 font-medium text-xl text-center">
               Or copy the link
             </p>
           </div>
 
-          <div className="w-full border rounded-md p-2 flex gap-2 items-center justify-between ">
-            <span className="text-[#3396FF]"> {copyLink}</span>
+          <div className="w-full border border-peach-300 rounded-full p-2 flex gap-2 items-center justify-between ">
+            <span className="text-peach-300"> {copyLink}</span>
             <div
               onClick={handleCopy}
-              className="p-3  rounded-full cursor-pointer text-pink-400 text-sm font-medium bg-white shadow-baseShadow"
+              className="p-3  rounded-full cursor-pointer text-neutral-800 text-sm font-medium bg-peach-400 shadow-baseShadow"
             >
               Copy Link
             </div>
@@ -132,7 +132,7 @@ export const ShareProjectModal: FC<ShareProjectModalProps> = ({
 
           <div className="text-center">
             <span
-              className="cursor-pointer  text-sm font-medium text-[#a3b0f6] hover:text-[#f472b6]"
+              className="cursor-pointer  text-sm font-medium text-neutral-400 hover:text-red-500"
               onClick={onClose}
             >
               Dismiss

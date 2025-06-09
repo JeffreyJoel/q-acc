@@ -2,12 +2,13 @@
 import { useEffect, useState } from "react";
 import { useAccount } from "wagmi";
 // import DonateNavbar from './DonatePageNavbar';
-import DonatePageBody from './DonatePageBody';
+import DonatePageBody from "./DonatePageBody";
 import { checkUserOwnsNFT } from "@/helpers/token";
 
 import { useDonateContext } from "@/contexts/donation.context";
 import { useFetchActiveRoundDetails } from "@/hooks/useRounds";
 import { InfoModal } from "../modals/InfoModal";
+import DonatePageLoader from "../loaders/DonatePageLoader";
 // import { ConnectModal } from '../ConnectModal';
 
 const DonateIndex = () => {
@@ -46,7 +47,7 @@ const DonateIndex = () => {
   //     );
   //   }
   if (loading) {
-    return;
+    return <DonatePageLoader />;
   }
   if (activeRoundDetails?.__typename === "EarlyAccessRound" && !ownsNFT) {
     return (
@@ -61,7 +62,6 @@ const DonateIndex = () => {
 
   return (
     <div className="mt-32 px-4 md:px-0 mx-auto w-full max-w-7xl">
-      {/* <DonateNavbar isConfirming={isConfirming} /> */}
       <DonatePageBody setIsConfirming={setIsConfirming} />
     </div>
   );

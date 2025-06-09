@@ -11,9 +11,9 @@ const DonateRoute = () => {
   const params = useParams();
   const { data: activeRoundDetails } = useFetchActiveRoundDetails();
   const isRoundActive = !!activeRoundDetails;
-  const slug = Array.isArray(params.donateSlug)
-    ? params.donateSlug[0]
-    : params.donateSlug;
+  const slug = Array.isArray(params.id)
+    ? params.id[0]
+    : params.id;
   return  (
     isRoundActive ? (
       <DonateProvider slug={slug}>

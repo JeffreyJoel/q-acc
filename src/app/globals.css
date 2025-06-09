@@ -128,3 +128,14 @@
 .ql-toolbar.ql-snow{
   border-color:var(--neutral-800) !important;
 }
+
+/* Styling to remove the top and bottom arrows in the number input component */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield;
+}
