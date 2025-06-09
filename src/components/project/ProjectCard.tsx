@@ -27,13 +27,13 @@ import { getUpcomingRound } from "@/helpers/date";
 import { getPoolAddressByPair } from "@/helpers/getTokensListedData";
 import config from "@/config/configuration";
 import Image from "next/image";
+import { SupportButton } from "./SupportButton";
 
 interface ProjectCardProps {
   project: IProject;
 }
 
 const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
-
   const [maxPOLCap, setMaxPOLCap] = useState(0);
   const [totalPOLDonated, setTotalPOLDonated] = useState<number>(0);
   const [isTokenListed, setIsTokenListed] = useState(false);
@@ -49,9 +49,10 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
   const { data: activeRoundDetails } = useFetchActiveRoundDetails();
   const { data: allRounds } = useFetchAllRoundDetails();
 
+  console.log(activeRoundDetails);
+
   const polPriceNumber = Number(POLPrice);
 
-  
   useEffect(() => {
     if (project?.id) {
       const fetchProjectDonations = async () => {
@@ -430,17 +431,17 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
               Review Project
             </Link>
             {activeRoundDetails ? (
-              // <SupportButton
-              //   project={project}
-              //   disabled={maxPOLCap === amountDonatedInRound}
-              // />
-              <button
-                className="px-6 py-4 rounded-full text-sm font-bold items-center flex gap-2 bg-peach-400  text-black w-full justify-center "
-                disabled={maxPOLCap === amountDonatedInRound} // for support button
-              >
-                Buy Token
-              </button>
+              <SupportButton
+                project={project}
+                disabled={maxPOLCap === amountDonatedInRound}
+              />
             ) : (
+              // <button
+              //   className="px-6 py-4 rounded-full text-sm font-bold items-center flex gap-2 bg-peach-400  text-black w-full justify-center "
+              //   disabled={maxPOLCap === amountDonatedInRound} // for support button
+              // >
+              //   Buy Token
+              // </button>
               isTokenListed && (
                 <button
                   className="px-6 py-4 rounded-full text-sm font-bold items-center flex gap-2 bg-peach-400  text-black w-full justify-center "

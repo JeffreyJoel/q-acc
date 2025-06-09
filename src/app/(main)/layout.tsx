@@ -57,7 +57,9 @@ export default function RootLayout({
       >
         <ClientLayout>
           <NavBar/>
+          <div className="min-h-screen">
           {children}
+          </div>
           <Footer/>
         </ClientLayout>
       </body>
