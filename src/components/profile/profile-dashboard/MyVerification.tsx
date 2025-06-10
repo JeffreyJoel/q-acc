@@ -7,7 +7,7 @@ import SkipVerification from '@/components/verification/SkipVerification';
 export const MyVerifications = () => {
   return (
     <div className='container'>
-      <div className='w-full flex flex-col p-8 gap-10 rounded-2xl  text-xl font-redHatText leading-9 mb-14 md:mb-48 mt-14'>
+      <div className='w-full flex flex-col gap-10 rounded-2xl text-xl font-redHatText leading-9 mb-14 md:mb-48'>
         <GitcoinVerifySection />
         <ZkidVerifySection />
 

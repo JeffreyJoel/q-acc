@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Address, formatUnits } from 'viem';
+import {formatUnits } from 'viem';
 import { IconViewTransaction } from '@/components/icons/IconViewTransaction';
 import { IconTotalDonars } from '@/components/icons/IconTotalDonors';
 import { IconTotalSupply } from '@/components/icons/IconTotalSupply';
@@ -13,8 +13,6 @@ import { IconViewProject } from '@/components/icons/IconViewProject';
 import { IconEditProject } from '@/components/icons/IconEditProject';
 import { IconTributesReceived } from '@/components/icons/IconTributesReceived';
 import { IconTokenSchedule } from '@/components/icons/IconTokenSchedule';
-import { useFetchUser } from '@/hooks/useFetchUser';
-import { useFetchProjectByUserId } from '@/hooks/useProjects';
 import { formatDateMonthDayYear, isMiddleOfThePeriod } from '@/helpers/date';
 import { fetchProjectDonationsById } from '@/services/donation.service';
 import {
@@ -40,17 +38,12 @@ import { IconUnlock } from '@/components/icons/IconUnlock';
 import { ShareProjectModal } from '@/components/modals/ShareModal';
 import { useAddressWhitelist } from '@/hooks/useAddressWhitelist';
 import { calculateCapAmount } from '@/helpers/round';
-// import { Button, ButtonColor } from '../Button';
 import { EProjectSocialMediaType } from '@/types/project.type';
 import { useTokenSupplyDetails } from '@/hooks/useTokens';
 import { ChevronDownIcon, SearchIcon } from 'lucide-react';
-import { useAccount } from 'wagmi';
-import { useDonorContext } from '@/contexts/donor.context';
+import { IProject } from '@/types/project.type';
 
-const MyProjects = () => {
-  const { address } = useAccount();
-  const {user} = useDonorContext();
-  const { data: projectData } = useFetchProjectByUserId(user?.id ? parseInt(user.id) : 0);
+const MyProjects = ({projectData}:{projectData: IProject}) => {
   const projectId = projectData?.id;
   const projectSlug = projectData?.slug;
   const { data: addrWhitelist } = useAddressWhitelist();
@@ -615,7 +608,6 @@ const MyProjects = () => {
 
             {tributeModuleAvailable && (
               <button
-                // color={enableClaimButton ? ButtonColor.Giv : ButtonColor.Gray}
                 disabled={!enableClaimButton}
                 className={`flex justify-center px-6 py-3 rounded-full font-bold transition-colors ${
                   enableClaimButton 

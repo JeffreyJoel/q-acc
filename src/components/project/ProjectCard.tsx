@@ -49,34 +49,40 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
   const { data: activeRoundDetails } = useFetchActiveRoundDetails();
   const { data: allRounds } = useFetchAllRoundDetails();
 
-  console.log(activeRoundDetails);
-
   const polPriceNumber = Number(POLPrice);
 
+  // Fetch project donations and calculate market cap
   useEffect(() => {
-    if (project?.id) {
-      const fetchProjectDonations = async () => {
+    if (!project?.id) return;
+
+    const fetchProjectDonations = async () => {
+      try {
         const data = await fetchProjectDonationsById(
-          parseInt(project?.id),
+          parseInt(project.id),
           1000,
           0
         );
 
         if (data && project?.abc?.fundingManagerAddress) {
-          const { donations, totalCount } = data;
-          // setPageDonations(donations);
+          const { donations } = data;
           setMarketCapLoading(true);
+
           const { marketCap: newCap, change24h } =
             await calculateMarketCapChange(
               donations,
-              project?.abc?.fundingManagerAddress,
+              project.abc.fundingManagerAddress,
               activeRoundDetails?.startDate
             );
 
-          setMarketCap(newCap * polPriceNumber);
-          setMarketCapChangePercentage(change24h);
-          setMarketCapLoading(false);
-
+          // Validate market cap values before setting
+          if (
+            typeof newCap === "number" &&
+            !isNaN(newCap) &&
+            polPriceNumber > 0
+          ) {
+            setMarketCap(newCap * polPriceNumber);
+            setMarketCapChangePercentage(change24h || 0);
+          }
           setTotalPOLDonated(calculateTotalDonations(donations));
         } else if (
           project.abc?.issuanceTokenAddress &&
@@ -85,79 +91,125 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
           if (isTokenListed) {
             const marketCapData = await getMarketCap(
               isTokenListed,
-              project?.abc.issuanceTokenAddress,
+              project.abc.issuanceTokenAddress,
               project.abc.fundingManagerAddress
             );
-            setMarketCap(marketCapData);
-          } else {
-            const { donations, totalCount } = data;
+
+            // Validate market cap data before setting
+            if (typeof marketCapData === "number" && !isNaN(marketCapData)) {
+              setMarketCap(marketCapData);
+            }
+          } else if (data) {
+            const { donations } = data;
             const { marketCap: newCap, change24h } =
               await calculateMarketCapChange(
                 donations,
-                project?.abc?.fundingManagerAddress
+                project.abc.fundingManagerAddress
               );
-            setMarketCap(newCap * polPriceNumber);
+
+            // Validate market cap values before setting
+            if (
+              typeof newCap === "number" &&
+              !isNaN(newCap) &&
+              polPriceNumber > 0
+            ) {
+              setMarketCap(newCap * polPriceNumber);
+              setMarketCapChangePercentage(change24h || 0);
+            }
           }
-
-          setMarketCapChangePercentage(0); // No change to show
         }
-      };
-      fetchProjectDonations();
-    }
-  }, [project, marketCap, activeRoundDetails, isTokenListed]);
+      } catch (error) {
+        console.error("Error fetching project donations:", error);
+      } finally {
+        setMarketCapLoading(false);
+      }
+    };
 
-  useMemo(() => {
+    fetchProjectDonations();
+  }, [
+    project?.id,
+    project?.abc?.fundingManagerAddress,
+    project?.abc?.issuanceTokenAddress,
+    activeRoundDetails?.startDate,
+    isTokenListed,
+    polPriceNumber,
+  ]);
+
+  // Calculate POL cap and donation amounts
+  useEffect(() => {
+    if (!activeRoundDetails || !project?.id) return;
+
     const updatePOLCap = async () => {
-      const { capAmount, totalDonationAmountInRound }: any =
-        await calculateCapAmount(activeRoundDetails, Number(project.id), true);
+      try {
+        const { capAmount, totalDonationAmountInRound } =
+          await calculateCapAmount(
+            activeRoundDetails,
+            Number(project.id),
+            true
+          );
 
-      setMaxPOLCap(capAmount);
-
-      setAmountDonatedInRound(totalDonationAmountInRound);
+        setMaxPOLCap(capAmount);
+        setAmountDonatedInRound(totalDonationAmountInRound);
+      } catch (error) {
+        console.error("Error calculating POL cap:", error);
+      }
     };
 
     updatePOLCap();
-  }, [activeRoundDetails, project, progress]);
+  }, [activeRoundDetails, project?.id]);
 
-  useMemo(() => {
+  // Fetch pool address and token price
+  useEffect(() => {
+    if (!project?.abc?.issuanceTokenAddress) return;
+
     const fetchPoolAddress = async () => {
-      if (project?.abc?.issuanceTokenAddress) {
+      try {
+        if (!project.abc?.issuanceTokenAddress) return;
+
         const { price, isListed } = await getPoolAddressByPair(
           project.abc.issuanceTokenAddress,
           config.WPOL_TOKEN_ADDRESS
         );
 
         setIsTokenListed(isListed);
+
         if (
-          project?.abc?.issuanceTokenAddress ===
-          "0x0b7a46e1af45e1eaadeed34b55b6fc00a85c7c68" //check for prismo token address only
+          project.abc.issuanceTokenAddress ===
+          "0x0b7a46e1af45e1eaadeed34b55b6fc00a85c7c68"
         ) {
+          // Check for prismo token address only
           setCurrentTokenPrice(Number(price));
         } else {
           setCurrentTokenPrice(1 / Number(price));
         }
+      } catch (error) {
+        console.error("Error fetching pool address:", error);
       }
     };
 
     fetchPoolAddress();
   }, [project?.abc?.issuanceTokenAddress]);
 
-  useMemo(() => {
-    const calcRemTime = async () => {
-      const upcomingRound = await getUpcomingRound(allRounds);
-      if (upcomingRound?.startDate) {
-        setRoundStatus("starts");
-      } else {
-        setRoundStatus("ended");
+  // Calculate round status
+  useEffect(() => {
+    if (!allRounds) return;
+
+    const calcRoundStatus = async () => {
+      try {
+        const upcomingRound = await getUpcomingRound(allRounds);
+        setRoundStatus(upcomingRound?.startDate ? "starts" : "ended");
+      } catch (error) {
+        console.error("Error calculating round status:", error);
       }
     };
-    calcRemTime();
-  }, [activeRoundDetails?.startDate, activeRoundDetails?.endDate, allRounds]);
+
+    calcRoundStatus();
+  }, [allRounds]);
 
   const capitalizeFirstLetter = (str: string) => {
     return str
-      .toLowerCase() // Make the whole string lowercase first
-      .replace(/(?:^|\.\s*)([a-z])/g, (match) => match.toUpperCase()); // Capitalize first letter of each sentence
+      .toLowerCase()
+      .replace(/(?:^|\.\s*)([a-z])/g, (match) => match.toUpperCase());
   };
 
   return (
@@ -413,11 +465,14 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
               </span>
               <div className="flex flex-col">
                 <span className="text-white font-bold text-lg text-right">
-                  {" "}
                   {marketCapLoading ? (
                     <Spinner />
-                  ) : (
+                  ) : marketCap !== undefined ? (
                     <span>$ {formatAmount(marketCap)}</span>
+                  ) : (
+                    <span className="text-[#b2b5bc] font-semibold text-sm">
+                      Data unavailable
+                    </span>
                   )}
                 </span>
               </div>
@@ -436,12 +491,6 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
                 disabled={maxPOLCap === amountDonatedInRound}
               />
             ) : (
-              // <button
-              //   className="px-6 py-4 rounded-full text-sm font-bold items-center flex gap-2 bg-peach-400  text-black w-full justify-center "
-              //   disabled={maxPOLCap === amountDonatedInRound} // for support button
-              // >
-              //   Buy Token
-              // </button>
               isTokenListed && (
                 <button
                   className="px-6 py-4 rounded-full text-sm font-bold items-center flex gap-2 bg-peach-400  text-black w-full justify-center "
