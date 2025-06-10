@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { CopyButton } from "../../shared/CopyButton";
 import Image from "next/image";
 import { Address } from "viem";
@@ -30,14 +30,12 @@ export default function ProfileInfo({ userAddress }: { userAddress: Address }) {
   //   router.push('/project/create');
   // };
 
-  useEffect(() => {
-    if (
-      authenticated &&
-      userAddress.toLowerCase() === ConnectedUserAddress?.toLowerCase()
-    ) {
-      setIsUserLoggedIn(true);
-    }
-  }, [authenticated, userAddress, ConnectedUserAddress]);
+  const isOwnProfile = useMemo(() => {
+    return (
+     authenticated && ConnectedUserAddress &&
+      userAddress.toLowerCase() === ConnectedUserAddress.toLowerCase()
+    );
+  }, [ConnectedUserAddress, userAddress]);
 
   let avatar;
   if (user?.avatar && !user.avatar.includes("https://gateway.pinata.cloud")) {
@@ -45,6 +43,7 @@ export default function ProfileInfo({ userAddress }: { userAddress: Address }) {
   } else {
     avatar = user?.avatar;
   }
+console.log(user);
 
 
   if (donorContextLoading || !user) {
@@ -123,7 +122,7 @@ export default function ProfileInfo({ userAddress }: { userAddress: Address }) {
             </div>
           </div>
           <div className="flex gap-3">
-            {isUserLoggedIn && (
+            {isOwnProfile && (
               <button
                 className="text-peach-400 font-medium hover:text-peach-300 transition-colors"
                 onClick={() => user && openUpdateProfileModal(user)}

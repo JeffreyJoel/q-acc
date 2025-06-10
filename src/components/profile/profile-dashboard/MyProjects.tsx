@@ -327,13 +327,13 @@ const MyProjects = () => {
                 <IconViewProject />
                 View project
               </Link>
-              <Link
+              {/* <Link
                 href={`edit/${projectId}/project`}
                 className='p-2 flex gap-2 items-center hover:bg-neutral-700/50 rounded-lg'
               >
                 <IconEditProject />
                 Edit project
-              </Link>
+              </Link> */}
             </div>
           </div>
         </div>

@@ -11,6 +11,7 @@ import { IUser, INewUer } from "@/types/user.type";
 import { useFetchUser } from "@/hooks/useFetchUser";
 import { Address } from "viem";
 import { useAccount } from "wagmi";
+import { ethers } from "ethers";
 // import { isProductReleased } from '@/config/configuration';
 import { useAddressWhitelist } from "@/hooks/useAddressWhitelist";
 import { useModal } from "@/contexts/ModalContext";
@@ -28,7 +29,10 @@ export const UserController = () => {
 
   const { data: useWhitelist } = useAddressWhitelist();
   const pathname = usePathname();
-  const userAddress = address || privyUser?.wallet?.address;
+  
+  // Standardize address format to checksum
+  const rawAddress = privyUser?.wallet?.address || address;
+  const userAddress = rawAddress ? ethers.getAddress(rawAddress) : undefined;
 
   const { data: user, refetch } = useFetchUser(
     ready && authenticated && !!userAddress,
@@ -115,9 +119,6 @@ export const UserController = () => {
         // }
         return;
       }
-      // Remove stale token if any
-      localStorage.removeItem("token");
-
       openSignModal();
     };
 
@@ -129,17 +130,17 @@ export const UserController = () => {
     authenticated
   ]);
 
-  // useEffect(() => {
-  //   const handleShowSignInModal = () => {
-  //     openSignModal();
-  //   };
+  useEffect(() => {
+    const handleShowSignInModal = () => {
+      openSignModal();
+    };
 
-  //   window.addEventListener("showSignInModal", handleShowSignInModal);
+    window.addEventListener("showSignInModal", handleShowSignInModal);
 
-  //   return () => {
-  //     window.removeEventListener("showSignInModal", handleShowSignInModal);
-  //   };
-  // }, [openSignModal, openUpdateProfileModal, user]);
+    return () => {
+      window.removeEventListener("showSignInModal", handleShowSignInModal);
+    };
+  }, [openSignModal, openUpdateProfileModal, user]);
 
   return null;
 };
