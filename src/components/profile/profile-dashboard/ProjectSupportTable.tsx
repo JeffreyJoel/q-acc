@@ -133,7 +133,7 @@ const ProjectSupportTable = ({
   }
 
   return (
-    <div className='container flex  flex-col py-1 md:px-6 gap-10'>
+    <div className='container mx-auto flex  flex-col py-1 md:px-6 gap-10'>
       <div className='flex gap-10 lg:flex-row flex-col '>
         <div className='flex flex-col w-full  font-redHatText overflow-x-auto'>
           <div className='flex justify-between'>

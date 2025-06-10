@@ -78,7 +78,6 @@ export async function getPoolAddressByPair(
     const isListed = poolAddress !== ZeroAddress;
 
     if (!isListed) {
-      console.log('token abc pool not found', tokenABC);
       return { price: '0', isListed: false, poolAddress: '' };
     }
 

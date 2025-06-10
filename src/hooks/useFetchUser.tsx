@@ -1,5 +1,4 @@
 import { useQuery } from '@tanstack/react-query';
-// import { useAccount } from 'wagmi';
 import { fetchUserInfo } from '@/services/user.service';
 import { Address } from 'viem';
 

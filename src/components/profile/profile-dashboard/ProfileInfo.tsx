@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import { CopyButton } from "../../shared/CopyButton";
 import Image from "next/image";
-import { useFetchUser } from "@/hooks/useFetchUser";
 import { Address } from "viem";
 import { roundPoints } from "@/helpers/points";
 import { GitcoinVerificationBadge } from "../../verification-badges/GitcoinVerificationBadge";
@@ -12,15 +11,18 @@ import { useAccount } from "wagmi";
 import { useModal } from "@/contexts/ModalContext";
 import { getIpfsAddress } from "@/helpers/image";
 import { CreateProjectButton } from "../../project/create/CreateProjectButton";
+import { usePrivy } from "@privy-io/react-auth";
+import { useDonorContext } from "@/contexts/donor.context";
+import { Spinner } from "@/components/loaders/Spinner";
 
 export default function ProfileInfo({ userAddress }: { userAddress: Address }) {
   const [isUserLoggedIn, setIsUserLoggedIn] = useState(false);
 
-  const { data: user, isLoading } = useFetchUser(
-    !!userAddress,
-    userAddress as Address
-  );
-  const { address: ConnectedUserAddress, isConnected } = useAccount();
+  const { user, loading: donorContextLoading } = useDonorContext();
+  const { address: wagmiAddress } = useAccount();
+  const { authenticated, user: privyUser } = usePrivy();
+
+  const ConnectedUserAddress = privyUser?.wallet?.address || wagmiAddress;
 
   const { openUpdateProfileModal } = useModal();
 
@@ -29,18 +31,65 @@ export default function ProfileInfo({ userAddress }: { userAddress: Address }) {
   // };
 
   useEffect(() => {
-    if (isConnected && userAddress === ConnectedUserAddress) {
+    if (
+      authenticated &&
+      userAddress.toLowerCase() === ConnectedUserAddress?.toLowerCase()
+    ) {
       setIsUserLoggedIn(true);
     }
-  }, [isConnected, userAddress, ConnectedUserAddress]);
-
-  console.log(user);
+  }, [authenticated, userAddress, ConnectedUserAddress]);
 
   let avatar;
   if (user?.avatar && !user.avatar.includes("https://gateway.pinata.cloud")) {
     avatar = getIpfsAddress(user.avatar);
   } else {
     avatar = user?.avatar;
+  }
+
+
+  if (donorContextLoading || !user) {
+    return (
+      // TODO: move this to a separate file
+      <div className="p-6 bg-neutral-800 rounded-2xl">
+        <div className="flex items-center justify-between w-full">
+          <div className="flex items-center">
+            <div className="w-[140px] h-[140px] bg-neutral-700 rounded-lg overflow-hidden mr-4 flex items-center justify-center">
+              <Spinner size={40} />
+            </div>
+
+            <div className="space-y-3">
+              <div className="h-8 bg-neutral-700 rounded w-48 animate-pulse"></div>
+              <div className="h-5 bg-neutral-700 rounded w-36 animate-pulse"></div>
+              <div className="h-5 bg-neutral-700 rounded w-40 animate-pulse"></div>
+            </div>
+          </div>
+          <div className="flex gap-3">
+            <div className="h-10 bg-neutral-700 rounded w-24 animate-pulse"></div>
+          </div>
+        </div>
+
+        <div className="mt-8 mb-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div className="flex items-center border-peach-100/30 border-[1px] border-r-4 border-b-4 shadow-sm rounded-xl px-4 py-2">
+            <span className="text-neutral-300 mr-2">Your q/acc points</span>
+            <div className="bg-black rounded-full w-5 h-5 flex items-center justify-center mr-1">
+              <Image
+                src="/images/logos/round_logo.png"
+                alt="Q"
+                width={16}
+                height={16}
+                priority
+              />
+            </div>
+            <div className="h-6 bg-neutral-700 rounded w-16 animate-pulse ml-3"></div>
+          </div>
+
+          <div className="flex flex-col md:flex-row gap-4">
+            <div className="h-8 bg-neutral-700 rounded w-32 animate-pulse"></div>
+            <div className="h-8 bg-neutral-700 rounded w-32 animate-pulse"></div>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -77,14 +126,14 @@ export default function ProfileInfo({ userAddress }: { userAddress: Address }) {
             {isUserLoggedIn && (
               <button
                 className="text-peach-400 font-medium hover:text-peach-300 transition-colors"
-                onClick={() => openUpdateProfileModal(user)}
+                onClick={() => user && openUpdateProfileModal(user)}
               >
                 Edit Profile
               </button>
             )}
-            {isUserLoggedIn && (
+            {/* {isUserLoggedIn && (
               <CreateProjectButton className="bg-peach-400 text-black px-4 py-2 rounded-md font-medium hover:bg-peach-300 transition-colors" />
-            )}
+            )} */}
           </div>
         </div>
 

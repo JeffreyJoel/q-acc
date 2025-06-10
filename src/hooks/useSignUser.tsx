@@ -21,7 +21,7 @@ export const useSignUser = (onSigned?: (user: IUser) => void) => {
 
   const userAddress = address;
 
-  const { refetch } = useFetchUser(!!userAddress, userAddress as Address);
+  const { refetch } = useFetchUser(true, userAddress as Address);
 
   return useQuery({
     queryKey: ["token", userAddress],

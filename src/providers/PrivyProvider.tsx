@@ -29,9 +29,9 @@ const privyConfig: PrivyClientConfig = {
 export const config = createConfig({
   chains: [polygon, polygonAmoy],
   // connectors: [injected()],
-  storage: createStorage({
-    storage: cookieStorage,
-  }),
+  // storage: createStorage({
+  //   storage: cookieStorage,
+  // }),
   ssr: false,
   transports: {
     [polygon.id]: http(),

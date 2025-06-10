@@ -9,11 +9,14 @@ import { useDonateContext } from "@/contexts/donation.context";
 import { useFetchActiveRoundDetails } from "@/hooks/useRounds";
 import { InfoModal } from "../modals/InfoModal";
 import DonatePageLoader from "../loaders/DonatePageLoader";
+import { WalletNotConnected } from "../shared/WalletNotConnected";
+import { usePrivy } from "@privy-io/react-auth";
 // import { ConnectModal } from '../ConnectModal';
 
 const DonateIndex = () => {
   const [ownsNFT, setOwnsNFT] = useState(false);
   const { address, isConnected } = useAccount();
+  const { authenticated } = usePrivy()
   const { projectData } = useDonateContext();
   const { data: activeRoundDetails } = useFetchActiveRoundDetails();
   const [loading, setLoading] = useState(true);
@@ -34,18 +37,13 @@ const DonateIndex = () => {
     checkNFT();
   }, [projectData?.abc?.nftContractAddress, address, ownsNFT]);
 
-  //   if (!isConnected) {
-  //     return (
-  //       <>
-  //         <ConnectModal
-  //           isOpen={true}
-  //           onClose={function (): void {
-  //             throw new Error('Function not implemented.');
-  //           }}
-  //         />
-  //       </>
-  //     );
-  //   }
+    if (!isConnected || !authenticated) {
+      return (
+        <>
+        <WalletNotConnected />
+        </>
+      );
+    }
   if (loading) {
     return <DonatePageLoader />;
   }
