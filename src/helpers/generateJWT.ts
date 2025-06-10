@@ -3,6 +3,7 @@ import { Connector, signMessage as wagmiSignMessage } from '@wagmi/core';
 import config from '@/config/configuration';
 import { config as wagmiConfig } from '@/providers/PrivyProvider';
 import { Address } from 'viem';
+import { ethers } from 'ethers';
 
 // Generate Nonce
 export const fetchNonce = async (): Promise<string> => {
@@ -47,13 +48,11 @@ export const createSiweMessage = async (
   }
 };
 
-// Define the type for Privy's signMessage function
 type PrivySignMessageFn = (
   payload: { message: string },
   options?: { address?: Address }
 ) => Promise<{ signature: string }>;
 
-// Renamed: Signs with Privy's embedded wallet context
 export const signChallengeWithPrivyEmbed = async (
   privySignMessage: PrivySignMessageFn,
   address: string,
@@ -105,7 +104,6 @@ export const signChallengeWithPrivyEmbed = async (
   }
 };
 
-// New: Signs with an external wallet via wagmi
 export const signChallengeWithExternalWallet = async (
   address: string,
   chainId: number,
@@ -118,9 +116,8 @@ export const signChallengeWithExternalWallet = async (
 
   const { message, nonce } = siweMessage;
 
-  // Using @wagmi/core signMessage with wagmiConfig
   const signature = await wagmiSignMessage(wagmiConfig, {
-    account: address as Address, // Wagmi expects account address
+    account: address as Address,
     message: message,
   });
 
@@ -161,7 +158,14 @@ export const getLocalStorageToken = (address: string) => {
     const storedToken = localStorage.getItem('token');
     if (storedToken) {
       const tokenObj = JSON.parse(storedToken);
-      if (tokenObj.publicAddress.toLowerCase() === address.toLowerCase()) {
+      
+      // Standardize both addresses to checksum format for comparison
+      const storedAddress = tokenObj.publicAddress ? ethers.getAddress(tokenObj.publicAddress) : null;
+      const checkAddress = ethers.getAddress(address);
+      
+      console.log('Token check - Stored:', storedAddress, 'Current:', checkAddress);
+      
+      if (storedAddress && storedAddress === checkAddress) {
         // Check if the token is expired (if it has an expiration time)
         if (tokenObj.expiration) {
           const currentTime = Math.floor(Date.now());
@@ -172,12 +176,17 @@ export const getLocalStorageToken = (address: string) => {
           }
         }
         return storedToken;
+      } else {
+        console.log('Token address mismatch - not deleting, just returning null');
+        return null;
       }
-      localStorage.removeItem('token');
     }
+    return null;
   } catch (error) {
+    console.error('Error checking token:', error);
+    // Delete on parsing errors, not address mismatches
     localStorage.removeItem('token');
-    console.error(error);
+    return null;
   }
 };
 

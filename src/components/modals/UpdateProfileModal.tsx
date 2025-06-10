@@ -46,6 +46,7 @@ export const UpdateProfileModal = ({
 }: UpdateProfileModalProps) => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("")
   const [code, setCode] = useState("");
   const [step, setStep] = useState<DialogStep>("details");
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
@@ -67,6 +68,7 @@ export const UpdateProfileModal = ({
     if (isOpen) {
       setName(currentUser?.fullName || "");
       setEmail(currentUser?.email || "");
+      setUsername(currentUser?.username || "")
       setCode("");
       setStep("details");
       setAvatarFile(null);
@@ -94,6 +96,7 @@ export const UpdateProfileModal = ({
       );
       try {
         const updatePayload: INewUer = {
+          username: username.trim(),
           fullName: name.trim(),
           email: email.trim(),
           avatar: avatarHash || currentUser?.avatar || undefined,
@@ -186,6 +189,7 @@ export const UpdateProfileModal = ({
 
   const resetAndClose = () => {
     setName("");
+    setUsername("");
     setEmail("");
     setCode("");
     setStep("details");
@@ -221,6 +225,17 @@ export const UpdateProfileModal = ({
 
           {step === "details" && (
             <div className="grid gap-4 py-4">
+                <div className="grid gap-2">
+                <label htmlFor="name">Username</label>
+                <Input
+                  id="username"
+                  placeholder="Your Username"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  className="col-span-4  rounded-xl border border-neutral-700 focus:ring-peach-400 focus:border-peach-400 outline-none"
+                  disabled={isLoading}
+                />
+              </div>
               <div className="grid gap-2">
                 <label htmlFor="name">Name</label>
                 <Input

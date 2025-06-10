@@ -19,9 +19,11 @@ export const useSignUser = (onSigned?: (user: IUser) => void) => {
   const { wallets } = useWallets();
   const chainId = useChainId();
 
-  const userAddress = address;
+  // Standardize address format to checksum
+  const rawUserAddress = address;
+  const userAddress = rawUserAddress ? ethers.getAddress(rawUserAddress) : undefined;
 
-  const { refetch } = useFetchUser(!!userAddress, userAddress as Address);
+  const { refetch } = useFetchUser(true, userAddress as Address);
 
   return useQuery({
     queryKey: ["token", userAddress],
@@ -45,7 +47,7 @@ export const useSignUser = (onSigned?: (user: IUser) => void) => {
 
       // Find the active wallet to check its type
       const activeWallet = wallets.find(
-        (w) => w.address.toLowerCase() === userAddress.toLowerCase()
+        (w) => ethers.getAddress(w.address) === userAddress
       );
 
       if (!activeWallet) {
@@ -76,6 +78,7 @@ export const useSignUser = (onSigned?: (user: IUser) => void) => {
 
         if (newToken) {
           localStorage.setItem("token", JSON.stringify(newToken));
+          console.log("Token saved for address:", checkSumAddress);
           const { data: newUser } = await refetch();
           if (newUser) {
             onSigned?.(newUser as IUser);

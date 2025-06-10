@@ -79,7 +79,7 @@ const RewardsBreakDown: React.FC = () => {
   });
 
   return (
-    <div className='container flex flex-col gap-8 my-8'>
+    <div className='container mx-auto flex flex-col gap-8 my-8'>
       {/* Project Information and Overview */}
       <div className='p-6 flex lg:flex-row flex-col bg-neutral-800 rounded-lg gap-14'>
         {/* Project Banner */}

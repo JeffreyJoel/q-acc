@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Address, formatUnits } from 'viem';
@@ -45,13 +45,12 @@ import { EProjectSocialMediaType } from '@/types/project.type';
 import { useTokenSupplyDetails } from '@/hooks/useTokens';
 import { ChevronDownIcon, SearchIcon } from 'lucide-react';
 import { useAccount } from 'wagmi';
+import { useDonorContext } from '@/contexts/donor.context';
 
 const MyProjects = () => {
   const { address } = useAccount();
-  const { data: userData } = useFetchUser(true, address as Address);
-  const { data: projectData } = useFetchProjectByUserId(
-    parseInt(userData?.id ?? ''),
-  );
+  const {user} = useDonorContext();
+  const { data: projectData } = useFetchProjectByUserId(user?.id ? parseInt(user.id) : 0);
   const projectId = projectData?.id;
   const projectSlug = projectData?.slug;
   const { data: addrWhitelist } = useAddressWhitelist();
@@ -125,6 +124,7 @@ const MyProjects = () => {
     allRounds: allRoundData,
   });
 
+
   useEffect(() => {
     if (!allRoundData) return;
 
@@ -154,7 +154,6 @@ const MyProjects = () => {
       ) {
         activeRound = round;
         roundType = __typename;
-        console.log('active', activeRound);
       }
 
       // Push past EarlyAccessRounds to pastRounds
@@ -269,10 +268,11 @@ const MyProjects = () => {
       projectCollateralFeeCollected.refetch();
     },
   });
+  
 
-  if (!addrWhitelist || !projectData) {
+  if (!projectData) {
     return (
-      <div className='container bg-neutral-800 w-full h-[500px] flex items-center justify-center text-[25px] font-bold text-neutral-300 rounded-2xl'>
+      <div className='container mx-auto  bg-neutral-800 w-full h-[500px] flex items-center justify-center text-[25px] font-bold text-neutral-300 rounded-2xl'>
         You don't have any project!
       </div>
     );
@@ -288,7 +288,7 @@ const MyProjects = () => {
   )?.link;
 
   return (
-    <div className='container'>
+    <div className='container mx-auto'>
       {/* Project Header */}
       <div className='bg-neutral-800 p-6 flex flex-col rounded-xl'>
         <div className='flex flex-col lg:flex-row justify-between lg:items-center'>
@@ -327,13 +327,13 @@ const MyProjects = () => {
                 <IconViewProject />
                 View project
               </Link>
-              <Link
+              {/* <Link
                 href={`edit/${projectId}/project`}
                 className='p-2 flex gap-2 items-center hover:bg-neutral-700/50 rounded-lg'
               >
                 <IconEditProject />
                 Edit project
-              </Link>
+              </Link> */}
             </div>
           </div>
         </div>

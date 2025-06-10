@@ -14,6 +14,7 @@ export const useUpdateUser = () => {
       return await requestGraphQL(
         UPDATE_USER,
         {
+          username:user.username,
           email: user.email,
           fullName: user.fullName,
           avatar: user.avatar,
