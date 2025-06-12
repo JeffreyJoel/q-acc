@@ -60,7 +60,7 @@ const SkipVerification = () => {
 
       <Button
         variant='default'
-        className='mr-auto px-16 shadow-baseShadow'
+        className='mr-auto px-16 rounded-full'
         disabled={isPending || user?.skipVerification}
         onClick={() => updateSkipVerification(true)}
       >

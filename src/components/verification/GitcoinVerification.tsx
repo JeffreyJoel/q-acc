@@ -76,7 +76,7 @@ export const GitcoinVerifySection = () => {
         matching pool allocation.
       </p>
       <Button
-        className='mr-auto px-20 bg-pink-400'
+        className='mr-auto px-20 bg-peach-400 rounded-full'
         variant='default'
         disabled={isUserLoading || isScoreFetching}
         onClick={onCheckScore}

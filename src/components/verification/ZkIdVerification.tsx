@@ -54,25 +54,12 @@ export const ZkidVerifySection = () => {
         Allows you to spend up to approximately $25,000 and influence the
         matching pool allocation.
       </p>
-      {/* <Button
-        styleType={ButtonStyle.Solid}
-        color={ButtonColor.Base}
-        className='mr-auto px-16'
-        loading={isLoading}
-        onClick={() => {
-          setShowPrivadoModal(true);
-        }}
-      >
-        {!!error ? 'retry' : 'Go to Privado'}
-        <IconArrowRight size={16} />
-      </Button> */}
 
       <Button
         variant='default'
         disabled={isPrivadoLoading || !url}
-        className='mr-auto px-16 shadow-baseShadow'
+        className='mr-auto px-16 rounded-full'
         onClick={() => {
-          // Open the Wallet URL to start the verification process
           url && window.open(url, '_blank');
         }}
       >
