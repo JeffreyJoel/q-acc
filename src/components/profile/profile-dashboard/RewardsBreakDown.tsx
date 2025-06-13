@@ -166,11 +166,11 @@ const RewardsBreakDown: React.FC = () => {
             <div className='flex justify-between p-2'>
               <div className='flex gap-2'>
                 <IconMinted size={24} />
-                <span className='text-[#4F576A] font-medium'>
+                <span className='text-neutral-200 font-medium'>
                   Total tokens received
                 </span>
               </div>
-              <span className='font-medium text-[#1D1E1F]'>
+              <span className='font-medium text-neutral-300'>
                 {formatAmount(totalTokensReceived)} {project?.abc?.tokenTicker}
               </span>
             </div>
@@ -178,19 +178,19 @@ const RewardsBreakDown: React.FC = () => {
             <div className='flex justify-between p-2'>
               <div className='flex gap-2'>
                 <IconLockedTokens size={24} />
-                <span className='text-[#4F576A] font-medium'>
+                <span className='text-neutral-200 font-medium'>
                   Locked tokens
                 </span>
               </div>
-              <span className='font-medium text-[#1D1E1F]'>
+              <span className='font-medium text-neutral-300'>
                 {formatAmount(lockedTokens)} {project?.abc?.tokenTicker}
               </span>
             </div>
 
-            <div className='flex flex-col md:flex-row gap-3 justify-between p-[16px_8px] bg-[#F7F7F9] rounded-md'>
+            <div className='flex flex-col md:flex-row gap-3 justify-between p-[16px_8px] bg-neutral-700/50 rounded-md'>
               <div className='flex gap-2 items-center'>
                 <IconAvailableTokens size={32} />
-                <span className='font-medium text-[#1D1E1F] text-2xl'>
+                <span className='font-medium text-neutral-300 text-2xl'>
                   Available to claim
                 </span>
               </div>
@@ -199,7 +199,7 @@ const RewardsBreakDown: React.FC = () => {
               </span>
             </div>
 
-            <button className='bg-[#5326EC] text-white px-4 py-2 rounded-md' disabled={availableToClaim <= 0}>
+            <button className='bg-peach-400 text-white px-4 py-2 rounded-md' disabled={availableToClaim <= 0}>
               Claim Tokens
             </button>
           </div>
