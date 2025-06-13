@@ -32,6 +32,12 @@ import { useGetCurrentTokenPrice } from '@/hooks/useGetCurrentTokenPrice';
 import { Button } from '@/components/ui/button';
 import { useAccount } from 'wagmi';
 
+import {
+  useClaimRewards,
+  useReleasableForStream,
+} from '@/hooks/useClaimRewards';
+import { ethers } from 'ethers';
+
 const DonarSupportedProjects = ({
   projectId,
   project,
@@ -99,8 +105,33 @@ const DonarSupportedProjects = ({
     social => social.type === EProjectSocialMediaType.WEBSITE,
   )?.link;
 
-  const isTokenClaimable =
-    totalClaimableRewardTokens !== null && totalClaimableRewardTokens > 0;
+  const releasable = useReleasableForStream({
+    paymentProcessorAddress: project?.abc?.paymentProcessorAddress!,
+    client: project?.abc?.paymentRouterAddress!,
+    receiver: address,
+    streamId: BigInt(1),
+  });
+
+  const claimableReward = releasable.data
+    ? Number(ethers.formatUnits(releasable.data, 18)) // Format BigInt data to decimal
+    : 0;
+
+  const isTokenClaimable = releasable.data !== undefined && claimableReward > 0;
+  const { claim } = useClaimRewards({
+    paymentProcessorAddress: project?.abc?.paymentProcessorAddress!,
+    paymentRouterAddress: project?.abc?.paymentRouterAddress!,
+    onSuccess: () => {
+      // do after 5 seconds
+      // setTimeout(() => {
+      //   claimedTributesAndMintedTokenAmounts.refetch();
+      // }, 5000);
+      // projectCollateralFeeCollected.refetch();
+
+      releasable.refetch();
+
+      console.log('Successly Clamied Tokens');
+    },
+  });
   return (
     <div className='p-6 flex lg:flex-row flex-col gap-14 bg-neutral-800 rounded-xl'>
       {/* Project Details */}
@@ -410,6 +441,7 @@ const DonarSupportedProjects = ({
         <button
           className='flex justify-center rounded-xl bg-peach-400 text-neutral-800 px-4 py-3 disabled:opacity-50'
           disabled={!isTokenClaimable}
+          onClick={() => claim.mutateAsync()}
         >
           Claim Tokens
         </button>

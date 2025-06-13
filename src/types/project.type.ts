@@ -111,6 +111,8 @@ export interface IProject {
     tokenPrice?: number;
     mintedAmount?: number;
     fundingManagerAddress?: string;
+    paymentProcessorAddress?: string;
+    paymentRouterAddress?: string;
   };
   tributeClaimModuleAddress?: string;
   tributeRecipientAddress?: string;
@@ -159,6 +161,7 @@ export interface IProject {
   socialMedia?: IProjectSocialMedia[];
   seasonNumber: number;
 }
+
 
 export interface ProjectFormData {
   projectName: string;
