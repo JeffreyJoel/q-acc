@@ -1,5 +1,5 @@
 'use client';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import ProjectUserDonationTable from './ProjectUserDonationTable';
 import { IconABC } from '@/components/icons/IconABC';
@@ -21,6 +21,12 @@ import { useCheckSafeAccount } from '@/hooks/useCheckSafeAccount';
 import { useDonorContext } from '@/contexts/donor.context';
 import { Address } from 'viem';
 import { useAccount } from 'wagmi';
+import {
+  useClaimRewards,
+  useReleasableForStream,
+  useReleasedForStream,
+} from '@/hooks/useClaimRewards';
+import { ethers } from 'ethers';
 
 const RewardsBreakDown: React.FC = () => {
   const { donationsGroupedByProject, projectDonorData } = useDonorContext();
@@ -31,6 +37,7 @@ const RewardsBreakDown: React.FC = () => {
   const projectId = searchParams.get('projectId');
   const { data: POLPrice } = useTokenPrice();
   const { data: isSafeAccount } = useCheckSafeAccount();
+  const [lockedTokens, setLockedTokens] = useState(0);
 
   // if (
   //   !donationsGroupedByProject ||
@@ -59,24 +66,67 @@ const RewardsBreakDown: React.FC = () => {
     0,
   );
 
-  let lockedTokens = 0;
-  let availableToClaim = 0;
 
-  projectDonations.forEach((donation: any) => {
-    const lockedRewardTokenAmount = calculateLockedRewardTokenAmount(
-      donation.rewardTokenAmount,
-      donation.rewardStreamStart,
-      donation.rewardStreamEnd,
-      donation.cliff,
-    );
-    const claimableRewardTokenAmount = calculateClaimableRewardTokenAmount(
-      donation.rewardTokenAmount,
-      lockedRewardTokenAmount,
-    );
-
-    lockedTokens += lockedRewardTokenAmount || 0;
-    availableToClaim += claimableRewardTokenAmount || 0;
+  const releasable = useReleasableForStream({
+    paymentProcessorAddress: project?.abc?.paymentProcessorAddress!,
+    client: project?.abc?.paymentRouterAddress!,
+    receiver: address,
+    streamId: BigInt(1),
   });
+
+  const released = useReleasedForStream({
+    paymentProcessorAddress: project?.abc?.paymentProcessorAddress!,
+    client: project?.abc?.paymentRouterAddress!,
+    receiver: address,
+    streamId: BigInt(1),
+  });
+
+  const availableToClaim = releasable.data
+    ? Number(ethers.formatUnits(releasable.data, 18)) // Format BigInt data to decimal
+    : 0;
+
+  const tokensAlreadyClaimed = released.data
+    ? Number(ethers.formatUnits(released.data, 18)) // Format BigInt data to decimal
+    : 0;
+
+  const isTokenClaimable =
+    releasable.data !== undefined && availableToClaim > 0;
+
+  const { claim } = useClaimRewards({
+    paymentProcessorAddress: project?.abc?.paymentProcessorAddress!,
+    paymentRouterAddress: project?.abc?.paymentRouterAddress!,
+    onSuccess: () => {
+      // do after 5 seconds
+      // setTimeout(() => {
+      //   claimedTributesAndMintedTokenAmounts.refetch();
+      // }, 5000);
+      // projectCollateralFeeCollected.refetch();
+
+      releasable.refetch();
+
+      console.log('Successly Clamied Tokens');
+    },
+  });
+
+  useEffect(() => {
+    setLockedTokens(totalTokensReceived - tokensAlreadyClaimed);
+  }, [releasable, released, totalTokensReceived]);
+
+  // projectDonations.forEach((donation: any) => {
+  //   const lockedRewardTokenAmount = calculateLockedRewardTokenAmount(
+  //     donation.rewardTokenAmount,
+  //     donation.rewardStreamStart,
+  //     donation.rewardStreamEnd,
+  //     donation.cliff,
+  //   );
+  //   const claimableRewardTokenAmount = calculateClaimableRewardTokenAmount(
+  //     donation.rewardTokenAmount,
+  //     lockedRewardTokenAmount,
+  //   );
+
+  //   lockedTokens += lockedRewardTokenAmount || 0;
+  //   availableToClaim += claimableRewardTokenAmount || 0;
+  // });
 
   return (
     <div className='container mx-auto flex flex-col gap-8 my-8'>
@@ -199,7 +249,9 @@ const RewardsBreakDown: React.FC = () => {
               </span>
             </div>
 
-            <button className='bg-peach-400 text-white px-4 py-2 rounded-md' disabled={availableToClaim <= 0}>
+            <button className='bg-peach-400 text-white px-4 py-2 rounded-md' 
+               onClick={() => claim.mutateAsync()}
+            disabled={availableToClaim <= 0}>
               Claim Tokens
             </button>
           </div>
