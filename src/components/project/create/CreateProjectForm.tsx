@@ -188,12 +188,12 @@ const CreateProjectForm: FC = () => {
     );
   }
 
-  // return userProjectsCount && userProjectsCount > 0 ? (
-  //   <div className="mt-48 flex-1 flex items-center justify-center text-center">
-  //     <p className="text-2xl font-bold">You have already created a project.</p>
-  //   </div>
-  // ) : 
-  return (
+  return userProjectsCount && userProjectsCount > 0 ? (
+    <div className="mt-48 flex-1 flex items-center justify-center text-center">
+      <p className="text-2xl font-bold">You have already created a project.</p>
+    </div>
+  ) : 
+   (
     <FormProvider {...methods}>
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className="bg-neutral-800 w-full flex flex-col gap-16 pt-10 mt-28 rounded-2xl p-8">
