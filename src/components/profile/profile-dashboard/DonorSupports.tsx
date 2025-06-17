@@ -7,8 +7,8 @@ import DonorSupportedProjects from "./DonorSupportedProjects";
 import { useDonorContext } from "@/contexts/donor.context";
 import { Spinner } from "@/components/loaders/Spinner";
 import { ArrowLeftIcon } from "lucide-react";
-
-const DonarSupports = () => {
+  
+const DonarSupports = ({ isOwnProfile }: { isOwnProfile: boolean }) => {
   const [showBreakDown, setShowBreakDown] = useState<boolean>(false);
   const {
     donationsGroupedByProject,
@@ -68,6 +68,7 @@ const DonarSupports = () => {
             return (
               <div key={projectId}>
                 <DonorSupportedProjects
+                  isOwnProfile={isOwnProfile}
                   projectId={projectId}
                   project={project}
                   uniqueDonors={donationData.uniqueDonors}

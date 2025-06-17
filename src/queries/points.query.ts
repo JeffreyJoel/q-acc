@@ -11,6 +11,7 @@ export const FETCH_LEADERBOARD = /* GraphQL */ `
         projectsFundedCount
         walletAddress
         rank
+        username
       }
       totalCount
     }

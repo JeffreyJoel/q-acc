@@ -145,6 +145,7 @@ export const UpdateProfileModal = ({
             fullName: name.trim(),
             email: email.trim(),
             avatar: avatarHash || currentUser?.avatar || undefined,
+            username: username.trim(),
             newUser: !currentUser?.email,
           };
           await updateUser(updatePayload);
@@ -157,6 +158,7 @@ export const UpdateProfileModal = ({
           }
           toast.success("Profile updated successfully!");
           resetAndClose();
+          window.location.reload();
         } else {
           await sendCode({ email: email.trim() });
         }
