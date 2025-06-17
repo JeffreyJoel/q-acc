@@ -11,42 +11,14 @@ import { SocialMediaInput } from "@/components/project/create/SocialMediaInput";
 import { validators } from "@/components/project/create/validators";
 import { RichTextEditor } from "@/components/shared/RichTextEditor";
 import { useProjectCreationContext } from "@/contexts/projectCreation.context";
-import { EProjectSocialMediaType } from "@/types/project.type";
-import { useFetchUser } from "@/hooks/useFetchUser";
-import { useCreateProject } from "@/hooks/useCreateProject";
+import {
+  EProjectSocialMediaType,
+  ProjectFormData,
+  IProjectSocialMedia,
+} from "@/types/project.type";
 import { TeamMember } from "@/types/project.type";
-// import { HoldModal } from '@/components/Modals/HoldModal';
-// import { ConnectModal } from '@/components/ConnectModal';
-import { IconArrowRight, IconExternalLink } from "@tabler/icons-react";
-import { useAddressWhitelist } from "@/hooks/useAddressWhitelist";
-import { useFetchProjectsCountByUserId } from "@/hooks/useFetchProjectsCountByUserId";
-// import ProjectDetailPreview from '@/components/ProjectPreview/ProjectDetailPreview';
-// import Routes from '@/lib/constants/Routes';
+import { IconArrowRight } from "@tabler/icons-react";
 import { Address } from "viem";
-import { Label } from "@/components/ui/label";
-
-export interface ProjectFormData {
-  projectName: string;
-  projectTeaser: string;
-  projectDescription: string;
-  website: string;
-  facebook: string;
-  twitter: string;
-  linkedin: string;
-  discord: string;
-  telegram: string;
-  instagram: string;
-  reddit: string;
-  youtube: string;
-  farcaster: string;
-  lens: string;
-  github: string;
-  projectAddress: string;
-  addressConfirmed: boolean;
-  logo: string | null;
-  banner: string | null;
-  team: TeamMember[];
-}
 
 const socialMediaLinks = [
   {
@@ -123,81 +95,63 @@ const socialMediaLinks = [
   },
 ];
 
-const CreateProjectForm: FC = () => {
-  const { address, isConnected } = useAccount();
-  const { data: user } = useFetchUser(true, address as Address);
-  const { mutateAsync: createProject, isPending } = useCreateProject();
-  const { formData, setFormData, isEditMode } = useProjectCreationContext();
-  const methods = useForm<ProjectFormData>({
-    defaultValues: isEditMode ? (formData as ProjectFormData) : (formData as ProjectFormData),
-    mode: "onChange",
-  });
-  const { data: addrWhitelist, isFetched: isWhiteListFetched } =
-    useAddressWhitelist();
-  const { data: userProjectsCount, isFetched: isProjectsCountFetched } =
-    useFetchProjectsCountByUserId(parseInt(user?.id ?? ""));
+interface EditProjectFormProps {
+  projectId: string;
+}
+
+const EditProjectForm: FC<EditProjectFormProps> = ({ projectId }) => {
+  const { address } = useAccount();
+  const { formData, setFormData, isLoading, projectData, isEditMode } =
+    useProjectCreationContext();
+  const methods = useForm<ProjectFormData>({ mode: "onChange" });
   const router = useRouter();
-  const [showPreview, setShowPreview] = useState(false);
-
-  const { handleSubmit, getValues, setValue, resetField, register, formState: { errors } } = methods;
-
-  const projectAddress = addrWhitelist?.fundingPotMultisig;
+  const {
+    handleSubmit,
+    register,
+    formState: { errors },
+    reset,
+  } = methods;
   useEffect(() => {
-    if (projectAddress) {
-      setValue("projectAddress", projectAddress);
-    } else {
-      resetField("projectAddress");
+    if (formData && Object.keys(formData).length > 0 && 'projectName' in formData) {
+      reset(formData as ProjectFormData);
     }
-  }, [projectAddress]);
+  }, [formData, reset]);
 
-  const handleDrop = (name: string, file: File, ipfsHash: string) => {};
+  const handleDrop = (name: string, file: File, ipfsHash: string) => {
+    // Implement logic to handle file drops, possibly updating form state
+  };
 
   const onSubmit = async (data: ProjectFormData) => {
-    if (!user?.id || !address) return;
-    setFormData(data);
-    router.push("/project/create/team");
-    // router.push(Routes.CreateTeam);
+    if (!address) return;
+    setFormData({
+      ...data,
+      team: formData.team || [],
+    });
+    router.push(`/project/edit/${projectId}/team`);
   };
 
-  const handlePreview = () => {
-    const formData = getValues();
-    sessionStorage.setItem("previewData", JSON.stringify(formData));
-    setShowPreview(true);
-    // window.open(Routes.Preview, '_blank');
-  };
+  console.log(formData);
 
-  //   if (showPreview) {
-  //     return <ProjectDetailPreview setShowPreview={setShowPreview} />;
-  //   }
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
 
-  return userProjectsCount && userProjectsCount > 0 ? (
-    <div className="mt-48 flex-1 flex items-center justify-center text-center">
-      <p className="text-2xl font-bold">You have already created a project.</p>
-    </div>
-  ) : (
+  return (
     <FormProvider {...methods}>
       <form onSubmit={handleSubmit(onSubmit)}>
-        {/* <CreateNavbar
-          title='Create your project'
-          nextLabel='Add your team'
-          submitLabel='Save & continue'
-          loading={isPending}
-        /> */}
-        <div className="bg-neutral-800 w-full flex flex-col gap-16 pt-10 mt-28 rounded-2xl p-8">
+        <div className="container mx-auto bg-neutral-800 w-full flex flex-col gap-16 pt-10 mt-28 rounded-2xl p-8">
           <div className="flex flex-row justify-between">
             <h1 className="text-2xl font-bold text-white mb-7">
-              Create Your Project
+              Edit Your Project
             </h1>
 
             <div className="flex flex-row items-center gap-6">
-              <span className="font-bold ">Next: Add your team</span>
-             
-                <button
-                  className="bg-peach-400 text-black p-3  shadow-2xl rounded-full  text-xs md:text-md min-w-[150px] flex items-center justify-center gap-2 hover:bg-peach-300"
-                  type="submit"
-                  disabled={isPending}
-                >
-                  Save & continue
+              <span className="font-bold ">Next: Edit your team</span>
+              <button
+                className="bg-peach-400 text-black p-3 shadow-2xl rounded-full text-xs md:text-md min-w-[150px] flex items-center justify-center gap-2 hover:bg-peach-300"
+                type="submit"
+              >
+                Save & continue
                 <IconArrowRight width={20} height={20} />
               </button>
             </div>
@@ -209,7 +163,10 @@ const CreateProjectForm: FC = () => {
             <Input
               {...register("projectName", {
                 required: "Project name is required",
-                minLength: { value: 3, message: "Project name must be at least 3 characters" },
+                minLength: {
+                  value: 3,
+                  message: "Project name must be at least 3 characters",
+                },
               })}
               placeholder="My First Project"
               className="mt-2 border border-neutral-500 focus:ring-peach-400 focus:border-peach-400 outline-none"
@@ -228,7 +185,10 @@ const CreateProjectForm: FC = () => {
             <Textarea
               {...register("projectTeaser", {
                 required: "Project teaser is required",
-                maxLength: { value: 100, message: "Teaser must be 100 characters or less" },
+                maxLength: {
+                  value: 100,
+                  message: "Teaser must be 100 characters or less",
+                },
               })}
               placeholder="Enter project teaser"
               maxLength={100}
@@ -247,9 +207,6 @@ const CreateProjectForm: FC = () => {
               <h2 className="text-2xl">Tell us about your project...</h2>
               <p className="text-sm mt-2">
                 <span className="text-neutral-300">Aim for 200-500 words.</span>
-                {/* <span className='text-pink-500'>
-                  How to write a good project description.{' '}
-                </span> */}
               </p>
             </div>
             <RichTextEditor
@@ -262,10 +219,9 @@ const CreateProjectForm: FC = () => {
                     "Project description must be at least 200 characters",
                 },
               }}
-              defaultValue={(formData as ProjectFormData).projectDescription}
+              defaultValue={projectData?.description || ""}
               maxLength={500}
             />
-            {/* <Editor /> */}
           </section>
 
           <section className="flex flex-col gap-6">
@@ -300,36 +256,9 @@ const CreateProjectForm: FC = () => {
             <Dropzone name="banner" onDrop={handleDrop} />
           </section>
         </div>
-        <div className="bg-neutral-800 flex flex-row flex-wrap justify-between items-center gap-16 w-full mt-10 mb-10 rounded-2xl p-8">
-          <h3 className="text-lg line leading-7 text-neutral-300 font-bold font-redHatText">
-            Preview your project
-          </h3>
-          <button
-            onClick={handlePreview}
-            type="button"
-            className="px-6 py-4 font-bold items-center justify-center flex gap-2 text-peach-400 bg-transparent border-peach-400 border-2 p-4 rounded-full text-xs md:text-md min-w-[150px]"
-          >
-            PREVIEW
-          </button>
-        </div>
       </form>
     </FormProvider>
   );
-  //   : (
-  //     <div>
-  //       <p>This </p>
-  //     </div>
-  //   );
-  //   : isConnected ? (
-  //     <HoldModal isOpen onClose={() => router.push('/')} />
-  //   ) : (
-  //     <ConnectModal
-  //       isOpen={true}
-  //       onClose={function (): void {
-  //         throw new Error('Function not implemented.');
-  //   }}
-  //     />
-  //   );
 };
 
-export default CreateProjectForm;
+export default EditProjectForm;

@@ -320,13 +320,13 @@ const MyProjects = ({projectData}:{projectData: IProject}) => {
                 <IconViewProject />
                 View project
               </Link>
-              {/* <Link
-                href={`edit/${projectId}/project`}
+              <Link
+                href={`/project/edit/${projectId}`}
                 className='p-2 flex gap-2 items-center hover:bg-neutral-700/50 rounded-lg'
               >
                 <IconEditProject />
                 Edit project
-              </Link> */}
+              </Link>
             </div>
           </div>
         </div>

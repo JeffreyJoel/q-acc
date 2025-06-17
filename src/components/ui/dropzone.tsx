@@ -116,7 +116,7 @@ export const Dropzone: FC<DropzoneProps> = ({ name, rules, onDrop }) => {
               setValue(name, null);
               setSelectedImage(null);
             }}
-            className='px-2 text-xs text-peach-400 rounded border-none flex gap-1 items-center'
+            className='px-2 text-xs text-red-500 rounded border-none flex gap-1 items-center'
           >
             <IconX size={8} />
             <span>Delete</span>
@@ -124,7 +124,7 @@ export const Dropzone: FC<DropzoneProps> = ({ name, rules, onDrop }) => {
         </div>
         <div className='relative w-full bg-neutral-900 h-2 rounded-lg overflow-hidden mb-4'>
           <div
-            className='absolute top-0 left-0 h-full bg-neutral-700 transition-all'
+            className='absolute top-0 left-0 h-full bg-peach-400 transition-all'
             style={{ width: `${100}%` }}
           ></div>
         </div>
@@ -171,7 +171,7 @@ export const Dropzone: FC<DropzoneProps> = ({ name, rules, onDrop }) => {
                 <p className='font-bold'>Browse Files</p>
               </>
             )}
-            {isLoading && <p className='text-blue-500 mt-2'>Uploading...</p>}
+            {isLoading && <p className='text-peach-400 mt-2'>Uploading...</p>}
           </>
         )}
       </div>
@@ -195,7 +195,7 @@ export const Dropzone: FC<DropzoneProps> = ({ name, rules, onDrop }) => {
           </div>
           <div className='relative w-full bg-neutral-900 h-2 rounded-lg overflow-hidden mb-4'>
             <div
-              className='absolute top-0 left-0 h-full bg-neutral-700 transition-all'
+              className='absolute top-0 left-0 h-full bg-peach-400 transition-all'
               style={{ width: `${uploadProgress}%` }}
             ></div>
           </div>

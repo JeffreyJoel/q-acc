@@ -2,7 +2,7 @@
 
 import Image from 'next/image';
 import { FC } from 'react';
-import { type RegisterOptions } from 'react-hook-form';
+import { type RegisterOptions, useFormContext } from 'react-hook-form';
 import { Input } from '@/components/ui/input';
 
 interface SocialMediaInputProps {
@@ -20,6 +20,8 @@ export const SocialMediaInput: FC<SocialMediaInputProps> = ({
   placeholder,
   rules,
 }) => {
+  const { register } = useFormContext();
+
   return (
     <div className='flex gap-12 items-center '>
       <div className='flex gap-2 items-center mb-2 w-36'>
@@ -33,8 +35,10 @@ export const SocialMediaInput: FC<SocialMediaInputProps> = ({
         <label>{label}</label>
       </div>
       <div className='w-full'>
-        <Input name={name} placeholder={placeholder}
-        className="border border-neutral-700 focus:ring-peach-400 focus:border-peach-400 outline-none"
+        <Input 
+          {...register(name, rules)} 
+          placeholder={placeholder}
+          className="border border-neutral-700 focus:ring-peach-400 focus:border-peach-400 outline-none"
         />
       </div>
     </div>

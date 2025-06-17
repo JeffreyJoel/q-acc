@@ -131,9 +131,9 @@ export const ProjectCreationForm: FC<ProjectCreationFormProps> = ({
   const { address } = useAccount();
   const { data: user } = useFetchUser(true, address as Address);
   const { mutateAsync: createProject, isPending } = useCreateProject();
-  const { formData, setFormData } = useProjectCreationContext();
+  const { formData, setFormData, isEditMode } = useProjectCreationContext();
   const methods = useForm<ProjectFormData>({
-    defaultValues: formData.project,
+    defaultValues: formData as ProjectFormData,
     mode: 'onChange',
   });
   const { data: addrWhitelist, isFetched: isWhiteListFetched } =
@@ -153,7 +153,7 @@ export const ProjectCreationForm: FC<ProjectCreationFormProps> = ({
   // Update context when form data changes
   useEffect(() => {
     const subscription = watch((value) => {
-      setFormData({ project: value as ProjectFormData });
+      setFormData(value as ProjectFormData);
     });
     return () => subscription.unsubscribe();
   }, [watch, setFormData]);
@@ -288,7 +288,7 @@ export const ProjectCreationForm: FC<ProjectCreationFormProps> = ({
                     message: 'Project description must be 500 characters or less',
                   },
                 }}
-                defaultValue={formData.project.projectDescription}
+                defaultValue={(formData as ProjectFormData).projectDescription}
                 maxLength={500}
               />
             </div>

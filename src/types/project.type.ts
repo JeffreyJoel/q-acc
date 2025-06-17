@@ -1,4 +1,3 @@
-
 export enum ChainType {
   SOLANA = 'SOLANA',
   EVM = 'EVM',
@@ -160,6 +159,7 @@ export interface IProject {
   }[];
   socialMedia?: IProjectSocialMedia[];
   seasonNumber: number;
+  teamMembers?: TeamMember[];
 }
 
 

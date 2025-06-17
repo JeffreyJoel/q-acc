@@ -11,6 +11,7 @@ import {
   fetchProjectMetadata,
 } from '@/services/project.service';
 import { IProjectCreation } from '@/types/project.type';
+import { Abc } from '@/app/api/projects/abc/[address]/route';
 
 /**
  * Hook to fetch all projects
@@ -138,5 +139,23 @@ export const useFetchProjectMetadata = (slug: string, address?: Address) => {
     staleTime: Infinity,
     gcTime: Infinity,
     enabled: !!slug, // Only run if slug is provided
+  });
+};
+
+export const useFetchAbcData = (projectAddress?: string) => {
+  return useQuery<Abc | null>({
+    queryKey: ['abcData', projectAddress],
+    queryFn: async () => {
+      if (!projectAddress) return null;
+      const response = await fetch(`/api/projects/abc/${projectAddress}`);
+      if (!response.ok) {
+        if (response.status === 404) {
+          return null;
+        }
+        throw new Error('Network response was not ok');
+      }
+      return response.json();
+    },
+    enabled: !!projectAddress,
   });
 };
