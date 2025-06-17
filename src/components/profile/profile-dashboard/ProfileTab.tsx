@@ -208,9 +208,8 @@ export default function ProfileTab({ userAddress }: ProfileTabProps) {
             )}
           </TabsContent>
         )}
-
         <TabsContent value="tokens" className="">
-          {isLoading ? <ProjectsTokensSkeleton /> : <DonorSupports />}
+          {isLoading ? <ProjectsTokensSkeleton /> : <DonorSupports isOwnProfile={!!isOwnProfile} />}
         </TabsContent>
 
         {isOwnProfile && (

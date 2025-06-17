@@ -1,43 +1,43 @@
-import React, { useEffect, useState } from 'react';
-import Link from 'next/link';
-import Image from 'next/image';
-import { getIpfsAddress } from '@/helpers/image';
+import React, { useEffect, useState } from "react";
+import Link from "next/link";
+import Image from "next/image";
+import { getIpfsAddress } from "@/helpers/image";
 
-import { IconViewTransaction } from '@/components/icons/IconViewTransaction';
-import { IconTotalSupply } from '@/components/icons/IconTotalSupply';
-import { IconTotalDonars } from '@/components/icons/IconTotalDonors';
-import { IconTotalDonations } from '@/components/icons/IconTotalDonations';
-import { formatAmount } from '@/helpers/donations';
-import { IconTokenSchedule } from '@/components/icons/IconTokenSchedule';
-import { IconMinted } from '@/components/icons/IconMinted';
-import { IconAvailableTokens } from '@/components/icons/IconAvailableTokens';
+import { IconViewTransaction } from "@/components/icons/IconViewTransaction";
+import { IconTotalSupply } from "@/components/icons/IconTotalSupply";
+import { IconTotalDonars } from "@/components/icons/IconTotalDonors";
+import { IconTotalDonations } from "@/components/icons/IconTotalDonations";
+import { formatAmount } from "@/helpers/donations";
+import { IconTokenSchedule } from "@/components/icons/IconTokenSchedule";
+import { IconMinted } from "@/components/icons/IconMinted";
+import { IconAvailableTokens } from "@/components/icons/IconAvailableTokens";
 // import { Button, ButtonColor } from '@/components/Button';
-import { IconBreakdownArrow } from '@/components/icons/IconBreakdownArrow';
+import { IconBreakdownArrow } from "@/components/icons/IconBreakdownArrow";
 import {
   useTokenPriceRange,
   useTokenPriceRangeStatus,
-} from '@/services/tokenPrice.service';
+} from "@/services/tokenPrice.service";
 import {
   useFetchActiveRoundDetails,
   useFetchAllRoundDetails,
-} from '@/hooks/useRounds';
-import { calculateCapAmount } from '@/helpers/round';
-import { useCheckSafeAccount } from '@/hooks/useCheckSafeAccount';
-import { EProjectSocialMediaType, IProject } from '@/types/project.type';
-import { Share } from 'lucide-react';
-import { ShareProjectModal } from '@/components/modals/ShareModal';
-import { useTokenSupplyDetails, } from '@/hooks/useTokens';
-import { useFetchPOLPriceSquid } from '@/hooks/useTokens';
-import { useGetCurrentTokenPrice } from '@/hooks/useGetCurrentTokenPrice';
-import { Button } from '@/components/ui/button';
-import { useAccount } from 'wagmi';
+} from "@/hooks/useRounds";
+import { calculateCapAmount } from "@/helpers/round";
+import { useCheckSafeAccount } from "@/hooks/useCheckSafeAccount";
+import { EProjectSocialMediaType, IProject } from "@/types/project.type";
+import { Share } from "lucide-react";
+import { ShareProjectModal } from "@/components/modals/ShareModal";
+import { useTokenSupplyDetails } from "@/hooks/useTokens";
+import { useFetchPOLPriceSquid } from "@/hooks/useTokens";
+import { useGetCurrentTokenPrice } from "@/hooks/useGetCurrentTokenPrice";
+import { Button } from "@/components/ui/button";
+import { useAccount } from "wagmi";
 
 import {
   useClaimRewards,
   useReleasableForStream,
-} from '@/hooks/useClaimRewards';
-import { ethers } from 'ethers';
-import { usePrivy } from '@privy-io/react-auth';
+} from "@/hooks/useClaimRewards";
+import { ethers } from "ethers";
+import { usePrivy } from "@privy-io/react-auth";
 
 const DonarSupportedProjects = ({
   projectId,
@@ -49,6 +49,7 @@ const DonarSupportedProjects = ({
   totalContribution,
   totalRewardTokens,
   onClickBreakdown,
+  isOwnProfile,
 }: {
   projectId: string;
   project: IProject;
@@ -59,6 +60,7 @@ const DonarSupportedProjects = ({
   totalContribution: number;
   totalRewardTokens: number;
   onClickBreakdown: () => void;
+  isOwnProfile: boolean;
 }) => {
   const { data: POLPrice } = useFetchPOLPriceSquid();
   const { data: activeRoundDetails } = useFetchActiveRoundDetails();
@@ -73,12 +75,12 @@ const DonarSupportedProjects = ({
   const address = privyUser?.wallet?.address as `0x${string}`;
 
   const paymentRouterAddress =
-    projectId === '35'
-      ? '0xBDdfFD420B40617ef8B59679720B2be6e04f31A1'
+    projectId === "35"
+      ? "0xBDdfFD420B40617ef8B59679720B2be6e04f31A1"
       : project?.abc?.paymentRouterAddress!;
   const paymentProcessorAddress =
-    projectId === '35'
-      ? '0xC2e3Ee53aB359aEaf8eD64bB6f1a304928bE83f9'
+    projectId === "35"
+      ? "0xC2e3Ee53aB359aEaf8eD64bB6f1a304928bE83f9"
       : project.abc?.paymentProcessorAddress!;
 
   useEffect(() => {
@@ -97,10 +99,8 @@ const DonarSupportedProjects = ({
   const { data: allRounds } = useFetchAllRoundDetails();
   const { data: isSafeAccount } = useCheckSafeAccount();
 
-  
-
   const { data: tokenDetails } = useTokenSupplyDetails(
-    project?.abc?.fundingManagerAddress!,
+    project?.abc?.fundingManagerAddress!
   );
 
   // console.log(project);
@@ -111,7 +111,7 @@ const DonarSupportedProjects = ({
   });
   const tokenPriceRange = useTokenPriceRange({
     contributionLimit: maxPOLCap,
-    contractAddress: project.abc?.fundingManagerAddress || '',
+    contractAddress: project.abc?.fundingManagerAddress || "",
   });
 
   const handleShare = () => {
@@ -119,7 +119,7 @@ const DonarSupportedProjects = ({
   };
 
   const website = project.socialMedia?.find(
-    social => social.type === EProjectSocialMediaType.WEBSITE,
+    (social) => social.type === EProjectSocialMediaType.WEBSITE
   )?.link;
 
   const releasable = useReleasableForStream({
@@ -128,8 +128,6 @@ const DonarSupportedProjects = ({
     receiver: address,
     streamId: BigInt(2),
   });
-
-
 
   const claimableReward = releasable.data
     ? Number(ethers.formatUnits(releasable.data, 18)) // Format BigInt data to decimal
@@ -151,156 +149,158 @@ const DonarSupportedProjects = ({
 
       releasable.refetch();
 
-      console.log('Successly Clamied Tokens');
+      console.log("Successly Clamied Tokens");
     },
   });
   return (
-    <div className='p-6 flex lg:flex-row flex-col gap-14 bg-neutral-800 rounded-xl'>
+    <div className="p-6 flex lg:flex-row flex-col gap-14 bg-neutral-800 rounded-xl">
       {/* Project Details */}
-      <div className='flex flex-col gap-4 w-full lg:w-1/2'>
+      <div className="flex flex-col gap-4 w-full lg:w-1/2">
         {/* Project Banner */}
         <div
-          className='w-full h-[230px] bg-cover bg-center rounded-3xl relative'
+          className="w-full h-[230px] bg-cover bg-center rounded-3xl relative"
           style={{
             backgroundImage: `url('${project.image}')`,
           }}
         >
-          <div className=' flex flex-col absolute  bottom-[24px] left-[24px] md:bottom-[24px] md:left-[24px] gap-2'>
-            <div className='border rounded-md bg-neutral-800 p-1 block w-fit'>
+          <div className=" flex flex-col absolute  bottom-[24px] left-[24px] md:bottom-[24px] md:left-[24px] gap-2">
+            <div className="border rounded-md bg-neutral-800 p-1 block w-fit">
               <img
-                className='w-6 h-6 rounded-full'
+                className="w-6 h-6 rounded-full"
                 src={getIpfsAddress(
                   project.abc?.icon ||
-                    'Qmeb6CzCBkyEkAhjrw5G9GShpKiVjUDaU8F3Xnf5bPHtm4',
+                    "Qmeb6CzCBkyEkAhjrw5G9GShpKiVjUDaU8F3Xnf5bPHtm4"
                 )}
               />
             </div>
-            <div className='flex flex-col text-white gap-2'>
-              <h1 className='text-2xl md:text-[41px] font-bold leading-10'>
+            <div className="flex flex-col text-white gap-2">
+              <h1 className="text-2xl md:text-[41px] font-bold leading-10">
                 {project.title}
               </h1>
             </div>
           </div>
         </div>
-        <p className='text-neutral-200 text-sm font-redHatText'>
+        <p className="text-neutral-200 text-sm font-redHatText">
           {project.descriptionSummary}
         </p>
-        <div className='flex flex-wrap gap-2'>
+        <div className="flex flex-wrap gap-2">
           {project?.socialMedia
-            ?.filter(sm => sm.type !== EProjectSocialMediaType.WEBSITE)
+            ?.filter((sm) => sm.type !== EProjectSocialMediaType.WEBSITE)
             .map((social: any) => {
               return (
                 <Link
                   key={social.link}
                   href={social.link}
-                  target='_blank'
-                  className='p-2 rounded-lg border-gray-200 border'
+                  target="_blank"
+                  className="p-2 rounded-lg border-gray-200 border"
                 >
                   <Image
                     src={`/images/icons/social/${social.type.toLowerCase()}.svg`}
                     alt={`${social.type} icon`}
                     width={24}
                     height={24}
-                    className='filter invert'
+                    className="filter invert"
                   />
                 </Link>
               );
             })}
         </div>
-        <div className='flex flex-col gap-4 font-redHatText'>
-          <div className='flex gap-4 flex-wrap'>
+        <div className="flex flex-col gap-4 font-redHatText">
+          <div className="flex gap-4 flex-wrap">
             {website && (
               <Link
-                target='_blank'
+                target="_blank"
                 href={website}
-                className='w-full py-2 px-4 border border-peach-300 rounded-3xl flex justify-center flex-1'
+                className="w-full py-2 px-4 border border-peach-300 rounded-3xl flex justify-center flex-1"
               >
                 <div>
-                  <span className='flex gap-4 text-peach-300 font-bold'>
+                  <span className="flex gap-4 text-peach-300 font-bold">
                     Website
-                    <IconViewTransaction color='#FCD1AA' />
+                    <IconViewTransaction color="#FCD1AA" />
                   </span>
-                </div>{' '}
+                </div>{" "}
               </Link>
             )}
             <Link
-              target='_blank'
+              target="_blank"
               href={`https://polygonscan.com/address/${project?.abc?.issuanceTokenAddress}`}
-              className='w-full py-2 px-4 border border-peach-200 rounded-3xl flex justify-center flex-1'
+              className="w-full py-2 px-4 border border-peach-200 rounded-3xl flex justify-center flex-1"
             >
               <div>
-                <span className='flex gap-4 text-peach-300 font-bold text-nowrap'>
+                <span className="flex gap-4 text-peach-300 font-bold text-nowrap">
                   Contract Address
-                  <IconViewTransaction color='#FCD1AA' />
+                  <IconViewTransaction color="#FCD1AA" />
                 </span>
-              </div>{' '}
+              </div>{" "}
             </Link>
           </div>
-          <div className='flex justify-center gap-4 flex-wrap'>
+          <div className="flex justify-center gap-4 flex-wrap">
             <Link
-              target='_blank'
+              target="_blank"
               href={`/project/${project?.slug}`}
-              className=' py-2 px-4 border border-peach-300 rounded-3xl flex justify-center flex-1'
+              className=" py-2 px-4 border border-peach-300 rounded-3xl flex justify-center flex-1"
             >
-              <span className='flex gap-4 text-peach-300 font-bold items-center text-nowrap'>
+              <span className="flex gap-4 text-peach-300 font-bold items-center text-nowrap">
                 View Project
-                <IconViewTransaction color='#FCD1AA' />
+                <IconViewTransaction color="#FCD1AA" />
               </span>
             </Link>
             <div
               onClick={handleShare}
-              className='cursor-pointer py-2 px-4 border border-peach-300 rounded-3xl flex justify-center flex-1'
+              className="cursor-pointer py-2 px-4 border border-peach-300 rounded-3xl flex justify-center flex-1"
             >
-              <span className='flex gap-4 text-peach-300 font-bold items-center text-nowrap'>
+              <span className="flex gap-4 text-peach-300 font-bold items-center text-nowrap">
                 Share Project
-                <Share color='#FCD1AA' size={24} />
+                <Share color="#FCD1AA" size={24} />
               </span>
-            </div>{' '}
+            </div>{" "}
             <ShareProjectModal
               isOpen={isShareModalOpen}
               onClose={closeShareModal}
               showCloseButton={true}
-              projectSlug={project?.slug || ''}
+              projectSlug={project?.slug || ""}
               projectTitle={project?.title}
               tokenTicker={project?.abc?.tokenTicker}
               projectData={project}
             />
           </div>
 
-          <div className='flex justify-between p-2'>
-            <div className='flex gap-2'>
+          <div className="flex justify-between p-2">
+            <div className="flex gap-2">
               <IconTotalSupply size={24} />
-              <span className='text-neutral-300 font-medium font-redHatText'>
+              <span className="text-neutral-300 font-medium font-redHatText">
                 Total Supply
               </span>
             </div>
-            <span className='font-medium text-neutral-200'>
-              {formatAmount(Number(tokenDetails?.issuance_supply)) || '---'}{' '}
+            <span className="font-medium text-neutral-200">
+              {formatAmount(Number(tokenDetails?.issuance_supply)) || "---"}{" "}
               {project.abc?.tokenTicker}
             </span>
           </div>
 
-          <div className='flex justify-between p-2'>
-            <div className='flex gap-2'>
+          <div className="flex justify-between p-2">
+            <div className="flex gap-2">
               <IconTotalDonars size={24} />
-              <span className='text-neutral-300 font-medium  font-redHatText'>
+              <span className="text-neutral-300 font-medium  font-redHatText">
                 Total supporters
               </span>
             </div>
-            <span className='font-medium text-neutral-200'>{uniqueDonors}</span>
+            <span className="font-medium text-neutral-200">{uniqueDonors}</span>
           </div>
 
-          <div className='flex flex-col md:flex-row gap-3 justify-between p-[16px_8px] bg-neutral-700/50 rounded-md'>
-            <div className='flex gap-2'>
+          <div className="flex flex-col md:flex-row gap-3 justify-between p-[16px_8px] bg-neutral-700/50 rounded-md">
+            <div className="flex gap-2">
               <IconTotalDonations size={24} />
-              <span className='font-medium text-neutral-200'>Total received</span>
+              <span className="font-medium text-neutral-200">
+                Total received
+              </span>
             </div>
-            <div className='flex gap-2'>
-              <span className='font-medium text-neutral-200'>
+            <div className="flex gap-2">
+              <span className="font-medium text-neutral-200">
                 ~ $ {formatAmount(totalContributions * POLPrice) || 0}
               </span>
-              <span className='font-medium text-neutral-400'>
-                {formatAmount(totalContributions) || 0} POL{' '}
+              <span className="font-medium text-neutral-400">
+                {formatAmount(totalContributions) || 0} POL{" "}
               </span>
             </div>
           </div>
@@ -308,7 +308,7 @@ const DonarSupportedProjects = ({
       </div>
 
       {/* Project Claim and Reward */}
-      <div className='flex flex-col gap-4 w-full lg:w-1/2  font-redHatText'>
+      <div className="flex flex-col gap-4 w-full lg:w-1/2  font-redHatText">
         {/* {activeRoundDetails && (
           <>
             <div className='flex items-center gap-2'>
@@ -371,28 +371,28 @@ const DonarSupportedProjects = ({
 
         {!isSafeAccount && (
           <>
-            <h1 className='flex p-[4px_16px] bg-neutral-700 w-fit rounded-md'>
-              You supported this project{' '}
+            <h1 className="flex p-[4px_16px] bg-neutral-700 w-fit rounded-md">
+              {isOwnProfile ? "You" : "User"} supported this project{" "}
               {projectDonations > 1 && (
-                <span className='font-medium'>
+                <span className="font-medium">
                   &nbsp;{projectDonations}&nbsp;
                 </span>
               )}
               {projectDonations === 1 ? (
-                <span className='font-bold'>&nbsp;once</span>
+                <span className="font-bold">&nbsp;once</span>
               ) : (
-                'times'
+                "times"
               )}
               .
             </h1>
-            <div className='flex justify-between p-2 bg-neutral-700/50 rounded-lg'>
-              <div className='flex gap-2'>
+            <div className="flex justify-between p-2 bg-neutral-700/50 rounded-lg">
+              <div className="flex gap-2">
                 <IconTotalDonations size={24} />
-                <span className='text-neutral-300 font-medium '>
-                  Your contribution
+                <span className="text-neutral-300 font-medium ">
+                  {isOwnProfile ? "Your" : "User's"} contribution
                 </span>
               </div>
-              <span className='font-medium text-neutral-200'>
+              <span className="font-medium text-neutral-200">
                 {formatAmount(totalContribution)} POL
               </span>
             </div>
@@ -401,80 +401,90 @@ const DonarSupportedProjects = ({
 
         {totalRewardTokens > 0 ? (
           <>
-            <div className='flex justify-between p-2'>
-              <div className='flex gap-2'>
+            <div className="flex justify-between p-2">
+              <div className="flex gap-2">
                 <IconMinted size={24} />
-                <span className='text-neutral-300 font-medium '>
-                  Your project tokens{' '}
+                <span className="text-neutral-300 font-medium ">
+                  {isOwnProfile ? "Your" : "User's"} project tokens{" "}
                 </span>
               </div>
-              <div className='flex gap-1'>
-                <span className='font-medium text-neutral-200'>
-                  {formatAmount(totalRewardTokens) || '---'}{' '}
+              <div className="flex gap-1">
+                <span className="font-medium text-neutral-200">
+                  {formatAmount(totalRewardTokens) || "---"}{" "}
                   {project.abc?.tokenTicker}
                 </span>
-                <span className='font-medium text-neutral-400'>
-                  ~{' '}
+                <span className="font-medium text-neutral-400">
+                  ~{" "}
                   {formatAmount(totalRewardTokens * (currentTokenPrice || 0)) ||
-                    '---'}{' '}
+                    "---"}{" "}
                   POL
                 </span>
               </div>
             </div>
 
-            <div className='flex flex-col md:flex-row gap-3 justify-between p-[16px_8px] bg-neutral-700/50 rounded-md'>
-              <div className='flex gap-2'>
-                <IconAvailableTokens size={24} />
-                <span className='font-medium text-neutral-300'>
-                  Available to claim
-                </span>
-                <div className='relative group'>
-                  <IconTokenSchedule />
-                  <div className='absolute w-[200px] z-50 mb-2 left-[-60px] hidden group-hover:block bg-gray-800 text-white text-xs rounded py-1 px-2'>
-                    The tokens have been unlocked and are now available for you
-                    to claim. Once claimed, they will be transferred to your
-                    wallet.
+            {isOwnProfile && (
+              <div className="flex flex-col md:flex-row gap-3 justify-between p-[16px_8px] bg-neutral-700/50 rounded-md">
+                <div className="flex gap-2">
+                  <IconAvailableTokens size={24} />
+                  <span className="font-medium text-neutral-300">
+                    Available to claim
+                  </span>
+                  <div className="relative group">
+                    <IconTokenSchedule />
+                    <div className="absolute w-[200px] z-50 mb-2 left-[-60px] hidden group-hover:block bg-gray-800 text-white text-xs rounded py-1 px-2">
+                      The tokens have been unlocked and are now available for
+                      you to claim. Once claimed, they will be transferred to
+                      your wallet.
+                    </div>
                   </div>
                 </div>
+                <div className="flex gap-1 font-medium text-neutral-300">
+                  <span>
+                    {totalClaimableRewardTokens !== null
+                      ? `${formatAmount(totalClaimableRewardTokens)} ${
+                          project.abc?.tokenTicker || ""
+                        }`
+                      : "---"}
+                  </span>
+                  <span className="text-neutral-400">
+                    ~{" "}
+                    {totalClaimableRewardTokens !== null
+                      ? formatAmount(
+                          totalClaimableRewardTokens * (currentTokenPrice || 0)
+                        )
+                      : "---"}{" "}
+                    POL
+                  </span>
+                </div>
               </div>
-              <div className='flex gap-1 font-medium text-neutral-300'>
-                <span>
-                  {totalClaimableRewardTokens !== null
-                    ? `${formatAmount(totalClaimableRewardTokens)} ${project.abc?.tokenTicker || ''}`
-                    : '---'}
-                </span>
-                <span className='text-neutral-400'>
-                  ~{' '}
-                  {totalClaimableRewardTokens !== null
-                    ? formatAmount(
-                        totalClaimableRewardTokens * (currentTokenPrice || 0),
-                      )
-                    : '---'}{' '}
-                  POL
-                </span>
-              </div>
-            </div>
+            )}
           </>
         ) : (
-          ''
+          ""
         )}
 
         {/* Claim Rewards */}
-        <button
-          className='flex justify-center rounded-xl bg-peach-400 text-neutral-800 px-4 py-3 disabled:opacity-50'
-          disabled={!isTokenClaimable}
-          onClick={() => claim.mutateAsync()}
-        >
-          Claim Tokens
-        </button>
-        <Link href={`/profile/${address}?tab=contributions&projectId=${projectId}`}>
-          <button
-            className='px-4 py-3 flex items-center gap-2 justify-center w-full border border-peach-300 rounded-xl text-peach-300'
-            onClick={onClickBreakdown}
-          >
-            Tokens & Contributions Breakdown <IconBreakdownArrow />
-          </button>
-        </Link>
+        {isOwnProfile && (
+          <>
+            <button
+              className="flex justify-center rounded-xl bg-peach-400 text-neutral-800 px-4 py-3 disabled:opacity-50"
+              disabled={!isTokenClaimable}
+              onClick={() => claim.mutateAsync()}
+            >
+              Claim Tokens
+            </button>
+            <Link
+              href={`/profile/${address}?tab=contributions&projectId=${projectId}`}
+            >
+              <button
+                className="px-4 py-3 flex items-center gap-2 justify-center w-full border border-peach-300 rounded-xl text-peach-300"
+                onClick={onClickBreakdown}
+              >
+                Tokens & Contributions Breakdown <IconBreakdownArrow />
+              </button>
+            </Link>
+          </>
+        )}
       </div>
     </div>
   );

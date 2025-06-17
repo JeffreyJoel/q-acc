@@ -6,7 +6,6 @@ import RewardsBreakDown from "./RewardsBreakDown";
 import DonorSupportedProjects from "./DonorSupportedProjects";
 import { useDonorContext } from "@/contexts/donor.context";
 import { Spinner } from "@/components/loaders/Spinner";
-import { useAccount } from "wagmi";
 import { ArrowLeftIcon } from "lucide-react";
 
 const DonarSupports = () => {
@@ -19,7 +18,6 @@ const DonarSupports = () => {
     error,
   } = useDonorContext();
   const searchParams = useSearchParams();
-  const { address } = useAccount();
   const projectId = searchParams.get("projectId");
 
   useEffect(() => {
