@@ -16,8 +16,6 @@ import { useDonorContext } from "@/contexts/donor.context";
 import { Spinner } from "@/components/loaders/Spinner";
 
 export default function ProfileInfo({ userAddress }: { userAddress: Address }) {
-  const [isUserLoggedIn, setIsUserLoggedIn] = useState(false);
-
   const { user, loading: donorContextLoading } = useDonorContext();
   const { address: wagmiAddress } = useAccount();
   const { authenticated, user: privyUser } = usePrivy();
@@ -32,7 +30,8 @@ export default function ProfileInfo({ userAddress }: { userAddress: Address }) {
 
   const isOwnProfile = useMemo(() => {
     return (
-     authenticated && ConnectedUserAddress &&
+      authenticated &&
+      ConnectedUserAddress &&
       userAddress.toLowerCase() === ConnectedUserAddress.toLowerCase()
     );
   }, [ConnectedUserAddress, userAddress]);
@@ -43,8 +42,6 @@ export default function ProfileInfo({ userAddress }: { userAddress: Address }) {
   } else {
     avatar = user?.avatar;
   }
-console.log(user);
-
 
   if (donorContextLoading || !user) {
     return (
@@ -105,9 +102,15 @@ console.log(user);
             </div>
 
             <div>
-              <p className="text-2xl font-bold">{user?.fullName}</p>
-              <p className="text-neutral-300">{user?.email}</p>
-
+              {isOwnProfile && (
+                <p className="text-2xl font-bold">{user?.fullName}</p>
+              )}
+              {user?.username && (
+                <p className="text-xl text-neutral-300">@{user?.username}</p>
+              )}
+              {isOwnProfile && (
+                <p className="text-neutral-300">{user?.email}</p>
+              )}
               <div className="flex items-center text-neutral-300">
                 <span className="font-mono">
                   {" "}
@@ -130,9 +133,9 @@ console.log(user);
                 Edit Profile
               </button>
             )}
-            {/* {isUserLoggedIn && (
+            {isOwnProfile && (
               <CreateProjectButton className="bg-peach-400 text-black px-4 py-2 rounded-md font-medium hover:bg-peach-300 transition-colors" />
-            )} */}
+            )}
           </div>
         </div>
 

@@ -34,13 +34,13 @@ export function LeaderboardItem({ user, onUserClick }: LeaderboardItemProps) {
           <Avatar className="h-8 w-8 sm:h-12 sm:w-12 border-2 border-[#3a3a3a]">
             <AvatarImage src={user.avatar ?? ''} />
        
-              <AvatarFallback className="text-xs sm:text-base">{user.name?.charAt(0)}</AvatarFallback>
+              <AvatarFallback className="text-xs sm:text-base">{user.username?.charAt(0) || user.name?.charAt(0)}</AvatarFallback>
             
           </Avatar>
         </div>
 
         <div className="flex flex-col">
-          <span className="font-medium text-sm sm:text-lg">{user?.name}</span>
+          <span className="font-medium text-sm sm:text-lg">{user?.username}</span>
           <span className="text-xs sm:text-sm text-gray-400">{shortenAddress(user.walletAddress)}</span>
         </div>
       </div>

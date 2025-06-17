@@ -15,6 +15,7 @@ import { EProjectSocialMediaType } from "@/types/project.type";
 import { useFetchUser } from "@/hooks/useFetchUser";
 import { useCreateProject } from "@/hooks/useCreateProject";
 import { TeamMember } from "@/types/project.type";
+import ProjectPreview from "@/components/project/create/ProjectPreview";
 // import { HoldModal } from '@/components/Modals/HoldModal';
 // import { ConnectModal } from '@/components/ConnectModal';
 import { IconArrowRight, IconExternalLink } from "@tabler/icons-react";
@@ -156,33 +157,45 @@ const CreateProjectForm: FC = () => {
     if (!user?.id || !address) return;
     setFormData(data);
     router.push("/project/create/team");
-    // router.push(Routes.CreateTeam);
   };
 
   const handlePreview = () => {
-    const formData = getValues();
-    sessionStorage.setItem("previewData", JSON.stringify(formData));
+    const currentValues = getValues();
+    setFormData(currentValues);
     setShowPreview(true);
-    // window.open(Routes.Preview, '_blank');
   };
 
-  //   if (showPreview) {
-  //     return <ProjectDetailPreview setShowPreview={setShowPreview} />;
-  //   }
+  const handleClosePreview = () => {
+    setShowPreview(false);
+  };
 
-  return userProjectsCount && userProjectsCount > 0 ? (
-    <div className="mt-48 flex-1 flex items-center justify-center text-center">
-      <p className="text-2xl font-bold">You have already created a project.</p>
-    </div>
-  ) : (
+  const handleEditFromPreview = () => {
+    setShowPreview(false);
+    // Focus on the first input field
+    const firstInput = document.querySelector('input[name="projectName"]') as HTMLInputElement;
+    if (firstInput) {
+      firstInput.focus();
+    }
+  };
+
+  if (showPreview) {
+    return (
+      <ProjectPreview 
+        formData={formData as ProjectFormData}
+        onClose={handleClosePreview}
+        onEdit={handleEditFromPreview}
+      />
+    );
+  }
+
+  // return userProjectsCount && userProjectsCount > 0 ? (
+  //   <div className="mt-48 flex-1 flex items-center justify-center text-center">
+  //     <p className="text-2xl font-bold">You have already created a project.</p>
+  //   </div>
+  // ) : 
+  return (
     <FormProvider {...methods}>
       <form onSubmit={handleSubmit(onSubmit)}>
-        {/* <CreateNavbar
-          title='Create your project'
-          nextLabel='Add your team'
-          submitLabel='Save & continue'
-          loading={isPending}
-        /> */}
         <div className="bg-neutral-800 w-full flex flex-col gap-16 pt-10 mt-28 rounded-2xl p-8">
           <div className="flex flex-row justify-between">
             <h1 className="text-2xl font-bold text-white mb-7">
@@ -318,7 +331,7 @@ const CreateProjectForm: FC = () => {
   //   : (
   //     <div>
   //       <p>This </p>
-  //     </div>
+  //     <  /div>
   //   );
   //   : isConnected ? (
   //     <HoldModal isOpen onClose={() => router.push('/')} />

@@ -4,6 +4,7 @@ import { useForm, FormProvider } from "react-hook-form";
 import { useEffect, useState, type FC } from "react";
 import { useRouter } from "next/navigation";
 import { TeamForm } from "@/components/project/create/TeamForm";
+import ProjectPreview from "@/components/project/create/ProjectPreview";
 // import { Button, ButtonColor } from '@/components/ui/button';
 import { useProjectCreationContext } from "@/contexts/projectCreation.context";
 import { useCreateProject } from "@/hooks/useCreateProject";
@@ -46,12 +47,13 @@ const CreateTeamForm: FC = () => {
   const router = useRouter();
 
   const [isModalOpen, setModalOpen] = useState(false);
+  const [showPreview, setShowPreview] = useState(false);
 
   const openModal = () => setModalOpen(true);
   const closeModal = () => setModalOpen(false);
   const [projectSlug, setProjectSlug] = useState("");
 
-  const { handleSubmit, setValue, watch, reset } = methods;
+  const { handleSubmit, setValue, watch, reset, getValues } = methods;
 
   const teamMembers = watch("team"); // Watch the team members array
 
@@ -132,6 +134,34 @@ const CreateTeamForm: FC = () => {
     }
   };
 
+  const handlePreview = () => {
+    const currentTeam = getValues('team');
+    const updatedFormData = {
+      ...(formData as ProjectFormData),
+      team: currentTeam,
+    };
+    setFormData(updatedFormData);
+    setShowPreview(true);
+  };
+
+  const handleClosePreview = () => {
+    setShowPreview(false);
+  };
+
+  const handleEditFromPreview = () => {
+    setShowPreview(false);
+  };
+
+  if (showPreview) {
+    return (
+      <ProjectPreview 
+        formData={formData as ProjectFormData}
+        onClose={handleClosePreview}
+        onEdit={handleEditFromPreview}
+      />
+    );
+  }
+
   return (
     <FormProvider {...methods}>
       <form onSubmit={handleSubmit(onSubmit)} className="container mt-28">
@@ -146,7 +176,13 @@ const CreateTeamForm: FC = () => {
             Create project
           </h1>
           <div className="flex flex-row items-center gap-6">
-
+            <button
+              type="button"
+              onClick={handlePreview}
+              className="px-6 py-3 font-bold items-center justify-center flex gap-2 text-peach-400 bg-transparent border-peach-400 border-2 rounded-full text-xs md:text-md min-w-[150px] hover:bg-peach-400 hover:text-black transition-colors"
+            >
+              Preview
+            </button>
             <button
               className="bg-peach-400 text-black p-3  shadow-2xl rounded-full  text-xs md:text-md min-w-[150px] flex items-center justify-center gap-2 hover:bg-peach-300"
               type="submit"
