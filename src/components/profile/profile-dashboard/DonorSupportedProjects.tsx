@@ -37,6 +37,7 @@ import {
   useReleasableForStream,
 } from '@/hooks/useClaimRewards';
 import { ethers } from 'ethers';
+import { usePrivy } from '@privy-io/react-auth';
 
 const DonarSupportedProjects = ({
   projectId,
@@ -67,7 +68,19 @@ const DonarSupportedProjects = ({
   const closeShareModal = () => setIsShareModalOpen(false);
   const { issuanceTokenAddress } = project?.abc || {};
   const { currentTokenPrice } = useGetCurrentTokenPrice(issuanceTokenAddress);
-  const { address } = useAccount();
+  const { user: privyUser } = usePrivy();
+
+  const address = privyUser?.wallet?.address as `0x${string}`;
+
+  const paymentRouterAddress =
+    projectId === '35'
+      ? '0xBDdfFD420B40617ef8B59679720B2be6e04f31A1'
+      : project?.abc?.paymentRouterAddress!;
+  const paymentProcessorAddress =
+    projectId === '35'
+      ? '0xC2e3Ee53aB359aEaf8eD64bB6f1a304928bE83f9'
+      : project.abc?.paymentProcessorAddress!;
+
   useEffect(() => {
     const updatePOLCap = async () => {
       if (activeRoundDetails) {
@@ -84,9 +97,13 @@ const DonarSupportedProjects = ({
   const { data: allRounds } = useFetchAllRoundDetails();
   const { data: isSafeAccount } = useCheckSafeAccount();
 
+  
+
   const { data: tokenDetails } = useTokenSupplyDetails(
     project?.abc?.fundingManagerAddress!,
   );
+
+  // console.log(project);
 
   const tokenPriceRangeStatus = useTokenPriceRangeStatus({
     project,
@@ -106,20 +123,25 @@ const DonarSupportedProjects = ({
   )?.link;
 
   const releasable = useReleasableForStream({
-    paymentProcessorAddress: project?.abc?.paymentProcessorAddress!,
-    client: project?.abc?.paymentRouterAddress!,
+    paymentProcessorAddress: paymentProcessorAddress,
+    client: paymentRouterAddress,
     receiver: address,
-    streamId: BigInt(1),
+    streamId: BigInt(2),
   });
+
+
 
   const claimableReward = releasable.data
     ? Number(ethers.formatUnits(releasable.data, 18)) // Format BigInt data to decimal
     : 0;
 
   const isTokenClaimable = releasable.data !== undefined && claimableReward > 0;
+
+  console.log(releasable.data);
+
   const { claim } = useClaimRewards({
-    paymentProcessorAddress: project?.abc?.paymentProcessorAddress!,
-    paymentRouterAddress: project?.abc?.paymentRouterAddress!,
+    paymentProcessorAddress: paymentProcessorAddress,
+    paymentRouterAddress: paymentRouterAddress,
     onSuccess: () => {
       // do after 5 seconds
       // setTimeout(() => {

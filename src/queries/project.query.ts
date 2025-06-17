@@ -52,6 +52,9 @@ export const CREATE_PROJECT = /* GraphQL */ `
         icon
         orchestratorAddress
         projectAddress
+        paymentRouterAddress
+        paymentProcessorAddress
+        fundingManagerAddress
       }
     }
   }
@@ -180,6 +183,8 @@ export const GET_PROJECT_BY_ID = /* GraphQL */ `
         orchestratorAddress
         projectAddress
         fundingManagerAddress
+        paymentRouterAddress
+        paymentProcessorAddress
       }
     }
   }
@@ -346,6 +351,8 @@ export const GET_PROJECT_BY_SLUG = /* GraphQL */ `
         nftContractAddress
         chainId
         fundingManagerAddress
+        paymentRouterAddress
+        paymentProcessorAddress
       }
       campaigns {
         id
@@ -523,6 +530,8 @@ export const GET_ALL_PROJECTS = /* GraphQL */ `
           chainId
           fundingManagerAddress
           totalSupply
+          paymentRouterAddress
+          paymentProcessorAddress
         }
         seasonNumber
       }
@@ -577,6 +586,8 @@ export const GET_PROJECT_BY_USER_ID = /* GraphQL */ `
           tokenPrice
           mintedAmount
           fundingManagerAddress
+          paymentRouterAddress
+          paymentProcessorAddress
         }
         tributeClaimModuleAddress
         tributeRecipientAddress

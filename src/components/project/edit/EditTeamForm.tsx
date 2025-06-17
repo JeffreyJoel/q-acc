@@ -4,35 +4,36 @@ import { useForm, FormProvider } from "react-hook-form";
 import { useEffect, useState, type FC } from "react";
 import { useRouter } from "next/navigation";
 import { TeamForm } from "@/components/project/create/TeamForm";
-// import { Button, ButtonColor } from '@/components/ui/button';
 import { useProjectCreationContext } from "@/contexts/projectCreation.context";
-import { useCreateProject } from "@/hooks/useCreateProject";
+import { useUpdateProject } from "@/hooks/useUpdateProject";
 import {
   EProjectSocialMediaType,
   IProjectCreation,
+  TeamMember,
   ProjectFormData,
 } from "@/types/project.type";
 import { useFetchUser } from "@/hooks/useFetchUser";
 import { useAccount } from "wagmi";
 import { Address } from "viem";
+import { usePrivy } from "@privy-io/react-auth";
 import { IconArrowRight } from "@tabler/icons-react";
-// /import { CreateProjectModal } from '@/components/Modals/CreateProjectModal';
+import { toast } from "sonner";
 
-export interface TeamMember {
-  name: string;
-  image?: { file: File; ipfsHash: string } | null;
-  twitter?: string;
-  linkedin?: string;
-  farcaster?: string;
+interface TeamFormData {
+  team: TeamMember[];
 }
 
-export interface TeamFormData {
-  team: TeamMember[]; // Array to store team member data
+interface EditTeamFormProps {
+  projectId: string;
 }
 
-const CreateTeamForm: FC = () => {
+const EditTeamForm: FC<EditTeamFormProps> = ({ projectId }) => {
   const { address } = useAccount();
-  const { data: user } = useFetchUser(true, address as Address);
+  const { user: PrivyUser } = usePrivy();
+
+  const userWalletAddress = PrivyUser?.wallet?.address || address;
+
+  const { data: user } = useFetchUser(true, userWalletAddress as Address);
   const { formData, setFormData, isEditMode } = useProjectCreationContext();
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const methods = useForm<TeamFormData>({
@@ -40,34 +41,34 @@ const CreateTeamForm: FC = () => {
       team: (formData as ProjectFormData).team?.length
         ? (formData as ProjectFormData).team
         : [{ name: "", image: null }],
-    }, // Initialize with existing team members or one empty member
-    mode: "onChange", // This enables validation on change
+    },
+    mode: "onChange",
   });
   const router = useRouter();
 
-  const [isModalOpen, setModalOpen] = useState(false);
-
-  const openModal = () => setModalOpen(true);
-  const closeModal = () => setModalOpen(false);
-  const [projectSlug, setProjectSlug] = useState("");
-
   const { handleSubmit, setValue, watch, reset } = methods;
 
-  const teamMembers = watch("team"); // Watch the team members array
+  const teamMembers = watch("team");
 
-  const { mutateAsync: createProject, isPending, error } = useCreateProject();
+  const { mutateAsync: updateProject, isPending } = useUpdateProject(projectId);
 
   useEffect(() => {
     if ((formData as ProjectFormData).team?.length === 0) {
-      // Ensure at least one empty team member is present
       reset({ team: [{ name: "", image: null }] });
-    } else {
-      reset({ team: (formData as ProjectFormData).team || [] });
+    } else if ((formData as ProjectFormData).team?.length > 0) {
+      const existingTeam = (formData as ProjectFormData).team.map(member => ({
+        name: member.name || "",
+        image: member.image || null,
+        twitter: member.twitter || "",
+        linkedin: member.linkedin || "",
+        farcaster: member.farcaster || "",
+      }));
+      reset({ team: existingTeam });
     }
   }, [(formData as ProjectFormData).team, reset]);
 
   const addTeamMember = () => {
-    setValue("team", [...teamMembers, { name: "", image: null }]); // Add a new team member
+    setValue("team", [...teamMembers, { name: "", image: null }]);
   };
 
   const removeTeamMember = (index: number) => {
@@ -81,22 +82,21 @@ const CreateTeamForm: FC = () => {
     const teamMembers = data.team;
     setFormData({
       ...(formData as ProjectFormData),
-      team: teamMembers, // Update the team array within the project
+      team: teamMembers,
     });
 
-    console.log("TEAM", teamMembers);
     const projectData = {
       ...(formData as ProjectFormData),
       team: teamMembers,
     };
 
-    const socialMediaKeys = Object.values(EProjectSocialMediaType);
-
     const socialMedia = Object.entries(projectData)
       .filter(
         ([key, value]) =>
           value &&
-          socialMediaKeys.includes(key.toUpperCase() as EProjectSocialMediaType)
+          Object.values(EProjectSocialMediaType).includes(
+            key.toUpperCase() as EProjectSocialMediaType
+          )
       )
       .map(([key, value]) => ({
         type: key.toUpperCase() as EProjectSocialMediaType,
@@ -105,54 +105,40 @@ const CreateTeamForm: FC = () => {
 
     if (!user?.id) return;
 
-    const project: IProjectCreation = {
+    const project: Partial<IProjectCreation> = {
       title: projectData.projectName,
       description: projectData.projectDescription,
       teaser: projectData.projectTeaser,
-      adminUserId: Number(user.id),
-      organisationId: 1, // Assuming you want to set a static organization ID
-      address: projectData.projectAddress,
       image: projectData.banner || undefined,
       icon: projectData.logo || undefined,
-      socialMedia: socialMedia.length ? socialMedia : undefined, // Include only if there are social media entries
-      teamMembers: teamMembers,
+      socialMedia: socialMedia.length ? socialMedia : undefined,
+      teamMembers: projectData.team,
     };
-    console.log("Submitting project data:", project);
 
     try {
-      const res: any = await createProject(project);
-      setProjectSlug(res?.createProject?.slug);
-      openModal();
-      // router.push(Routes.DashBoard);
+      await updateProject(project);
+      toast.success("Project updated successfully");
     } catch (err: any) {
       setErrorMessage(
-        err.message || "Failed to create project. Please try again."
+        err.message || "Failed to update project. Please try again."
       );
-      console.log(err);
+    } finally {
+      router.push(`/profile/${userWalletAddress}`);
     }
   };
 
   return (
     <FormProvider {...methods}>
       <form onSubmit={handleSubmit(onSubmit)} className="container mt-28">
-        {/* <CreateNavbar
-          title='Add your team'
-          onBack={() => router.push(Routes.CreateProject)}
-          submitLabel='Save'
-          disabled={isPending}
-        /> */}
         <div className="flex flex-row justify-between">
-          <h1 className="text-2xl font-bold text-white mb-7">
-            Create project
-          </h1>
+          <h1 className="text-2xl font-bold text-white mb-7">Edit Team</h1>
           <div className="flex flex-row items-center gap-6">
-
             <button
               className="bg-peach-400 text-black p-3  shadow-2xl rounded-full  text-xs md:text-md min-w-[150px] flex items-center justify-center gap-2 hover:bg-peach-300"
               type="submit"
               disabled={isPending}
             >
-              Create project
+              Save Changes
               <IconArrowRight width={20} height={20} />
             </button>
           </div>
@@ -170,12 +156,14 @@ const CreateTeamForm: FC = () => {
               teamMember={teamMembers[index]}
               index={index}
               removeMember={() => removeTeamMember(index)}
+              isEdit={true}
             />
           </div>
         ))}
         <div className="bg-neutral-800 p-6 rounded-xl flex justify-between items-center">
           <b>More team members?</b>
           <button
+            type="button"
             className="bg-peach-400 text-black p-3  shadow-2xl rounded-full  text-xs md:text-md min-w-[150px] flex items-center justify-center gap-2 hover:bg-peach-300"
             onClick={addTeamMember}
           >
@@ -183,14 +171,8 @@ const CreateTeamForm: FC = () => {
           </button>
         </div>
       </form>
-      {/* <CreateProjectModal
-        isOpen={isModalOpen}
-        onClose={closeModal}
-        showCloseButton={true}
-        slug={projectSlug}
-      /> */}
     </FormProvider>
   );
 };
 
-export default CreateTeamForm;
+export default EditTeamForm;

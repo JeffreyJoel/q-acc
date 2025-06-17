@@ -1,12 +1,16 @@
+'use client'
+
 import React from "react";
 import { useFormContext } from "react-hook-form";
 import { Dropzone } from "@/components/ui/dropzone";
 import { Input } from "@/components/ui/input";
 import { SocialMediaInput } from "@/components/project/create/SocialMediaInput";
 import { validators } from "@/components/project/create/validators";
+import { TeamMember } from "@/types/project.type";
 
 interface TeamFormProps {
   index: number;
+  teamMember: TeamMember;
   removeMember: () => void;
   isEdit?: boolean;
 }
@@ -34,10 +38,11 @@ const socialMediaLinks = [
 
 export const TeamForm: React.FC<TeamFormProps> = ({
   index,
+  teamMember,
   removeMember,
   isEdit = false,
 }) => {
-  const { setValue } = useFormContext(); // Access setValue from form context
+  const { setValue, register } = useFormContext();
 
   const handleDrop = (name: string, file: File, ipfsHash: string) => {
     if (file) {
@@ -58,16 +63,15 @@ export const TeamForm: React.FC<TeamFormProps> = ({
       </div>
 
       <Input
-        name={`team[${index}].name`} // Use dynamic name based on index
+        {...register(`team.${index}.name`)}
         placeholder="James Smith"
         className="border border-neutral-700 focus:ring-peach-400 focus:border-peach-400 outline-none"
-        // rules={{ required: 'Full Name is required' }}
       />
       <div>
         <h2 className="text-2xl">Social Media Links</h2>
         <p className="text-sm mt-2">
           <span className="text-neutral-300">
-            Add your project’s social media links (optional)
+            Add your project's social media links (optional)
           </span>
         </p>
       </div>
@@ -76,7 +80,7 @@ export const TeamForm: React.FC<TeamFormProps> = ({
           <SocialMediaInput
             key={socialMedia.name}
             {...socialMedia}
-            name={`team[${index}].${socialMedia.name}`}
+            name={`team.${index}.${socialMedia.name}`}
           />
         ))}
       </div>
@@ -85,7 +89,7 @@ export const TeamForm: React.FC<TeamFormProps> = ({
           Upload an Avatar
         </label>
         <p>Displayed in the header of the project page.</p>
-        <Dropzone name={`team[${index}].image`} onDrop={handleDrop} />
+        <Dropzone name={`team.${index}.image`} onDrop={handleDrop} />
       </div>
     </section>
   );
