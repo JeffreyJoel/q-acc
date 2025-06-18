@@ -72,6 +72,24 @@ export const claimTokensABI = [
     type: 'function',
   },
   {
+    type: 'function',
+    name: 'claimForSpecificStream',
+    inputs: [
+      {
+        name: 'client',
+        type: 'address',
+        internalType: 'address',
+      },
+      {
+        name: 'streamId',
+        type: 'uint256',
+        internalType: 'uint256',
+      },
+    ],
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
     inputs: [
       {
         internalType: 'address',
@@ -129,4 +147,52 @@ export const claimTokensABI = [
     stateMutability: 'view',
     type: 'function',
   },
+  {
+    type: "function",
+    name: "isActivePaymentReceiver",
+    inputs: [
+      {
+        name: "client",
+        type: "address",
+        internalType: "address"
+      },
+      {
+        name: "paymentReceiver",
+        type: "address",
+        internalType: "address"
+      }
+    ],
+    outputs: [
+      {
+        name: "",
+        type: "bool",
+        internalType: "bool"
+      }
+    ],
+    stateMutability: "view"
+  }
 ];
+
+export const ORCHESTRATOR_LIST_MODULES_ABI = [{
+  "inputs": [],
+  "name": "listModules",
+  "outputs": [{ "internalType": "address[]", "name": "", "type": "address[]" }],
+  "stateMutability": "view",
+  "type": "function"
+}];
+
+export const ORCHESTRATOR_ABI = [{
+  "inputs": [],
+  "name": "fundingManager",
+  "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
+  "stateMutability": "view",
+  "type": "function"
+}];
+
+export const MODULE_ABI = [{
+  "inputs": [],
+  "name": "title",
+  "outputs": [{ "internalType": "string", "name": "", "type": "string" }],
+  "stateMutability": "view",
+  "type": "function"
+}];

@@ -248,6 +248,9 @@ const MyProjects = ({projectData}:{projectData: IProject}) => {
       mintedTokenAmounts: 0,
     };
 
+  console.log(projectData?.tributeClaimModuleAddress, projectData?.tributeRecipientAddress);
+  console.log(projectData?.abc?.fundingManagerAddress);
+
   const { claim } = useClaimCollectedFee({
     fundingManagerAddress: projectData?.abc?.fundingManagerAddress!,
     tributeModule: projectData?.tributeClaimModuleAddress!,

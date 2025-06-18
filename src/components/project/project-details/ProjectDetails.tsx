@@ -26,6 +26,8 @@ export default function ProjectDetails({ params }: { params: { id: string } }) {
   const isRoundActive = !!activeRoundDetails;
   const isQaccRoundEnded = useFetchMostRecentEndRound(activeRoundDetails);
 
+  console.log(project);
+
   return (
     <div className="mt-24 max-w-7xl min-h-screen mx-auto">
       <div className="px-4 sm:px-6 lg:px-8 pt-8">

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { getIpfsAddress } from "@/helpers/image";
+import { getPaymentAddresses } from "@/helpers/getPaymentAddresses";
 
 import { IconViewTransaction } from "@/components/icons/IconViewTransaction";
 import { IconTotalSupply } from "@/components/icons/IconTotalSupply";
@@ -34,10 +35,12 @@ import { useAccount } from "wagmi";
 
 import {
   useClaimRewards,
+  useIsActivePaymentReceiver,
   useReleasableForStream,
 } from "@/hooks/useClaimRewards";
 import { ethers } from "ethers";
 import { usePrivy } from "@privy-io/react-auth";
+import { toast } from "sonner";
 
 const DonarSupportedProjects = ({
   projectId,
@@ -66,6 +69,16 @@ const DonarSupportedProjects = ({
   const { data: activeRoundDetails } = useFetchActiveRoundDetails();
   const [maxPOLCap, setMaxPOLCap] = useState(0);
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+  const [paymentAddresses, setPaymentAddresses] = useState<{
+    paymentRouterAddress: string | null;
+    paymentProcessorAddress: string | null;
+  }>({
+    paymentRouterAddress: null,
+    paymentProcessorAddress: null,
+  });
+
+  const [isTokenClaimable, setIsTokenClaimable] = useState(false);
+
   const openShareModal = () => setIsShareModalOpen(true);
   const closeShareModal = () => setIsShareModalOpen(false);
   const { issuanceTokenAddress } = project?.abc || {};
@@ -74,14 +87,33 @@ const DonarSupportedProjects = ({
 
   const address = privyUser?.wallet?.address as `0x${string}`;
 
-  const paymentRouterAddress =
-    projectId === "35"
-      ? "0xBDdfFD420B40617ef8B59679720B2be6e04f31A1"
-      : project?.abc?.paymentRouterAddress!;
-  const paymentProcessorAddress =
-    projectId === "35"
-      ? "0xC2e3Ee53aB359aEaf8eD64bB6f1a304928bE83f9"
-      : project.abc?.paymentProcessorAddress!;
+  useEffect(() => {
+    const fetchPaymentAddresses = async () => {
+      if (project?.abc?.orchestratorAddress) {
+        try {
+          const addresses = await getPaymentAddresses(
+            project.abc.orchestratorAddress
+          );
+          if (
+            addresses.paymentRouterAddress &&
+            addresses.paymentProcessorAddress
+          ) {
+            setPaymentAddresses(addresses);
+            return;
+          }
+        } catch (error) {
+          console.error(
+            "Failed to get payment addresses from orchestrator:",
+            error
+          );
+        }
+      }
+    };
+
+    if (project) {
+      fetchPaymentAddresses();
+    }
+  }, [projectId, project]);
 
   useEffect(() => {
     const updatePOLCap = async () => {
@@ -123,35 +155,36 @@ const DonarSupportedProjects = ({
   )?.link;
 
   const releasable = useReleasableForStream({
-    paymentProcessorAddress: paymentProcessorAddress,
-    client: paymentRouterAddress,
+    paymentProcessorAddress: paymentAddresses.paymentProcessorAddress || "",
+    client: paymentAddresses.paymentRouterAddress || "",
     receiver: address,
     streamId: BigInt(2),
   });
 
+  const isActivePaymentReceiver = useIsActivePaymentReceiver({
+    paymentProcessorAddress: paymentAddresses.paymentProcessorAddress || "",
+    client: paymentAddresses.paymentRouterAddress || "",
+    receiver: address,
+  });
+
   const claimableReward = releasable.data
-    ? Number(ethers.formatUnits(releasable.data, 18)) // Format BigInt data to decimal
+    ? Number(ethers.formatUnits(releasable.data, 18))
     : 0;
 
-  const isTokenClaimable = releasable.data !== undefined && claimableReward > 0;
-
-  console.log(releasable.data);
-
   const { claim } = useClaimRewards({
-    paymentProcessorAddress: paymentProcessorAddress,
-    paymentRouterAddress: paymentRouterAddress,
+    paymentProcessorAddress: paymentAddresses.paymentProcessorAddress || "",
+    paymentRouterAddress: paymentAddresses.paymentRouterAddress || "",
     onSuccess: () => {
-      // do after 5 seconds
-      // setTimeout(() => {
-      //   claimedTributesAndMintedTokenAmounts.refetch();
-      // }, 5000);
-      // projectCollateralFeeCollected.refetch();
-
+      setIsTokenClaimable(false);
       releasable.refetch();
-
-      console.log("Successly Clamied Tokens");
+      toast.success("Successfully Claimed Tokens");
     },
   });
+
+  useEffect(() => {
+    setIsTokenClaimable(isActivePaymentReceiver.data || false);
+  }, [isActivePaymentReceiver.data]);
+
   return (
     <div className="p-6 flex lg:flex-row flex-col gap-14 bg-neutral-800 rounded-xl">
       {/* Project Details */}
@@ -468,10 +501,14 @@ const DonarSupportedProjects = ({
           <>
             <button
               className="flex justify-center rounded-xl bg-peach-400 text-neutral-800 px-4 py-3 disabled:opacity-50"
-              disabled={!isTokenClaimable}
+              disabled={!isTokenClaimable || claim.isPending}
               onClick={() => claim.mutateAsync()}
             >
-              Claim Tokens
+              {isActivePaymentReceiver.isPending
+                ? "Checking for tokens..."
+                : claim.isPending
+                ? "Claiming..."
+                : "Claim Tokens"}
             </button>
             <Link
               href={`/profile/${address}?tab=contributions&projectId=${projectId}`}
