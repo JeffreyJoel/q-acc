@@ -154,19 +154,21 @@ export const signChallengeWithExternalWallet = async (
 };
 
 export const getLocalStorageToken = (address: string) => {
+  if (typeof window === 'undefined') {
+    return null;
+  }
+  
   try {
     const storedToken = localStorage.getItem('token');
     if (storedToken) {
       const tokenObj = JSON.parse(storedToken);
       
-      // Standardize both addresses to checksum format for comparison
       const storedAddress = tokenObj.publicAddress ? ethers.getAddress(tokenObj.publicAddress) : null;
       const checkAddress = ethers.getAddress(address);
       
       console.log('Token check - Stored:', storedAddress, 'Current:', checkAddress);
       
       if (storedAddress && storedAddress === checkAddress) {
-        // Check if the token is expired (if it has an expiration time)
         if (tokenObj.expiration) {
           const currentTime = Math.floor(Date.now());
           if (currentTime > tokenObj.expiration) {
@@ -184,13 +186,18 @@ export const getLocalStorageToken = (address: string) => {
     return null;
   } catch (error) {
     console.error('Error checking token:', error);
-    // Delete on parsing errors, not address mismatches
-    localStorage.removeItem('token');
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('token');
+    }
     return null;
   }
 };
 
 export const getCurrentUserToken = () => {
+  if (typeof window === 'undefined') {
+    return null;
+  }
+  
   try {
     const storedToken = localStorage.getItem('token');
     if (storedToken) {
@@ -208,4 +215,5 @@ export const getCurrentUserToken = () => {
   } catch (error) {
     console.error(error);
   }
+  return null;
 };
