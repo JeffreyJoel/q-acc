@@ -128,7 +128,7 @@ export default function ProfileInfo({ userAddress }: { userAddress: Address }) {
             {isOwnProfile && (
               <button
                 className="text-peach-400 font-medium hover:text-peach-300 transition-colors"
-                onClick={() => user && openUpdateProfileModal(user)}
+                onClick={() => user && openUpdateProfileModal(user, false)}
               >
                 Edit Profile
               </button>
@@ -158,7 +158,7 @@ export default function ProfileInfo({ userAddress }: { userAddress: Address }) {
 
           <div className="flex flex-col md:flex-row gap-4">
             <GitcoinVerificationBadge userAddress={userAddress} />
-            <PrivadoVerificationBadge userAddress={userAddress} />
+            {/* <PrivadoVerificationBadge userAddress={userAddress} /> */}
           </div>
         </div>
       </div>

@@ -35,7 +35,7 @@ export default function ProfileTab({ userAddress }: ProfileTabProps) {
   const { data: projectData } = useFetchProjectByUserId(
     user?.id ? parseInt(user.id) : 0
   );
-  const { user: privyUser } = usePrivy();
+  const { user: privyUser, authenticated } = usePrivy();
   const searchParams = useSearchParams();
   const router = useRouter();
 
@@ -44,6 +44,7 @@ export default function ProfileTab({ userAddress }: ProfileTabProps) {
   const isOwnProfile = useMemo(() => {
     return (
       ConnectedUserAddress &&
+      authenticated &&
       userAddress.toLowerCase() === ConnectedUserAddress.toLowerCase()
     );
   }, [ConnectedUserAddress, userAddress]);
@@ -209,7 +210,11 @@ export default function ProfileTab({ userAddress }: ProfileTabProps) {
           </TabsContent>
         )}
         <TabsContent value="tokens" className="">
-          {isLoading ? <ProjectsTokensSkeleton /> : <DonorSupports isOwnProfile={!!isOwnProfile} />}
+          {isLoading ? (
+            <ProjectsTokensSkeleton />
+          ) : (
+            <DonorSupports isOwnProfile={!!isOwnProfile} />
+          )}
         </TabsContent>
 
         {isOwnProfile && (

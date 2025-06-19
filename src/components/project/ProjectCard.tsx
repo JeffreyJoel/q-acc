@@ -220,8 +220,8 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
           loading="lazy"
           decoding="async"
           fill={true}
-          objectFit="cover"
-          className="rounded-xl h-full w-full object-center"
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+          className="rounded-xl h-full w-full object-cover object-center"
           src={project.image || ""}
         />
 

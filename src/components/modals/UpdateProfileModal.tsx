@@ -42,7 +42,7 @@ export const UpdateProfileModal = ({
   isOpen,
   onClose,
   currentUser,
-  sendOtp,
+  sendOtp = false,
 }: UpdateProfileModalProps) => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -74,7 +74,7 @@ export const UpdateProfileModal = ({
       setAvatarFile(null);
       setAvatarHash(currentUser?.avatar || "");
     }
-  }, [isOpen, currentUser]);
+  }, [isOpen, currentUser, sendOtp]);
 
   const {
     sendCode,
@@ -212,9 +212,10 @@ export const UpdateProfileModal = ({
         if (!open) resetAndClose();
       }}
     >
-      <DialogContent className="sm:max-w-md bg-neutral-900 rounded-[24px] w-full max-w-md">
+      <DialogContent className="sm:max-w-md p-0 bg-neutral-900 rounded-[24px] w-full max-h-[90vh] flex flex-col">
         <FormProvider {...methods}>
-          <DialogHeader>
+          <div className="p-6 flex-1 overflow-y-auto">
+            <DialogHeader>
             <DialogTitle>
               {step === "details" ? "Update Your Profile" : "Verify Your Email"}
             </DialogTitle>
@@ -315,8 +316,9 @@ export const UpdateProfileModal = ({
               </InputOTP>
             </div>
           )}
+          </div>
 
-          <DialogFooter className="gap-2 sm:justify-between">
+          <DialogFooter className="gap-2 sm:justify-between p-6 border-t border-neutral-800">
             {step === "otp" && (
               <Button
                 type="button"

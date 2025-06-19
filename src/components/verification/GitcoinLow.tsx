@@ -54,7 +54,7 @@ export const GitcoinLow: FC<IGitcoinLowProps> = ({
 
         <a href={links.PASSPORT} target='_blank' referrerPolicy='no-referrer'>
           <Button
-            className=' bg-pink-400'
+            className=' bg-peach-300'
           >
             <div className='flex items-center gap-1'>
               Increase Score to 15
@@ -63,7 +63,7 @@ export const GitcoinLow: FC<IGitcoinLowProps> = ({
           </Button>
         </a>
         <Button
-          className=' bg-pink-400'
+          className=' bg-peach-300'
           onClick={onCheckScore}
           disabled={isScoreFetching}
         >
