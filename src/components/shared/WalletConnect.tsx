@@ -10,12 +10,24 @@ function WalletConnect() {
   const { user, ready, authenticated } = usePrivy();
 
   const [isClient, setIsClient] = useState(false);
-  const { login } = useLogin({});
+  const { login } = useLogin({
+    onComplete: () => setIsLoading(false),
+    onError: () => setIsLoading(false),
+  });
 
   useEffect(() => {
     setIsClient(true);
   }, []);
 
+  const handleLogin = async () => {
+    setIsLoading(true);
+    try {
+      await login();
+    } catch (error) {
+      console.error("Login error:", error);
+      setIsLoading(false);
+    }
+  };
 
   return (
     <div>
@@ -26,11 +38,11 @@ function WalletConnect() {
           {ready ? (
             <NavbarButton
               disabled={isLoading}
-              onClick={() => login()}
+              onClick={handleLogin}
               variant="primary"
-              className="rounded-full px-4 py-2 bg-peach-400"
+              className={`rounded-full px-4 py-2 bg-peach-400 ${isLoading ? 'cursor-not-allowed opacity-50' : ''}`}
             >
-              Sign In
+              {isLoading ? "Connecting..." : "Sign In"}
             </NavbarButton>
           ) : (
             <NavbarButton

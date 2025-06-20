@@ -17,6 +17,7 @@ import { formatAmount } from '@/helpers/donations';
 import { useAccount } from 'wagmi';
 import { Address } from 'viem';
 import { Button } from '../ui/button';
+import { Loader2 } from 'lucide-react';
 
 export const GitcoinVerifySection = () => {
   const { address } = useAccount();
@@ -81,7 +82,14 @@ export const GitcoinVerifySection = () => {
         disabled={isUserLoading || isScoreFetching}
         onClick={onCheckScore}
       >
-        Check eligibility
+        {isUserLoading || isScoreFetching ? (
+          <div className='flex items-center gap-2'>
+            <Loader2 className='w-4 h-4 animate-spin' />
+            Checking...
+          </div>
+        ) : (
+          "Check eligibility"
+        )}
       </Button>
     </section>
   ) : status === GitcoinVerificationStatus.LOW_SCORE ? (

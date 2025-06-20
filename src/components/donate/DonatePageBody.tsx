@@ -189,6 +189,7 @@ const DonatePageBody: React.FC<DonatePageBodyProps> = ({ setIsConfirming }) => {
   const [squidTransactionRequest, setSquidTransactionRequest] =
     useState<any>(null);
   const [squidRouteLoading, setSquidRouteLoading] = useState(false);
+  const [isRefetching, setIsRefetching] = useState(false);
   const [isSquidTransaction, setIsSquidTransaction] = useState(false);
 
   const [minimumContributionAmount, setMinimumContributionAmount] =
@@ -765,8 +766,15 @@ const DonatePageBody: React.FC<DonatePageBodyProps> = ({ setIsConfirming }) => {
   };
 
   const handleRefetch = async () => {
-    await getTokenDetails();
-    console.log("Refetched", parseFloat(tokenDetails?.formattedBalance));
+    setIsRefetching(true);
+    try {
+      await getTokenDetails();
+      console.log("Refetched", parseFloat(tokenDetails?.formattedBalance));
+    } catch (error) {
+      console.error("Error refetching token details:", error);
+    } finally {
+      setIsRefetching(false);
+    }
   };
 
   const fetchRoute = (inputAmount: number) => {
@@ -922,8 +930,12 @@ const DonatePageBody: React.FC<DonatePageBodyProps> = ({ setIsConfirming }) => {
                         2
                       )} ${selectedToken?.symbol}`}
                 </span>
-                <button onClick={handleRefetch} className="hover:text-peach-400 transition-colors">
-                  <IconRefresh size={16} />
+                <button 
+                  onClick={handleRefetch} 
+                  disabled={isRefetching}
+                  className="hover:text-peach-400 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <IconRefresh size={16} className={isRefetching ? "animate-spin" : ""} />
                 </button>
               </span>
             </div>
@@ -1088,15 +1100,13 @@ const DonatePageBody: React.FC<DonatePageBodyProps> = ({ setIsConfirming }) => {
           <div className="flex flex-col">
             <Button
               onClick={handleDonateClick}
-              disabled={!isConnected || donateDisabled || squidRouteLoading}
+              disabled={!isConnected || donateDisabled}
+              loading={squidRouteLoading || donateDisabled}
+              loadingText={squidRouteLoading ? "Getting Swap Routes..." : "Processing..."}
               className="w-full bg-peach-400 hover:bg-peach-300 text-black font-medium py-3 rounded-lg transition-colors"
               size="lg"
             >
-              {isConnected
-                ? squidRouteLoading
-                  ? "Getting Swap Routes"
-                  : "Buy Token"
-                : "Connect Wallet"}
+              {isConnected ? "Buy Token" : "Connect Wallet"}
             </Button>
             <FlashMessage
               message={flashMessage}

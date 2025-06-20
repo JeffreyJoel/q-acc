@@ -42,7 +42,7 @@ export const UpdateProfileModal = ({
   isOpen,
   onClose,
   currentUser,
-  sendOtp,
+  sendOtp = false,
 }: UpdateProfileModalProps) => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -74,7 +74,7 @@ export const UpdateProfileModal = ({
       setAvatarFile(null);
       setAvatarHash(currentUser?.avatar || "");
     }
-  }, [isOpen, currentUser]);
+  }, [isOpen, currentUser, sendOtp]);
 
   const {
     sendCode,
@@ -212,9 +212,10 @@ export const UpdateProfileModal = ({
         if (!open) resetAndClose();
       }}
     >
-      <DialogContent className="sm:max-w-md bg-neutral-900 rounded-[24px] w-full max-w-md">
+      <DialogContent className="sm:max-w-md p-0 bg-neutral-900 rounded-[24px] w-full max-h-[90vh] flex flex-col">
         <FormProvider {...methods}>
-          <DialogHeader>
+          <div className="p-6 flex-1 overflow-y-auto">
+            <DialogHeader>
             <DialogTitle>
               {step === "details" ? "Update Your Profile" : "Verify Your Email"}
             </DialogTitle>
@@ -315,8 +316,9 @@ export const UpdateProfileModal = ({
               </InputOTP>
             </div>
           )}
+          </div>
 
-          <DialogFooter className="gap-2 sm:justify-between">
+          <DialogFooter className="gap-2 sm:justify-between p-6 border-t border-neutral-800">
             {step === "otp" && (
               <Button
                 type="button"
@@ -344,15 +346,11 @@ export const UpdateProfileModal = ({
                   type="button"
                   onClick={handleSendVerificationCode}
                   disabled={isLoading || !name.trim() || !email.includes("@")}
+                  loading={isLoading || isUpdatingUser}
+                  loadingText={isUpdatingUser ? "Updating..." : "Processing..."}
                   className="bg-peach-400 hover:bg-peach-300 text-black rounded-full"
                 >
-                  {!sendOtp
-                    ? isUpdatingUser
-                      ? "Updating..."
-                      : "Update"
-                    : privyLoginState.status === "sending-code"
-                    ? "Sending Code..."
-                    : "Send Code"}
+                  {!sendOtp ? "Update" : "Send Code"}
                 </Button>
               )}
               {step === "otp" && (
@@ -360,13 +358,11 @@ export const UpdateProfileModal = ({
                   type="button"
                   onClick={handleVerifyOtpAndSave}
                   disabled={isLoading || code.length !== 6}
+                  loading={isLoading || isUpdatingUser}
+                  loadingText={isUpdatingUser ? "Saving..." : "Verifying..."}
                   className="bg-peach-400 hover:bg-peach-300 text-black rounded-full"
                 >
-                  {privyLoginState.status === "submitting-code"
-                    ? "Verifying..."
-                    : isUpdatingUser
-                    ? "Saving..."
-                    : "Verify & Save"}
+                  Verify & Save
                 </Button>
               )}
             </div>

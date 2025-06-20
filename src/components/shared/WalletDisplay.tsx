@@ -1,12 +1,13 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   ChevronDown,
   LogOut,
   UserCircle2,
   UserCircleIcon,
   Wallet,
+  HelpCircle,
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -15,7 +16,8 @@ import { shortenAddress } from "@/helpers/address";
 import { useDisconnectAndLogout } from "@/hooks/useDisconnectAndLogout";
 import { getLocalStorageToken } from "@/helpers/generateJWT";
 import { useQueryClient } from "@tanstack/react-query";
-// import { WalletsDialog } from "@privy-io/react-auth/ui";
+
+import { UserPill } from "@privy-io/react-auth/ui";
 
 interface WalletDisplayProps {
   walletAddress?: string;
@@ -24,74 +26,143 @@ interface WalletDisplayProps {
 export const WalletDisplay = ({ walletAddress }: WalletDisplayProps) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [hasMounted, setHasMounted] = useState(false);
+
+  const dropdownRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
-  const { logout } = useLogout();
   const { disconnect } = useDisconnectAndLogout();
   const queryClient = useQueryClient();
-  const toggleDropdown = () => setIsMenuOpen(!isMenuOpen);
 
-  async function handleLogout() {
-    try {
-      // Close dropdown first
-      setIsMenuOpen(false);
-      
-      // Disconnect all wagmi connectors first
-      await disconnect();
-      
-      // Then logout from Privy
-      await logout();
-      
-      // Clear React Query cache to remove all user-specific cached data
+  const { logout } = useLogout({
+    onSuccess: () => {
+      console.log("User successfully logged out");
+
+      // Clear query cache
       queryClient.clear();
-      
-      // Clean up localStorage - be more thorough
+
+      // Clean up localStorage
       if (walletAddress) {
         const localStorageToken = getLocalStorageToken(walletAddress);
         if (localStorageToken) {
-          localStorage.removeItem('token');
+          localStorage.removeItem("token");
         }
       } else {
-        // If no specific wallet address, remove token anyway as a safety measure
-        localStorage.removeItem('token');
+        localStorage.removeItem("token");
       }
-      
+
       // Clean up any other auth-related localStorage items
-      const authRelatedKeys = ['token'];
-      authRelatedKeys.forEach(key => {
+      const authRelatedKeys = ["token"];
+      authRelatedKeys.forEach((key) => {
         try {
           localStorage.removeItem(key);
         } catch (error) {
           console.warn(`Failed to remove ${key} from localStorage:`, error);
         }
       });
-      
-      // Clean up session storage for cached data like leaderboard
-      const sessionStorageKeys = ['leaderboardData'];
-      sessionStorageKeys.forEach(key => {
+
+      router.push("/");
+    },
+  });
+
+  const toggleDropdown = () => setIsMenuOpen(!isMenuOpen);
+  const closeDropdown = () => setIsMenuOpen(false);
+
+  // Click outside to close dropdown
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        // Check if the click is on a UserPill modal or any modal with high z-index
+        const target = event.target as Element;
+        const isModalClick =
+          target.closest("[data-radix-popper-content-wrapper]") ||
+          target.closest('[role="dialog"]') ||
+          target.closest('[data-state="open"]') ||
+          target.closest(".privy-modal") ||
+          target.closest("[data-privy-modal]");
+
+        if (!isModalClick) {
+          closeDropdown();
+        }
+      }
+    };
+
+    if (isMenuOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isMenuOpen]);
+
+  // Close dropdown on Escape key
+  useEffect(() => {
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        closeDropdown();
+      }
+    };
+
+    if (isMenuOpen) {
+      document.addEventListener("keydown", handleEscape);
+    }
+
+    return () => {
+      document.removeEventListener("keydown", handleEscape);
+    };
+  }, [isMenuOpen]);
+
+  async function handleLogout() {
+    try {
+      closeDropdown();
+
+      await disconnect();
+
+      await logout();
+
+      queryClient.clear();
+
+      if (walletAddress) {
+        const localStorageToken = getLocalStorageToken(walletAddress);
+        if (localStorageToken) {
+          localStorage.removeItem("token");
+        }
+      } else {
+        localStorage.removeItem("token");
+      }
+
+      // Clean up any other auth-related localStorage items
+      const authRelatedKeys = ["token"];
+      authRelatedKeys.forEach((key) => {
         try {
-          sessionStorage.removeItem(key);
+          localStorage.removeItem(key);
         } catch (error) {
-          console.warn(`Failed to remove ${key} from sessionStorage:`, error);
+          console.warn(`Failed to remove ${key} from localStorage:`, error);
         }
       });
-      
-      // Navigate to home page after successful logout
-      router.push('/');
-      
     } catch (error) {
-      console.error('Error during logout:', error);
+      console.error("Error during logout:", error);
+
       // Still try to clean up storage even if logout/disconnect fails
       try {
         queryClient.clear();
-        localStorage.removeItem('token');
-        sessionStorage.removeItem('leaderboardData');
-        // Navigate to home even if logout had errors
-        router.push('/');
+        localStorage.removeItem("token");
+        sessionStorage.removeItem("leaderboardData");
+        router.push("/");
       } catch (cleanupError) {
-        console.warn('Failed to cleanup storage during error handling:', cleanupError);
+        console.warn(
+          "Failed to cleanup storage during error handling:",
+          cleanupError
+        );
       }
     }
   }
+
+  const handleMyAccountClick = () => {
+    closeDropdown();
+  };
 
   useEffect(() => {
     setHasMounted(true);
@@ -102,49 +173,90 @@ export const WalletDisplay = ({ walletAddress }: WalletDisplayProps) => {
   }
 
   return (
-    <div className="relative inline-block text-left">
-      <button
-        onClick={toggleDropdown}
-        className="flex items-center gap-2 bg-neutral-800 px-4 py-3 rounded-full border border-peach-400/30 shadow-sm"
-      >
-        <UserCircleIcon />
-        <span className="hidden sm:block text-sm font-medium">
-          {walletAddress ? shortenAddress(walletAddress) : "0x0000...0000"}
-        </span>
-        <ChevronDown className="h-4 w-4 hidden sm:block" />
-      </button>
+    <>
+      {/* Ensure UserPill modals appear above dropdown */}
+      <style jsx global>{`
+        [data-radix-popper-content-wrapper],
+        [role="dialog"],
+        .privy-modal,
+        [data-privy-modal] {
+          z-index: 100 !important;
+        }
+      `}</style>
+      <div className="relative inline-block text-left" ref={dropdownRef}>
+        <button
+          onClick={toggleDropdown}
+          className="flex items-center gap-2 bg-neutral-800 px-4 py-3 rounded-full border border-peach-400/30 shadow-sm hover:bg-neutral-700 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-peach-400/50"
+          aria-haspopup="true"
+          aria-expanded={isMenuOpen}
+        >
+          <UserCircleIcon className="h-5 w-5" />
+          <span className="hidden sm:block text-sm font-medium text-gray-200">
+            {walletAddress ? shortenAddress(walletAddress) : "0x0000...0000"}
+          </span>
+          <ChevronDown
+            className={`h-4 w-4 hidden sm:block transition-transform duration-200 ${
+              isMenuOpen ? "rotate-180" : ""
+            }`}
+          />
+        </button>
 
-      {isMenuOpen && (
-        <div className="absolute block right-0 left-0 mx-auto mt-2 pt-3 w-60 dark bg-neutral-800 rounded-2xl shadow-xl ring-1 ring-black ring-opacity-5 z-50 ">
-          <div
-            className="hover:bg-peach-400/10 flex items-center gap-2 mx-2 px-4 py-3 rounded-xl cursor-pointer text-base ext-gray-200"
-            // onClick={() => openModal()}
-          >
-            <Wallet /> Wallet
+        {isMenuOpen && (
+          <div className="absolute right-0 mt-2 w-64 bg-neutral-800 rounded-2xl shadow-xl ring-1 ring-white/10 z-40 animate-in slide-in-from-top-2 duration-200">
+            {/* Header with UserPill */}
+            <div className="py-2 border-b border-neutral-700 relative">
+              <div className="cursor-pointer hover:bg-peach-400/10 [&_.privy-modal]:z-[100] [&_[role='dialog']]:z-[100] [&_[data-radix-popper-content-wrapper]]:z-[100]">
+                <UserPill
+                  expanded={true}
+                  ui={{
+                    minimal: false,
+                    background: "secondary",
+                  }}
+                  label={
+                    <span className="w-full flex items-center gap-3 text-left transition-colors duration-150 text-gray-200">
+                      <Wallet className="h-5 w-5" />
+                      <span className="text-sm font-medium">
+                        Manage Wallets
+                      </span>
+                    </span>
+                  }
+                />
+              </div>
+            </div>
+
+            {/* Menu Items */}
+            <div className="py-2">
+              <Link
+                href={`/profile/${walletAddress}`}
+                onClick={handleMyAccountClick}
+              >
+                <div className="flex items-center gap-3 px-4 py-3 hover:bg-peach-400/10 transition-colors duration-150 text-gray-200">
+                  <UserCircle2 className="h-5 w-5" />
+                  <span className="text-sm font-medium">My Account</span>
+                </div>
+              </Link>
+              {/* 
+              <button
+                className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-peach-400/10 transition-colors duration-150 text-gray-200"
+              >
+                <HelpCircle className="h-5 w-5" />
+                <span className="text-sm font-medium">Need Help?</span>
+              </button> */}
+
+              {/* Divider */}
+              <div className="my-2 border-t border-neutral-700" />
+
+              <button
+                onClick={handleLogout}
+                className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-red-500/10 transition-colors duration-150 text-red-400"
+              >
+                <LogOut className="h-5 w-5" />
+                <span className="text-sm font-semibold">Sign Out</span>
+              </button>
+            </div>
           </div>
-          {/* <UserPill /> */}
-          {/* <WalletsDialog /> */}
-          <div className="mx-2" />
-          <ul className="py-2 px-2 flex flex-col gap-3 text-base text-gray-200">
-            <Link href={`/profile/${walletAddress}`}>
-              <li className="hover:bg-peach-400/10 flex items-center gap-2 px-4 py-3 rounded-xl cursor-pointer">
-                <UserCircle2 />
-                My Account
-              </li>
-            </Link>
-            <li className="hover:bg-peach-400/10 px-4 py-3 rounded-xl cursor-pointer">
-              Do You Need Help?
-            </li>
-            <li
-              className="hover:bg-peach-400/10 flex items-center gap-2 px-4 py-3 rounded-xl cursor-pointer text-red-600"
-              onClick={handleLogout}
-            >
-              <LogOut className="" />
-              <span className="font-semibold">Sign out</span>
-            </li>
-          </ul>
-        </div>
-      )}
-    </div>
+        )}
+      </div>
+    </>
   );
 };

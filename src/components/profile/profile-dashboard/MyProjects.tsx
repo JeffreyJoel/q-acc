@@ -233,8 +233,9 @@ const MyProjects = ({projectData}:{projectData: IProject}) => {
   const claimableFeesFormated = Number(formatUnits(claimableFees, 18));
   const enableClaimButton = claimableFeesFormated > 0;
   const tributeModuleAvailable: boolean =
-    !!projectData?.tributeClaimModuleAddress &&
-    !!projectData?.tributeRecipientAddress;
+    // !!projectData?.tributeClaimModuleAddress &&
+    // !!projectData?.tributeRecipientAddress;
+    true;
 
   const claimedTributesAndMintedTokenAmounts =
     useClaimedTributesAndMintedTokenAmounts(
@@ -253,8 +254,8 @@ const MyProjects = ({projectData}:{projectData: IProject}) => {
 
   const { claim } = useClaimCollectedFee({
     fundingManagerAddress: projectData?.abc?.fundingManagerAddress!,
-    tributeModule: projectData?.tributeClaimModuleAddress!,
-    feeRecipient: projectData?.tributeRecipientAddress!,
+    tributeModule: "0x06Ee820A94D7F23D3d3468a159737287059EdDdF",
+    feeRecipient: projectData?.abc?.projectAddress!,
     amount: claimableFees,
     onSuccess: () => {
       // do after 5 seconds

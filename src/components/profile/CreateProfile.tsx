@@ -4,7 +4,7 @@ import type React from "react";
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Upload, ArrowRight, ArrowLeft, Loader2 } from "lucide-react";
+import { X, Upload, ArrowRight, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
@@ -370,16 +370,11 @@ export default function ProfileCreationModal({
                     type="button"
                     onClick={handleSubmit}
                     disabled={isSubmitting}
+                    loading={isSubmitting}
+                    loadingText="Creating..."
                     className="rounded-full bg-[#FBBA80] hover:bg-[#FBBA80]/90 text-neutral-900 font-medium min-w-[120px]"
                   >
-                    {isSubmitting ? (
-                      <>
-                        <Loader2 size={16} className="mr-2 animate-spin" />
-                        Creating...
-                      </>
-                    ) : (
-                      "Create Profile"
-                    )}
+                    Create Profile
                   </Button>
                 </div>
               </motion.div>

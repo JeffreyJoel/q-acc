@@ -3,15 +3,15 @@
 import { Search, X } from "lucide-react";
 
 const categories = [
-  { id: "defi", name: "DeFi" },
-  { id: "game", name: "Gaming" },
-  { id: "infra", name: "Infrastructure" },
-  { id: "dao", name: "DAO" },
-  { id: "lending", name: "Lending" },
-  { id: "yield", name: "Yield" },
-  { id: "social", name: "Social" },
+  { id: "DeFi", name: "DeFi" },
+  { id: "Gaming", name: "Gaming" },
+  { id: "Infrastructure", name: "Infrastructure" },
+  { id: "DAO", name: "DAO" },
+  { id: "Lending", name: "Lending" },
+  { id: "Yield", name: "Yield" },
+  { id: "Social", name: "Social" },
   { id: "AI", name: "AI" },
-  { id: "music", name: "Music" },
+  { id: "Music", name: "Music" },
 ];
 
 const seasons = [

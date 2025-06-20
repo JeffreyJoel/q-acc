@@ -9,7 +9,7 @@ export const MyVerifications = () => {
     <div className='container'>
       <div className='w-full flex flex-col gap-10 rounded-2xl text-xl font-redHatText leading-9 mb-14 md:mb-48'>
         <GitcoinVerifySection />
-        <ZkidVerifySection />
+        {/* <ZkidVerifySection /> */}
 
         <SkipVerification />
       </div>

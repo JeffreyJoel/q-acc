@@ -18,6 +18,7 @@ export const SupportButton: FC<ISupportButtonProps> = ({
   project,
   disabled,
 }) => {
+  const [isLoading, setIsLoading] = useState(false);
   const { data: activeRoundDetails } = useFetchActiveRoundDetails();
   const { address } = useAccount();
   const router = useRouter();
@@ -28,9 +29,12 @@ export const SupportButton: FC<ISupportButtonProps> = ({
     activeRoundDetails?.startDate,
     adjustedEndDate
   );
-  const handleSupport = (e: any) => {
+  
+  const handleSupport = async (e: any) => {
     e.stopPropagation();
-    async function checkUser() {
+    setIsLoading(true);
+    
+    try {
       if (activeRoundDetails?.__typename !== "QfRound") {
         console.log(activeRoundDetails);
         const res = await checkUserOwnsNFT(
@@ -48,24 +52,27 @@ export const SupportButton: FC<ISupportButtonProps> = ({
       } else {
         router.push(`/support/${project.slug}`);
       }
+    } catch (error) {
+      console.error("Error checking NFT ownership:", error);
+    } finally {
+      setIsLoading(false);
     }
-    checkUser();
   };
+  
   return (
-    <>
-      <button
-        className={
-          "cursor-pointer px-6 py-4 rounded-full text-sm font-bold items-center flex gap-2 bg-peach-400  text-black w-full justify-center"
-        }
-        onClick={handleSupport}
-        disabled={
-          remainingTime === "Time is up!" ||
-          remainingTime === "--:--:--" ||
-          disabled
-        }
-      >
-        Buy Token
-      </button>
-    </>
+    <Button
+      onClick={handleSupport}
+      disabled={
+        remainingTime === "Time is up!" ||
+        remainingTime === "--:--:--" ||
+        disabled ||
+        isLoading
+      }
+      loading={isLoading}
+      loadingText="Checking access..."
+      className="cursor-pointer px-6 py-4 rounded-full text-sm font-bold bg-peach-400 text-black w-full"
+    >
+      Buy Token
+    </Button>
   );
 };

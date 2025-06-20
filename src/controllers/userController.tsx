@@ -22,7 +22,6 @@ import { useModal } from "@/contexts/ModalContext";
 export const UserController = () => {
   const { user: privyUser, ready, authenticated } = usePrivy();
   const { mutateAsync: updateUser } = useUpdateUser();
-  const router = useRouter();
   const { isConnected, address } = useAccount();
   const { setShowSignModal, openUpdateProfileModal, openSignModal, setOnSign } =
     useModal();
@@ -41,7 +40,6 @@ export const UserController = () => {
 
   const onSign = async (signedInUser: IUser) => {
     console.log("Signed", signedInUser);
-    // router.push("/");
     setShowSignModal(false);
     if (!signedInUser?.isSignedIn) return;
 

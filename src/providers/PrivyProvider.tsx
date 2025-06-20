@@ -9,12 +9,17 @@ import {
 } from "wagmi";
 
 import { PrivyClientConfig, PrivyProvider } from "@privy-io/react-auth";
-import { polygon, polygonAmoy } from "viem/chains";
+import { polygon, polygonAmoy, mainnet } from "viem/chains";
 import { WagmiProvider, createConfig } from "@privy-io/wagmi";
 
 const privyConfig: PrivyClientConfig = {
   embeddedWallets: {
     createOnLogin: "users-without-wallets",
+    showWalletUIs: true,
+    priceDisplay: {
+      primary: "fiat-currency",
+      secondary: "native-token",
+    },
   },
   loginMethods: ["wallet", "email", "google", "twitter"],
   appearance: {
@@ -24,6 +29,8 @@ const privyConfig: PrivyClientConfig = {
     accentColor: "#FBBA80",
   },
   defaultChain: polygon,
+  supportedChains: [polygon, mainnet, polygonAmoy],
+  
 };
 
 export const config = createConfig({
