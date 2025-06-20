@@ -119,11 +119,11 @@ export const ShareProjectModal: FC<ShareProjectModalProps> = ({
             </p>
           </div>
 
-          <div className="w-full border border-peach-300 rounded-full p-2 flex gap-2 items-center justify-between ">
+          <div className="text-sm w-full border border-peach-300 rounded-full p-3 flex gap-2 items-center justify-between ">
             <span className="text-peach-300"> {copyLink}</span>
             <div
               onClick={handleCopy}
-              className="p-3  rounded-full cursor-pointer text-neutral-800 text-sm font-medium bg-peach-400 shadow-baseShadow"
+              className="px-3 py-2 rounded-full cursor-pointer text-neutral-800 text-xs font-medium bg-peach-400 shadow-baseShadow"
             >
               Copy Link
             </div>

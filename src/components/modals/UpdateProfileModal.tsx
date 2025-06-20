@@ -346,15 +346,11 @@ export const UpdateProfileModal = ({
                   type="button"
                   onClick={handleSendVerificationCode}
                   disabled={isLoading || !name.trim() || !email.includes("@")}
+                  loading={isLoading || isUpdatingUser}
+                  loadingText={isUpdatingUser ? "Updating..." : "Processing..."}
                   className="bg-peach-400 hover:bg-peach-300 text-black rounded-full"
                 >
-                  {!sendOtp
-                    ? isUpdatingUser
-                      ? "Updating..."
-                      : "Update"
-                    : privyLoginState.status === "sending-code"
-                    ? "Sending Code..."
-                    : "Send Code"}
+                  {!sendOtp ? "Update" : "Send Code"}
                 </Button>
               )}
               {step === "otp" && (
@@ -362,13 +358,11 @@ export const UpdateProfileModal = ({
                   type="button"
                   onClick={handleVerifyOtpAndSave}
                   disabled={isLoading || code.length !== 6}
+                  loading={isLoading || isUpdatingUser}
+                  loadingText={isUpdatingUser ? "Saving..." : "Verifying..."}
                   className="bg-peach-400 hover:bg-peach-300 text-black rounded-full"
                 >
-                  {privyLoginState.status === "submitting-code"
-                    ? "Verifying..."
-                    : isUpdatingUser
-                    ? "Saving..."
-                    : "Verify & Save"}
+                  Verify & Save
                 </Button>
               )}
             </div>

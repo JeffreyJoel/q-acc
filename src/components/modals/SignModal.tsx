@@ -48,19 +48,14 @@ export const SignModal: FC<SignModalProps> = props => {
               type="button"
               onClick={() => refetch()}
               disabled={isFetching}
+              loading={isFetching}
+              loadingText="Signing..."
               className="w-full rounded-full bg-[#FBBA80] hover:bg-[#FBBA80]/90 text-neutral-900 font-medium py-6"
             >
-              {isFetching ? (
-                <div className="flex items-center justify-center gap-2">
-                  <Loader2 size={16} className="animate-spin" />
-                  <span>Signing...</span>
-                </div>
-              ) : (
-                <div className="flex items-center justify-center gap-2">
-                  <span>Sign Message</span>
-                  <ArrowRight size={16} />
-                </div>
-              )}
+              <div className="flex items-center justify-center gap-2">
+                <span>Sign Message</span>
+                <ArrowRight size={16} />
+              </div>
             </Button>
           </div>
         </div>

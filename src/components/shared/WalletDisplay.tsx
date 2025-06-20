@@ -120,8 +120,28 @@ export const WalletDisplay = ({ walletAddress }: WalletDisplayProps) => {
 
       await disconnect();
 
-      // logout from Privy - the cleanup is handled by the onSuccess callback
       await logout();
+
+      queryClient.clear();
+
+      if (walletAddress) {
+        const localStorageToken = getLocalStorageToken(walletAddress);
+        if (localStorageToken) {
+          localStorage.removeItem("token");
+        }
+      } else {
+        localStorage.removeItem("token");
+      }
+
+      // Clean up any other auth-related localStorage items
+      const authRelatedKeys = ["token"];
+      authRelatedKeys.forEach((key) => {
+        try {
+          localStorage.removeItem(key);
+        } catch (error) {
+          console.warn(`Failed to remove ${key} from localStorage:`, error);
+        }
+      });
     } catch (error) {
       console.error("Error during logout:", error);
 
@@ -215,7 +235,7 @@ export const WalletDisplay = ({ walletAddress }: WalletDisplayProps) => {
                   <span className="text-sm font-medium">My Account</span>
                 </div>
               </Link>
-{/* 
+              {/* 
               <button
                 className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-peach-400/10 transition-colors duration-150 text-gray-200"
               >
