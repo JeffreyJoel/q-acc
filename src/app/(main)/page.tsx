@@ -16,7 +16,7 @@ export default function Home() {
 
   const projects = useMemo(() => allProjects?.projects || [], [allProjects]);
 
-  console.log(projects);
+  // console.log(projects);
 
   const filteredProjects = useMemo(() => {
     if (!projects) return [];

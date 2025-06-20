@@ -72,7 +72,6 @@ const ProjectUserDonationTable: React.FC<ProjectUserDonationTableProps> = ({
     by: EOrderBy.Date,
     direction: EDirection.DESC,
   });
-  const { data: isSafeAccount } = useCheckSafeAccount();
 
   useEffect(() => {
     const fetchUserDonationData = async () => {
@@ -262,7 +261,7 @@ const ProjectUserDonationTable: React.FC<ProjectUserDonationTableProps> = ({
                       <div>
                         <div className='flex relative px-2'>
                           <div className='flex items-center'>
-                            <div className='w-6 h-6  absolute right-6 p-[4px] bg-[#fff] rounded-full shadow-baseShadow'>
+                            <div className='w-6 h-6  absolute right-6 p-[4px] rounded-full shadow-baseShadow'>
                               <img
                                 className='rounded-full  w-full'
                                 src={
@@ -273,7 +272,7 @@ const ProjectUserDonationTable: React.FC<ProjectUserDonationTableProps> = ({
                                 alt='From Chain  Logo'
                               />
                             </div>
-                            <div className='w-6 h-6 z-10 p-[4px] bg-[#fff] rounded-full shadow-baseShadow'>
+                            <div className='w-6 h-6 z-10 p-[4px] rounded-full shadow-baseShadow'>
                               <img
                                 className='rounded-full  w-full'
                                 src={tokenImageUrl}

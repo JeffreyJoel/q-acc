@@ -7,6 +7,7 @@ import { useUpdateSkipVerification } from '@/hooks/useUpdateSkipVerification';
 import { useFetchUser } from '@/hooks/useFetchUser';
 import { Address } from 'viem';
 import { useAccount } from 'wagmi';
+import { Loader2 } from 'lucide-react';
 
 interface IGitcoinLowProps {
   userGitcoinScore: number;
@@ -69,7 +70,13 @@ export const GitcoinLow: FC<IGitcoinLowProps> = ({
         >
           <div className='flex gap-2'>
             <IconGitcoinPassport size={16} />
-            Refresh Score
+            
+            {isScoreFetching ? (
+              <div className='flex items-center gap-2'>
+                <Loader2 className='w-4 h-4 animate-spin' />
+                Checking...
+              </div>
+            ):"Refresh Score"}
           </div>
         </Button>
       </div>
