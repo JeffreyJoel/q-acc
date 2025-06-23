@@ -254,8 +254,8 @@ const MyProjects = ({projectData}:{projectData: IProject}) => {
 
   const { claim } = useClaimCollectedFee({
     fundingManagerAddress: projectData?.abc?.fundingManagerAddress!,
-    tributeModule: "0x06Ee820A94D7F23D3d3468a159737287059EdDdF",
-    feeRecipient: projectData?.abc?.projectAddress!,
+    tributeModule: "0x74248f303f7c74df53aeff401cfacb9875c51690",
+    feeRecipient: projectData?.abc?.creatorAddress!,
     amount: claimableFees,
     onSuccess: () => {
       // do after 5 seconds
@@ -319,6 +319,7 @@ const MyProjects = ({projectData}:{projectData: IProject}) => {
             >
               <Link
                 href={`/project/${projectSlug}/`}
+                prefetch={true}
                 className='p-2 flex gap-2 items-center hover:bg-neutral-700/50 rounded-lg'
               >
                 <IconViewProject />
@@ -326,6 +327,7 @@ const MyProjects = ({projectData}:{projectData: IProject}) => {
               </Link>
               <Link
                 href={`/project/edit/${projectId}`}
+                prefetch={true}
                 className='p-2 flex gap-2 items-center hover:bg-neutral-700/50 rounded-lg'
               >
                 <IconEditProject />

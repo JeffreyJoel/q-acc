@@ -19,6 +19,7 @@ import {
 import { TeamMember } from "@/types/project.type";
 import { IconArrowRight } from "@tabler/icons-react";
 import { Address } from "viem";
+import EditProjectLoader from "@/components/loaders/EditProjectLoader";
 
 const socialMediaLinks = [
   {
@@ -133,7 +134,7 @@ const EditProjectForm: FC<EditProjectFormProps> = ({ projectId }) => {
   console.log(formData);
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return <EditProjectLoader />;
   }
 
   return (

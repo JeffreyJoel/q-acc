@@ -533,6 +533,8 @@ export const GET_ALL_PROJECTS = /* GraphQL */ `
           paymentRouterAddress
           paymentProcessorAddress
         }
+        tributeClaimModuleAddress
+        tributeRecipientAddress
         seasonNumber
       }
       totalCount

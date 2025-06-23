@@ -51,8 +51,9 @@ export const UpdateProfileModal = ({
   const [step, setStep] = useState<DialogStep>("details");
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [avatarHash, setAvatarHash] = useState<string>("");
+  const [isUpdatingUser, setIsUpdatingUser] = useState(false);
 
-  const { mutateAsync: updateUser, isPending: isUpdatingUser } =
+  const { mutateAsync: updateUser } =
     useUpdateUser();
   const queryClient = useQueryClient();
   const { address: accountAddress } = useAccount();
@@ -95,6 +96,7 @@ export const UpdateProfileModal = ({
         params.isNewUser
       );
       try {
+        setIsUpdatingUser(true);
         const updatePayload: INewUer = {
           username: username.trim(),
           fullName: name.trim(),
@@ -110,6 +112,7 @@ export const UpdateProfileModal = ({
             queryKey: ["user", queryAddress],
           });
         }
+        setIsUpdatingUser(false);
         resetAndClose();
       } catch (error) {
         console.error(
@@ -140,6 +143,7 @@ export const UpdateProfileModal = ({
   const handleSendVerificationCode = async () => {
     if (name.trim() && email.trim() && email.includes("@")) {
       try {
+        setIsUpdatingUser(true);
         if (!sendOtp) {
           const updatePayload: INewUer = {
             fullName: name.trim(),
@@ -149,16 +153,16 @@ export const UpdateProfileModal = ({
             newUser: !currentUser?.email,
           };
           await updateUser(updatePayload);
-
+        
           const queryAddress = currentUser?.walletAddress || accountAddress;
           if (queryAddress) {
             await queryClient.invalidateQueries({
               queryKey: ["user", queryAddress],
             });
           }
+          setIsUpdatingUser(false);
           toast.success("Profile updated successfully!");
           resetAndClose();
-          window.location.reload();
         } else {
           await sendCode({ email: email.trim() });
         }
@@ -197,6 +201,7 @@ export const UpdateProfileModal = ({
     setStep("details");
     setAvatarFile(null);
     setAvatarHash("");
+    sendOtp = false;
     methods.reset();
     onClose();
   };

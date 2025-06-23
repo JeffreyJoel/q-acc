@@ -24,20 +24,14 @@ export default function Home() {
       const searchMatch =
         searchText === "" ||
         (project.title &&
-          (searchText === "AI"
-            ? project.title.includes(searchText)
-            : project.title.toLowerCase().includes(searchText.toLowerCase()))) ||
+          project.title.toLowerCase().includes(searchText.toLowerCase())) ||
         (project.description &&
-          (searchText === "AI"
-            ? project.description.includes(searchText)
-            : project.description
-                .toLowerCase()
-                .includes(searchText.toLowerCase()))) ||
+          project.description
+            .toLowerCase()
+            .includes(searchText.toLowerCase())) ||
         (project.categories &&
           project.categories.some((category) =>
-            searchText === "AI"
-              ? category.name.includes(searchText)
-              : category.name.toLowerCase().includes(searchText.toLowerCase())
+            category.name.toLowerCase().includes(searchText.toLowerCase())
           ));
 
       const categoryMatch =
@@ -45,33 +39,25 @@ export default function Home() {
         (project.categories &&
           project.categories.some((category) =>
             selectedCategories.some((selectedCat) =>
-              selectedCat === "AI"
-                ? category.name.includes(selectedCat)
-                : category.name.toLowerCase().includes(selectedCat.toLowerCase())
+              category.name.toLowerCase().includes(selectedCat.toLowerCase())
             )
           )) ||
         (project.title &&
           selectedCategories.some((selectedCat) =>
             project.title &&
-            (selectedCat === "AI"
-              ? project.title.includes(selectedCat)
-              : project.title.toLowerCase().includes(selectedCat.toLowerCase()))
+            project.title.toLowerCase().includes(selectedCat.toLowerCase())
           )) ||
         (project.description &&
           selectedCategories.some((selectedCat) =>
             project.description &&
-            (selectedCat === "AI"
-              ? project.description.includes(selectedCat)
-              : project.description
-                  .toLowerCase()
-                  .includes(selectedCat.toLowerCase()))
+            project.description
+              .toLowerCase()
+              .includes(selectedCat.toLowerCase())
           )) ||
         (project.teaser &&
           selectedCategories.some((selectedCat) =>
             project.teaser &&
-            (selectedCat === "AI"
-              ? project.teaser.includes(selectedCat)
-              : project.teaser.toLowerCase().includes(selectedCat.toLowerCase()))
+            project.teaser.toLowerCase().includes(selectedCat.toLowerCase())
           ));
 
       const seasonMatch =

@@ -6,6 +6,7 @@ import {
   AnimatePresence,
 } from "motion/react";
 import Image from "next/image";
+import Link from "next/link";
 
 import React, { useEffect, useState } from "react";
 
@@ -132,12 +133,13 @@ export const NavItems = ({ items, className, onItemClick }: NavItemsProps) => {
       )}
     >
       {items.map((item, idx) => (
-        <a
+        <Link
           onMouseEnter={() => setHovered(idx)}
           onClick={onItemClick}
           className={`relative px-4 py-2 text-neutral-300 ${hovered === idx ? "text-peach-400" : ""}`}
           key={`link-${idx}`}
           href={item.link}
+          prefetch={true}
         >
           {hovered === idx && (
             <motion.div
@@ -146,7 +148,7 @@ export const NavItems = ({ items, className, onItemClick }: NavItemsProps) => {
             />
           )}
           <span className="relative z-20">{item.name}</span>
-        </a>
+        </Link>
       ))}
     </motion.div>
   );
