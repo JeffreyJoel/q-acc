@@ -90,7 +90,7 @@ export const useClaimCollectedFee = ({
         args: [feeRecipient, amount],
       });
       const tx = await rolesModuleInstance.write.execTransactionFromModule(
-        [fundingManagerAddress, 10000, encoded, 1],
+        [fundingManagerAddress, 0, encoded, 0],
         { gas: 1000000 },
       );
 

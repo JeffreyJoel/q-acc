@@ -81,6 +81,13 @@ export const ProjectCreationProvider: React.FC<ProjectCreationProviderProps> = (
         return;
       }
 
+      // Check if we already have data for this project
+      if (projectData && projectData.id?.toString() === projectId) {
+        setFormDataState(transformProjectToFormData(projectData));
+        setIsEditMode(true);
+        return;
+      }
+
       setIsLoading(true);
       try {
         const data = await fetchProjectById(Number(projectId));

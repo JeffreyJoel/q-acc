@@ -48,7 +48,7 @@ export const ModalProvider: React.FC<ModalProviderProps> = ({ children }) => {
 
   const openUpdateProfileModal = (user?: IUser, sendOtp?: boolean) => {
     if (user) setCurrentUser(user);
-    if (sendOtp) setSendOtp(sendOtp);
+    setSendOtp(sendOtp || false);
     setShowUpdateProfileModal(true);
   };
   
