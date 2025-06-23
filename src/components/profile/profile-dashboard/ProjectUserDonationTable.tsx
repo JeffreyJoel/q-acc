@@ -75,9 +75,10 @@ const ProjectUserDonationTable: React.FC<ProjectUserDonationTableProps> = ({
 
   useEffect(() => {
     const fetchUserDonationData = async () => {
+      if (!project?.id) return;
       // const data = await fetchUserDonations(userId);
       const donationsByProjectId = await fetchProjectDonors(
-        Number(project?.id),
+        Number(project.id),
         1000,
       );
       const userDonations = donationsByProjectId?.donations.filter(
