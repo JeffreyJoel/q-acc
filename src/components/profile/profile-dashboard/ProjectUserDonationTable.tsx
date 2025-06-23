@@ -75,51 +75,19 @@ const ProjectUserDonationTable: React.FC<ProjectUserDonationTableProps> = ({
 
   useEffect(() => {
     const fetchUserDonationData = async () => {
+      if (!project?.id) return;
       // const data = await fetchUserDonations(userId);
       const donationsByProjectId = await fetchProjectDonors(
-        Number(project?.id),
+        Number(project.id),
         1000,
       );
       const userDonations = donationsByProjectId?.donations.filter(
         (donation: any) => donation.user.id == userId,
       );
       if (userDonations) {
-        const sortedDonations = userDonations.sort(
-          (
-            a: {
-              createdAt: string | number | Date;
-              amount: number;
-              rewardTokenAmount: number;
-            },
-            b: {
-              createdAt: string | number | Date;
-              amount: number;
-              rewardTokenAmount: number;
-            },
-          ) => {
-            if (order.by === EOrderBy.Date) {
-              return order.direction === EDirection.ASC
-                ? new Date(a.createdAt).getTime() -
-                    new Date(b.createdAt).getTime()
-                : new Date(b.createdAt).getTime() -
-                    new Date(a.createdAt).getTime();
-            } else if (order.by === EOrderBy.Amount) {
-              return order.direction === EDirection.ASC
-                ? a.amount - b.amount
-                : b.amount - a.amount;
-            } else if (order.by === EOrderBy.Tokens) {
-              return order.direction === EDirection.ASC
-                ? a.rewardTokenAmount - b.rewardTokenAmount
-                : b.rewardTokenAmount - a.rewardTokenAmount;
-            }
-            return 0;
-          },
-        );
-
-        setTotalCount(sortedDonations.length);
-        console.log(sortedDonations);
+        setTotalCount(userDonations.length);
         setPageDonations(
-          sortedDonations.slice(page * itemPerPage, (page + 1) * itemPerPage),
+          userDonations.slice(page * itemPerPage, (page + 1) * itemPerPage),
         );
       }
     };

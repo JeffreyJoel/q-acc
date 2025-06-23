@@ -40,7 +40,7 @@ import { useAddressWhitelist } from '@/hooks/useAddressWhitelist';
 import { calculateCapAmount } from '@/helpers/round';
 import { EProjectSocialMediaType } from '@/types/project.type';
 import { useTokenSupplyDetails } from '@/hooks/useTokens';
-import { ChevronDownIcon, SearchIcon } from 'lucide-react';
+import { ChevronDownIcon, Loader2, SearchIcon } from 'lucide-react';
 import { IProject } from '@/types/project.type';
 
 const MyProjects = ({projectData}:{projectData: IProject}) => {
@@ -249,13 +249,10 @@ const MyProjects = ({projectData}:{projectData: IProject}) => {
       mintedTokenAmounts: 0,
     };
 
-  console.log(projectData?.tributeClaimModuleAddress, projectData?.tributeRecipientAddress);
-  console.log(projectData?.abc?.fundingManagerAddress);
-
   const { claim } = useClaimCollectedFee({
     fundingManagerAddress: projectData?.abc?.fundingManagerAddress!,
-    tributeModule: "0x74248f303f7c74df53aeff401cfacb9875c51690",
-    feeRecipient: projectData?.abc?.creatorAddress!,
+    tributeModule: projectData?.tributeClaimModuleAddress || "0x74248f303f7c74df53aeff401cfacb9875c51690",
+    feeRecipient: projectData?.tributeRecipientAddress || projectData?.abc?.creatorAddress!,
     amount: claimableFees,
     onSuccess: () => {
       // do after 5 seconds
@@ -614,16 +611,26 @@ const MyProjects = ({projectData}:{projectData: IProject}) => {
 
             {tributeModuleAvailable && (
               <button
-                disabled={!enableClaimButton}
-                className={`flex justify-center px-6 py-3 rounded-full font-bold transition-colors ${
-                  enableClaimButton 
-                    ? 'bg-peach-400 text-black hover:bg-peach-300' 
+                disabled={!enableClaimButton || claim.isPending}
+                className={`flex justify-center items-center px-6 py-3 rounded-full font-bold transition-colors ${
+                  claim.isPending
+                    ? 'bg-neutral-700 text-neutral-400 cursor-wait'
+                    : enableClaimButton
+                    ? 'bg-peach-400 text-black hover:bg-peach-300'
                     : 'bg-neutral-700 text-neutral-400 cursor-not-allowed'
                 }`}
                 onClick={() => claim.mutateAsync()}
-                // loading={claim.isPending}
               >
-                {enableClaimButton ? 'Claim Tributes' : 'No Tributes to Claim'}
+                {claim.isPending ? (
+                  <>
+                    <Loader2 className='mr-2 h-4 w-4 animate-spin' />
+                    Claiming...
+                  </>
+                ) : enableClaimButton ? (
+                  'Claim Tributes'
+                ) : (
+                  'No Tributes to Claim'
+                )}
               </button>
             )}
           </div>
