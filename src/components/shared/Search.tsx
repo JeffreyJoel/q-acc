@@ -10,7 +10,6 @@ const categories = [
   { id: "Lending", name: "Lending" },
   { id: "Yield", name: "Yield" },
   { id: "Social", name: "Social" },
-  { id: "AI", name: "AI" },
   { id: "Music", name: "Music" },
 ];
 
