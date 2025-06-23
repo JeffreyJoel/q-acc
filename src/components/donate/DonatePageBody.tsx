@@ -225,7 +225,7 @@ const DonatePageBody: React.FC<DonatePageBodyProps> = ({ setIsConfirming }) => {
   };
 
 
-  console.log(activeRoundDetails);
+  // console.log(activeRoundDetails);
 
   const getDonationCap: any = async () => {
     if (projectData?.id) {
@@ -260,7 +260,7 @@ const DonatePageBody: React.FC<DonatePageBodyProps> = ({ setIsConfirming }) => {
 
     setMaxPOLCap(capAmount);
     setRemainingDonationAmount(capAmount - totalDonationAmountInRound);
-    console.log("Remaining Donation Limit", remainingDonationAmount);
+    // console.log("Remaining Donation Limit", remainingDonationAmount);
     let tempprogress = 0;
     if (maxPOLCap > 0) {
       tempprogress = round((totalDonationAmountInRound / capAmount) * 100, 2); // Round to 2 decimal places

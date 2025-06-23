@@ -26,7 +26,7 @@ async function getProjectAbcLaunchData(
       projectAddress: projectAddress.toLocaleLowerCase(),
     });
 
-    console.log(`get abc of project address ${projectAddress} `, abc);
+    // console.log(`get abc of project address ${projectAddress} `, abc);
 
     return (
       abc && {

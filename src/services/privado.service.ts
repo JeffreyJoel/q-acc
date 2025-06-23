@@ -65,7 +65,7 @@ export const generatePrivadoShortenedUrl = async () => {
       `${baseUrl}/api/link-store?id=${shortenedUrlUuid}`,
     );
 
-    console.log('verificationRequest', verificationRequest);
+    // console.log('verificationRequest', verificationRequest);
 
     // Define the URLs for redirection
     const backUrl = encodeURIComponent(`${baseUrl}/create/get-verified`);
@@ -73,7 +73,7 @@ export const generatePrivadoShortenedUrl = async () => {
 
     // Configure the Wallet URL (universal link)
     const walletUrlWithMessage = `${webWalletBaseUrl}/#request_uri=${shortenedUrl}&back_url=${backUrl}&finish_url=${finishUrl}`;
-    console.log('walletUrlWithMessage', walletUrlWithMessage);
+    // console.log('walletUrlWithMessage', walletUrlWithMessage);
     return walletUrlWithMessage;
   } catch (error) {
     console.error('Error in verifyAccount:', error);

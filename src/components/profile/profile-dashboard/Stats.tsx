@@ -17,7 +17,7 @@ function Stats() {
     error,
   } = useDonorContext();
 
-  console.log(donationsGroupedByProject);
+  // console.log(donationsGroupedByProject);
 
   return (
     <div className="space-y-8">

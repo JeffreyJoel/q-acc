@@ -21,7 +21,7 @@ export const usePrivadoChainStatus = ({ disable, address }: { disable: boolean, 
     queryKey: ['isPrivadoVerified', address],
     enabled: !disable && !!address,
     queryFn: async () => {
-      console.log('get privado state onchain');
+      // console.log('get privado state onchain');
       const abi = [
         {
           inputs: [
@@ -59,7 +59,7 @@ export const useTriggerUserPrivadoStatusCheck = ({
     queryKey: ['triggerUserPrivadoStatusCheck', address],
     queryFn: async () => {
       if (!address) return;
-      console.log('calling checkUserPrivadoVerifiedState for user:', address);
+      // console.log('calling checkUserPrivadoVerifiedState for user:', address);
       const res = await requestGraphQL<{
         checkUserPrivadoVerifiedState: boolean;
       }>(

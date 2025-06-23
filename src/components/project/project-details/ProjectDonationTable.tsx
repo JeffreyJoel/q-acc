@@ -108,7 +108,7 @@ const ProjectDonationTable = () => {
         // setPageDonations(filteredDonations);
       }
 
-      console.log(pageDonations, 'donations');
+      // console.log(pageDonations, 'donations');
     };
 
     fetchProjectDonations();

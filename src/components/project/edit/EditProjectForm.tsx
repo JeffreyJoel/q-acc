@@ -131,7 +131,7 @@ const EditProjectForm: FC<EditProjectFormProps> = ({ projectId }) => {
     router.push(`/project/edit/${projectId}/team`);
   };
 
-  console.log(formData);
+  // console.log(formData);
 
   if (isLoading) {
     return <EditProjectLoader />;
