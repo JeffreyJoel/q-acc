@@ -11,30 +11,30 @@ export const useClaimRewards = ({
 }: {
   paymentProcessorAddress: string;
   paymentRouterAddress: string;
-  streamId?: bigint;
   onSuccess?: () => void;
   onError?: (error: Error) => void;
 }) => {
   const { data: walletClient } = useWalletClient();
   const publicClient = usePublicClient();
 
-  const contract = getContract({
-    address: paymentProcessorAddress as Address,
-    abi: claimTokensABI,
-    client: walletClient!,
-  });
-
   const claim = useMutation({
     mutationFn: async () => {
-      const tx = await contract.write.claimAll([paymentRouterAddress], {
-        gas: 1000000,
+      if (!walletClient) throw new Error("Wallet not connected");
+
+      const contract = getContract({
+        address: paymentProcessorAddress as Address,
+        abi: claimTokensABI,
+        client: walletClient,
       });
+
+      const tx = await contract.write.claimAll([paymentRouterAddress]);
 
       await publicClient!.waitForTransactionReceipt({
         hash: tx,
       });
     },
     onSuccess,
+    onError,
   });
 
   return { claim };
