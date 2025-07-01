@@ -24,6 +24,7 @@ import {
   User,
   LinkedAccountWithMetadata,
   PrivyErrorCode,
+  usePrivy,
 } from "@privy-io/react-auth";
 import { toast } from "sonner";
 import { Dropzone } from "../ui/dropzone";
@@ -57,6 +58,7 @@ export const UpdateProfileModal = ({
     useUpdateUser();
   const queryClient = useQueryClient();
   const { address: accountAddress } = useAccount();
+  const {user: privyUser} = usePrivy()
 
   // Setup react-hook-form
   const methods = useForm({
@@ -68,14 +70,14 @@ export const UpdateProfileModal = ({
   useEffect(() => {
     if (isOpen) {
       setName(currentUser?.fullName || "");
-      setEmail(currentUser?.email || "");
+      setEmail(currentUser?.email || privyUser?.email?.address || "");
       setUsername(currentUser?.username || "")
       setCode("");
       setStep("details");
       setAvatarFile(null);
       setAvatarHash(currentUser?.avatar || "");
     }
-  }, [isOpen, currentUser, sendOtp]);
+  }, [isOpen, currentUser, privyUser, sendOtp]);
 
   const {
     sendCode,
@@ -144,7 +146,13 @@ export const UpdateProfileModal = ({
     if (name.trim() && email.trim() && email.includes("@")) {
       try {
         setIsUpdatingUser(true);
-        if (!sendOtp) {
+        
+        // If user already has an email (signed in with email via Privy) or sendOtp is false, 
+        // skip OTP verification and directly update profile
+        const userAlreadyHasEmail =  currentUser?.email || privyUser?.email;
+        const shouldSkipOtp = !sendOtp || userAlreadyHasEmail;
+        
+        if (shouldSkipOtp) {
           const updatePayload: INewUer = {
             fullName: name.trim(),
             email: email.trim(),
@@ -226,7 +234,9 @@ export const UpdateProfileModal = ({
             </DialogTitle>
             <DialogDescription>
               {step === "details"
-                ? "Please enter your name and email. We'll send a code to verify your email."
+                ? currentUser?.email 
+                  ? "Please enter your name and email to update your profile."
+                  : "Please enter your name and email. We'll send a code to verify your email."
                 : `Enter the 6-digit code sent to ${email}.`}
             </DialogDescription>
           </DialogHeader>
@@ -269,7 +279,7 @@ export const UpdateProfileModal = ({
               </div>
 
              {
-              sendOtp === false && (
+              (!sendOtp || currentUser?.email) && (
                 <div className="grid gap-2">
                 <label htmlFor="avatar">Profile Photo</label>
                 <div className="w-full">
@@ -355,7 +365,7 @@ export const UpdateProfileModal = ({
                   loadingText={isUpdatingUser ? "Updating..." : "Processing..."}
                   className="bg-peach-400 hover:bg-peach-300 text-black rounded-full"
                 >
-                  {!sendOtp ? "Update" : "Send Code"}
+                  {(!sendOtp || currentUser?.email || privyUser?.email) ? "Update" : "Send Code"}
                 </Button>
               )}
               {step === "otp" && (

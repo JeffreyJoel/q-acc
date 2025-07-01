@@ -1,11 +1,13 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Loader2, ArrowRight, X } from "lucide-react";
+import { Loader2, ArrowRight, X, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useSignUser } from '@/hooks/useSignUser';
 import { IUser } from '@/types/user.type';
 import type { FC } from 'react';
+import { useState, useEffect } from 'react';
+import { usePrivy } from '@privy-io/react-auth';
 
 interface SignModalProps {
   isOpen: boolean;
@@ -14,9 +16,54 @@ interface SignModalProps {
 }
 
 export const SignModal: FC<SignModalProps> = props => {
-  const { refetch, isFetching } = useSignUser(props.onSign);
+  const { ready, authenticated } = usePrivy();
+  const { refetch, isFetching, error } = useSignUser(props.onSign);
+  const [retryCount, setRetryCount] = useState(0);
+  const [showRetry, setShowRetry] = useState(false);
+
+  // Reset retry state when modal opens
+  useEffect(() => {
+    if (props.isOpen) {
+      setRetryCount(0);
+      setShowRetry(false);
+    }
+  }, [props.isOpen]);
+
+  // Handle errors and show retry option
+  useEffect(() => {
+    if (error) {
+      setShowRetry(true);
+    }
+  }, [error]);
+
+  const handleSign = async () => {
+    try {
+      setShowRetry(false);
+      const result = await refetch();
+      
+      // If signing failed and it's a wallet initialization error, show retry
+      if (!result.data && retryCount < 3) {
+        setTimeout(() => {
+          setShowRetry(true);
+        }, 1000);
+      }
+    } catch (err) {
+      console.error("Sign error:", err);
+      setShowRetry(true);
+    }
+  };
+
+  const handleRetry = () => {
+    setRetryCount(prev => prev + 1);
+    handleSign();
+  };
 
   if (!props.isOpen) return null;
+
+  // Don't show modal if Privy is not ready
+  if (!ready) {
+    return null;
+  }
 
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
@@ -39,15 +86,30 @@ export const SignModal: FC<SignModalProps> = props => {
           <h2 className="text-xl font-semibold text-white mb-4">
             Sign Message to Continue
           </h2>
-          <p className="mt-4 mb-10 text-neutral-300">
+          <p className="mt-4 mb-6 text-neutral-300">
             Please sign the message to verify your wallet ownership and continue.
           </p>
 
-          <div className="space-y-6">
+          {/* Show error message if signing failed */}
+          {showRetry && (
+            <div className="mb-6 p-4 bg-red-900/20 border border-red-500/30 rounded-lg">
+              <div className="flex items-center gap-2 text-red-400 text-sm">
+                <AlertCircle size={16} />
+                <span>
+                  {retryCount === 0 
+                    ? "Signing failed. Please try again."
+                    : `Signing failed (attempt ${retryCount + 1}/3). Please wait a moment and try again.`
+                  }
+                </span>
+              </div>
+            </div>
+          )}
+
+          <div className="space-y-4">
             <Button
               type="button"
-              onClick={() => refetch()}
-              disabled={isFetching}
+              onClick={handleSign}
+              disabled={isFetching || !authenticated || !ready}
               loading={isFetching}
               loadingText="Signing..."
               className="w-full rounded-full bg-[#FBBA80] hover:bg-[#FBBA80]/90 text-neutral-900 font-medium py-6"
@@ -57,6 +119,25 @@ export const SignModal: FC<SignModalProps> = props => {
                 <ArrowRight size={16} />
               </div>
             </Button>
+
+            {/* Show retry button if signing failed */}
+            {showRetry && retryCount < 3 && (
+              <Button
+                type="button"
+                onClick={handleRetry}
+                disabled={isFetching}
+                variant="outline"
+                className="w-full rounded-full border-neutral-600 text-neutral-300 hover:bg-neutral-800 py-6"
+              >
+                Try Again
+              </Button>
+            )}
+
+            {retryCount >= 3 && (
+              <div className="text-center text-sm text-neutral-400">
+                Multiple signing attempts failed. Please refresh the page and try again.
+              </div>
+            )}
           </div>
         </div>
       </motion.div>
