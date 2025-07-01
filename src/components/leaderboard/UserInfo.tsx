@@ -68,7 +68,7 @@ export const UserInfo = () => {
         <h2 className="text-base font-medium mb-3 font-tusker-8">
           Your Ranking
         </h2>
-        <LeaderboardItem user={userInfo} onUserClick={handleUserClick} />
+        <LeaderboardItem user={userInfo as LeaderboardUser} onUserClick={handleUserClick} />
       </div>
     );
   }

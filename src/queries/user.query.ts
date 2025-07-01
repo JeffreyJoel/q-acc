@@ -6,7 +6,6 @@ export const GET_USER_BY_ADDRESS = /* GraphQL */ `
       fullName: name
       avatar
       email
-      username
       isSignedIn
       privadoVerified
       acceptedToS
@@ -19,8 +18,6 @@ export const GET_USER_BY_ADDRESS = /* GraphQL */ `
       projectsFundedCount
       rank
       skipVerification
-      totalDonated
-      donationsCount
     }
   }
 `;
@@ -41,8 +38,8 @@ export const GET_GIVETH_USER_BY_ADDRESS = /* GraphQL */ `
 `;
 
 export const UPDATE_USER = /* GraphQL */ `
-  mutation ($username:String, $email: String, $fullName: String, $avatar: String) {
-    updateUser(username:$username, email: $email, fullName: $fullName, avatar: $avatar)
+  mutation ($email: String, $fullName: String, $avatar: String) {
+    updateUser(email: $email, fullName: $fullName, avatar: $avatar)
   }
 `;
 

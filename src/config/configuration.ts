@@ -6,8 +6,8 @@ import production from './production';
 // export const isPreprod = process.env.NEXT_PUBLIC_ENV === 'preprod';
 // export const isProductReleased =
 //   process.env.NEXT_PUBLIC_IS_PRODUCT_RELEASE === 'true';
-export const isEarlyAccessBranch =
-  process.env.NEXT_PUBLIC_EARLY_ACCESS_BRANCH === 'true';
+// export const isEarlyAccessBranch =
+//   process.env.NEXT_PUBLIC_EARLY_ACCESS_BRANCH === 'true';
 // export const isCountryRestrictionEnabled =
 //   process.env.NEXT_PUBLIC_RESTRICT_FEATURE_FLAG === 'true';
 // export const GTM_ID = process.env.NEXT_PUBLIC_GTM_ID;
