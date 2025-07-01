@@ -179,6 +179,9 @@ const DonarSupportedProjects = ({
       releasable.refetch();
       toast.success("Successfully Claimed Tokens");
     },
+    onError: (error) => {
+      toast.error(error.message);
+    },
   });
 
   useEffect(() => {

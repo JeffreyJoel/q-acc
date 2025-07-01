@@ -21,11 +21,11 @@ export function LeaderboardItem({ user, onUserClick }: LeaderboardItemProps) {
           className={`
             flex items-center justify-center 
             w-8 h-8 sm:w-12 sm:h-12 rounded-full 
-            ${user.rank <= 3 ? "bg-peach-400 text-black" : "bg-[#3a3a3a] text-white"}
-            font-bold text-lg sm:text-2xl
+            ${user.rank > 0 && user.rank <= 3 ? "bg-peach-400 text-black" : "bg-[#3a3a3a] text-white"}
+            font-bold ${user.rank > 0 ? "text-lg sm:text-2xl" : "text-xs sm:text-sm"}
           `}
         >
-          {user.rank}
+          {user.rank > 0 ? user.rank : "N/A"}
         </div>
       </div>
 

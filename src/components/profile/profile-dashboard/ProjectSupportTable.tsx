@@ -69,7 +69,7 @@ const ProjectSupportTable = ({
 
         if (data) {
           const { donations, totalCount } = data;
-          console.log(donations);
+          // console.log(donations);
           setTotalCount(totalCount);
           setPageDonations(donations);
         }

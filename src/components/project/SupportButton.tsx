@@ -36,7 +36,7 @@ export const SupportButton: FC<ISupportButtonProps> = ({
     
     try {
       if (activeRoundDetails?.__typename !== "QfRound") {
-        console.log(activeRoundDetails);
+        // console.log(activeRoundDetails);
         const res = await checkUserOwnsNFT(
           project?.abc?.nftContractAddress || "",
           address || ""

@@ -41,6 +41,7 @@ const RewardsBreakDown: React.FC = () => {
   const { data: POLPrice } = useTokenPrice();
   const { data: isSafeAccount } = useCheckSafeAccount();
   const [lockedTokens, setLockedTokens] = useState(0);
+  const [isTokenClaimable, setIsTokenClaimable] = useState(false);
   const [paymentAddresses, setPaymentAddresses] = useState<{
     paymentRouterAddress: string | null;
     paymentProcessorAddress: string | null;
@@ -129,29 +130,26 @@ const RewardsBreakDown: React.FC = () => {
     ? Number(ethers.formatUnits(releasable.data, 18))
     : 0;
 
-  const isTokenClaimable = isActivePaymentReceiver.data;
-
   const { claim } = useClaimRewards({
-    paymentProcessorAddress: project?.abc?.paymentProcessorAddress!,
-    paymentRouterAddress: project?.abc?.paymentRouterAddress!,
+    paymentProcessorAddress: paymentAddresses.paymentProcessorAddress || "",
+    paymentRouterAddress: paymentAddresses.paymentRouterAddress || "",
     onSuccess: () => {
-      // do after 5 seconds
-      // setTimeout(() => {
-      //   claimedTributesAndMintedTokenAmounts.refetch();
-      // }, 5000);
-      // projectCollateralFeeCollected.refetch();
-
+      setIsTokenClaimable(false);
       releasable.refetch();
-
       toast.success("Successfully Claimed Tokens");
-
-      console.log("Successly Clamied Tokens");
+    },
+    onError: (error) => {
+      toast.error(error.message);
     },
   });
 
   useEffect(() => {
     setLockedTokens(totalTokensReceived - tokensAlreadyClaimed);
   }, [releasable, released, totalTokensReceived]);
+
+  useEffect(() => {
+    setIsTokenClaimable(isActivePaymentReceiver.data || false);
+  }, [isActivePaymentReceiver.data]);
 
   // projectDonations.forEach((donation: any) => {
   //   const lockedRewardTokenAmount = calculateLockedRewardTokenAmount(

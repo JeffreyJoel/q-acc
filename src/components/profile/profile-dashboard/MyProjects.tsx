@@ -42,6 +42,7 @@ import { EProjectSocialMediaType } from '@/types/project.type';
 import { useTokenSupplyDetails } from '@/hooks/useTokens';
 import { ChevronDownIcon, Loader2, SearchIcon } from 'lucide-react';
 import { IProject } from '@/types/project.type';
+import { toast } from 'sonner';
 
 const MyProjects = ({projectData}:{projectData: IProject}) => {
   const projectId = projectData?.id;
@@ -260,6 +261,7 @@ const MyProjects = ({projectData}:{projectData: IProject}) => {
         claimedTributesAndMintedTokenAmounts.refetch();
       }, 5000);
       projectCollateralFeeCollected.refetch();
+      toast.success("Successfully Claimed Tributes");
     },
   });
   

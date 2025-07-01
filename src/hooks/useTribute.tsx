@@ -76,14 +76,20 @@ export const useClaimCollectedFee = ({
 }) => {
   const { data: walletClient } = useWalletClient();
   const publicClient = usePublicClient();
-  const rolesModuleInstance = getContract({
-    address: tributeModule as Address,
-    abi: roleModuleAbi,
-    client: walletClient!,
-  });
 
   const claim = useMutation({
     mutationFn: async () => {
+      if (!walletClient) {
+        throw new Error('Wallet not connected');
+      }
+      if (!publicClient) {
+        throw new Error('Public client not available');
+      }
+      const rolesModuleInstance = getContract({
+        address: tributeModule as Address,
+        abi: roleModuleAbi,
+        client: walletClient,
+      });
       const encoded = encodeFunctionData({
         abi: fundingManagerAbi,
         functionName: 'withdrawProjectCollateralFee',
@@ -94,7 +100,7 @@ export const useClaimCollectedFee = ({
         { gas: 1000000 },
       );
 
-      await publicClient!.waitForTransactionReceipt({
+      await publicClient.waitForTransactionReceipt({
         hash: tx,
       });
     },

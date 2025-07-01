@@ -31,7 +31,7 @@ export const useGetCurrentTokenPrice = (tokenAddress?: string) => {
               : 1 / numericPrice;
 
         setCurrentTokenPrice(finalPrice);
-        console.log('Current Price Address:', isListed, finalPrice);
+        // console.log('Current Price Address:', isListed, finalPrice);
       } catch (error) {
         console.error('Failed to fetch token price:', error);
         setIsTokenListed(null);
