@@ -26,7 +26,7 @@ const NETWORK_RPC_ADDRESS = process.env.NEXT_PUBLIC_NETWORK_RPC_ADDRESS;
 //   console.log('Running in development mode');
 // }
 
-const envConfig = development;
+const envConfig = production;
 
 const config = {
   LOW_CAP_TEXT: '1,356 POL',
