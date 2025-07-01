@@ -125,7 +125,7 @@ const socialMediaLinks = [
 ];
 
 const CreateProjectForm: FC = () => {
-  const { address, isConnected } = useAccount();
+  const { address } = useAccount();
   const { data: user } = useFetchUser(true, address as Address);
   const { mutateAsync: createProject, isPending } = useCreateProject();
   const { formData, setFormData, isEditMode } = useProjectCreationContext();
