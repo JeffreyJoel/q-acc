@@ -13,6 +13,7 @@ import { Spinner } from "../loaders/Spinner";
 import { useAccount } from "wagmi";
 import { Address } from "viem";
 import { UserInfo } from "./UserInfo";
+import { LeaderboardUser } from "@/types/leaderboard";
 
 const LEADERBOARD_STORAGE_KEY = 'leaderboardData';
 const MAX_CACHE_AGE_MS = 1000 * 60 * 7;
@@ -167,7 +168,7 @@ export function PointsTable() {
         {paginatedUsers.map((item) => (
           <LeaderboardItem
             key={item.id}
-            user={item}
+            user={item as LeaderboardUser}
             onUserClick={handleUserClick}
           />
         ))}

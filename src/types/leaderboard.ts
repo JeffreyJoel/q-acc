@@ -8,5 +8,5 @@ export interface LeaderboardUser {
   projectsFundedCount: number;
   walletAddress: string;
   rank: number;
-  username: string | null;
+  username?: string | null;
 } 

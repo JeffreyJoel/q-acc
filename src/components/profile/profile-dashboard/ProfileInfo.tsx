@@ -133,9 +133,9 @@ export default function ProfileInfo({ userAddress }: { userAddress: Address }) {
                 Edit Profile
               </button>
             )}
-            {isOwnProfile && userProjectsCount === 0 && (
+            {/* {isOwnProfile && userProjectsCount === 0 && (
               <CreateProjectButton className="bg-peach-400 text-black px-4 py-2 rounded-md font-medium hover:bg-peach-300 transition-colors" />
-            )}
+            )} */}
           </div>
         </div>
 
