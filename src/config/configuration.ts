@@ -15,7 +15,9 @@ import production from './production';
 // export const isAllocationDone =
 //   process.env.NEXT_PUBLIC_IS_ALLOCATION_DONE === 'true';
 
-const NETWORK_RPC_ADDRESS = process.env.NEXT_PUBLIC_NETWORK_RPC_ADDRESS;
+const NETWORK_RPC_ADDRESS =
+  process.env.NEXT_PUBLIC_NETWORK_RPC_ADDRESS ||
+  "https://polygon-rpc.com";
 
 // console.log('config-isProductReleased', isProductReleased);
 // console.log('config-isProduction', isProduction);
