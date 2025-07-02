@@ -6,6 +6,7 @@ import { useState, useMemo } from "react";
 import { useFetchAllProjects } from "@/hooks/useProjects";
 import { IProject } from "@/types/project.type";
 import ProjectCardLoader from "@/components/loaders/ProjectCardLoader";
+import { useProjectsAggregatedData } from "@/hooks/useProjectsAggregatedData";
 
 export default function Home() {
   const [searchText, setSearchText] = useState("");
@@ -15,8 +16,6 @@ export default function Home() {
   const { data: allProjects, isLoading, error } = useFetchAllProjects();
 
   const projects = useMemo(() => allProjects?.projects || [], [allProjects]);
-
-  // console.log(projects);
 
   const filteredProjects = useMemo(() => {
     if (!projects) return [];
@@ -69,6 +68,13 @@ export default function Home() {
     });
   }, [projects, searchText, selectedCategories, selectedSeasons]);
 
+  const { 
+    aggregatedData, 
+    loading: aggregatedDataLoading, 
+    error: aggregatedDataError,
+    getProjectData 
+  } = useProjectsAggregatedData(filteredProjects);
+
   if (error) {
     return (
       <div className="flex justify-center items-center min-h-screen">
@@ -78,6 +84,13 @@ export default function Home() {
       </div>
     );
   }
+
+  if (aggregatedDataError) {
+    console.warn('Aggregated data error:', aggregatedDataError);
+  }
+
+  const shouldShowProjects = !isLoading && filteredProjects.length > 0;
+  const shouldShowLoading = isLoading;
 
   return (
     <>
@@ -102,52 +115,46 @@ export default function Home() {
         <div className="mt-16">
           <h2 className="text-xl font-medium font-tusker-8 text-white mb-6 flex items-center">
             All <span className="text-peach-300 ml-2">Projects</span>
+            {aggregatedDataLoading && (
+              <span className="ml-4 text-sm text-gray-400 flex items-center gap-2">
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-peach-400"></div>
+                Loading enhanced data...
+              </span>
+            )}
           </h2>
-          {isLoading ? (
+          {shouldShowLoading ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
               {Array.from({ length: 6 }).map((_, index) => (
                 <ProjectCardLoader key={index} />
               ))}
             </div>
-          ) : (
-            <>
-              {filteredProjects.length > 0 ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
-                  {filteredProjects.map((project: IProject) => (
-                    <ProjectCard key={project.id} project={project} />
-                  ))}
-                </div>
-              ) : (
-                <div className="bg-neutral-800 rounded-xl p-8 text-center mb-16">
-                  <p className="text-neutral-300">
-                    No projects match your search criteria.
-                  </p>
-                </div>
-              )}
-            </>
-          )}
-        </div>
-
-        {/* Removing the separate "Launched Projects" section for now
-        <div className="mt-16">
-          <h2 className="text-xl font-medium font-tusker-8 text-white mb-6 flex items-center">
-            Launched <span className="text-peach-300 ml-2">Projects</span>
-          </h2>
-          {launchedProjects.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16 ">
-              {launchedProjects.map((project) => (
-                <ProjectCard key={project.id} project={project} />
+          ) : shouldShowProjects ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
+              {filteredProjects.map((project: IProject) => (
+                <ProjectCard 
+                  key={project.id} 
+                  project={project}
+                  aggregatedData={getProjectData(project.id)}
+                />
               ))}
             </div>
           ) : (
             <div className="bg-neutral-800 rounded-xl p-8 text-center mb-16">
               <p className="text-neutral-300">
-                No launched projects match your search criteria.
+                No projects match your search criteria.
               </p>
             </div>
           )}
         </div>
-        */}
+
+        {/* Performance indicator for development */}
+        {process.env.NODE_ENV === 'development' && (
+          <div className="fixed bottom-4 right-4 bg-black/80 text-white text-xs p-2 rounded">
+            Projects: {filteredProjects.length} | 
+            Aggregated: {Object.keys(aggregatedData).length} | 
+            Loading: {aggregatedDataLoading ? 'Yes' : 'No'}
+          </div>
+        )}
       </div>
     </>
   );
