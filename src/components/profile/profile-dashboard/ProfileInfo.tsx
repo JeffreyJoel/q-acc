@@ -66,7 +66,9 @@ export default function ProfileInfo({ userAddress }: { userAddress: Address }) {
 
         <div className="mt-8 mb-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="flex items-center border-peach-100/30 border-[1px] border-r-4 border-b-4 shadow-sm rounded-xl px-4 py-2">
-            <span className="text-neutral-300 mr-2">Your q/acc points</span>
+            <span className="text-neutral-300 mr-2">
+              {isOwnProfile ? "Your" : "User's"} q/acc points
+            </span>
             <div className="bg-black rounded-full w-5 h-5 flex items-center justify-center mr-1">
               <Image
                 src="/images/logos/round_logo.png"
