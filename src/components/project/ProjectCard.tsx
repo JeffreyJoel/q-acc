@@ -37,7 +37,6 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
   const [marketCap, setMarketCap] = useState<number>();
   const [marketCapLoading, setMarketCapLoading] = useState(false);
 
-  const [progress, setProgress] = useState(0);
   const [amountDonatedInRound, setAmountDonatedInRound] = useState(0);
   const [currentTokenPrice, setCurrentTokenPrice] = useState(0);
   const [roundStatus, setRoundStatus] = useState("ended");
@@ -60,7 +59,6 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
           project.abc.issuanceTokenAddress,
           config.WPOL_TOKEN_ADDRESS
         );
-        console.log(price, isListed);
 
         setIsTokenListed(isListed);
 
