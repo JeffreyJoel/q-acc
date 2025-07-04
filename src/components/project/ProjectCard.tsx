@@ -4,10 +4,9 @@ import Link from "next/link";
 import type React from "react";
 import { IProject } from "@/types/project.type";
 import {
-  calculateMarketCapChange,
-  getMarketCap,
+  getMarketCap
 } from "@/services/tokenPrice.service";
-import { useEffect, useMemo } from "react";
+import { useEffect } from "react";
 import { useState } from "react";
 import { fetchProjectDonationsById } from "@/services/donation.service";
 import {
@@ -39,7 +38,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
   const [isTokenListed, setIsTokenListed] = useState(false);
   const [marketCap, setMarketCap] = useState<number>();
   const [marketCapLoading, setMarketCapLoading] = useState(false);
-  const [marketCapChangePercentage, setMarketCapChangePercentage] = useState(0);
+
   const [progress, setProgress] = useState(0);
   const [amountDonatedInRound, setAmountDonatedInRound] = useState(0);
   const [currentTokenPrice, setCurrentTokenPrice] = useState(0);
@@ -50,6 +49,39 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
   const { data: allRounds } = useFetchAllRoundDetails();
 
   const polPriceNumber = Number(POLPrice);
+
+    // Fetch pool address and token price
+    useEffect(() => {
+      if (!project?.abc?.issuanceTokenAddress) return;
+  
+      const fetchPoolAddress = async () => {
+        try {
+          if (!project.abc?.issuanceTokenAddress) return;
+  
+          const { price, isListed } = await getPoolAddressByPair(
+            project.abc.issuanceTokenAddress,
+            config.WPOL_TOKEN_ADDRESS
+          );
+          console.log(price, isListed);
+  
+          setIsTokenListed(isListed);
+  
+          if (
+            project.abc.issuanceTokenAddress ===
+            "0x0b7a46e1af45e1eaadeed34b55b6fc00a85c7c68"
+          ) {
+            // Check for prismo token address only
+            setCurrentTokenPrice(Number(price));
+          } else {
+            setCurrentTokenPrice(1 / Number(price));
+          }
+        } catch (error) {
+          console.error("Error fetching pool address:", error);
+        }
+      };
+  
+      fetchPoolAddress();
+    }, [project?.abc?.issuanceTokenAddress]);
 
   // Fetch project donations and calculate market cap
   useEffect(() => {
@@ -63,58 +95,27 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
           0
         );
 
+        let donations: any[] = [];
         if (data && project?.abc?.fundingManagerAddress) {
-          const { donations } = data;
-          setMarketCapLoading(true);
-
-          const { marketCap: newCap, change24h } =
-            await calculateMarketCapChange(
-              donations,
-              project.abc.fundingManagerAddress,
-              activeRoundDetails?.startDate
-            );
-
-          // Validate market cap values before setting
-          if (
-            typeof newCap === "number" &&
-            !isNaN(newCap) &&
-            polPriceNumber > 0
-          ) {
-            setMarketCap(newCap * polPriceNumber);
-            setMarketCapChangePercentage(change24h || 0);
-          }
+          donations = data.donations || [];
           setTotalPOLDonated(calculateTotalDonations(donations));
-        } else if (
-          project.abc?.issuanceTokenAddress &&
-          project.abc?.fundingManagerAddress
-        ) {
-          if (isTokenListed) {
-            const marketCapData = await getMarketCap(
-              isTokenListed,
-              project.abc.issuanceTokenAddress,
-              project.abc.fundingManagerAddress
-            );
+        }
 
-            // Validate market cap data before setting
-            if (typeof marketCapData === "number" && !isNaN(marketCapData)) {
+        if (project.abc?.issuanceTokenAddress && project.abc?.fundingManagerAddress) {
+          setMarketCapLoading(true);
+          
+          const marketCapData = await getMarketCap(isTokenListed,  project.abc.issuanceTokenAddress,
+            project.abc.fundingManagerAddress, donations);
+
+          // Validate market cap data before setting
+          if (typeof marketCapData === "number" && !isNaN(marketCapData)) {
+            if(isTokenListed){
               setMarketCap(marketCapData);
             }
-          } else if (data) {
-            const { donations } = data;
-            const { marketCap: newCap, change24h } =
-              await calculateMarketCapChange(
-                donations,
-                project.abc.fundingManagerAddress
-              );
-
-            // Validate market cap values before setting
-            if (
-              typeof newCap === "number" &&
-              !isNaN(newCap) &&
-              polPriceNumber > 0
-            ) {
-              setMarketCap(newCap * polPriceNumber);
-              setMarketCapChangePercentage(change24h || 0);
+            else{
+              if(polPriceNumber && polPriceNumber > 0){
+                setMarketCap(marketCapData * polPriceNumber);
+              }
             }
           }
         }
@@ -126,14 +127,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
     };
 
     fetchProjectDonations();
-  }, [
-    project?.id,
-    project?.abc?.fundingManagerAddress,
-    project?.abc?.issuanceTokenAddress,
-    activeRoundDetails?.startDate,
-    isTokenListed,
-    polPriceNumber,
-  ]);
+  }, [project?.id, isTokenListed, polPriceNumber]);
 
   // Calculate POL cap and donation amounts
   useEffect(() => {
@@ -158,37 +152,6 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
     updatePOLCap();
   }, [activeRoundDetails, project?.id]);
 
-  // Fetch pool address and token price
-  useEffect(() => {
-    if (!project?.abc?.issuanceTokenAddress) return;
-
-    const fetchPoolAddress = async () => {
-      try {
-        if (!project.abc?.issuanceTokenAddress) return;
-
-        const { price, isListed } = await getPoolAddressByPair(
-          project.abc.issuanceTokenAddress,
-          config.WPOL_TOKEN_ADDRESS
-        );
-
-        setIsTokenListed(isListed);
-
-        if (
-          project.abc.issuanceTokenAddress ===
-          "0x0b7a46e1af45e1eaadeed34b55b6fc00a85c7c68"
-        ) {
-          // Check for prismo token address only
-          setCurrentTokenPrice(Number(price));
-        } else {
-          setCurrentTokenPrice(1 / Number(price));
-        }
-      } catch (error) {
-        console.error("Error fetching pool address:", error);
-      }
-    };
-
-    fetchPoolAddress();
-  }, [project?.abc?.issuanceTokenAddress]);
 
   // Calculate round status
   useEffect(() => {
@@ -404,8 +367,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
                     {polPriceNumber
                       ? `${
                           " " + formatNumber(polPriceNumber * totalPOLDonated)
-                        }`
-                      : ""}
+                        }`                      : ""}
                   </span>
                   <span className="text-gray-400 font-medium text-right">
                     {formatNumber(totalPOLDonated)} POL
@@ -512,3 +474,4 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
 };
 
 export default ProjectCard;
+
