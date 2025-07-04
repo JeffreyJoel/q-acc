@@ -5,8 +5,16 @@ import axios from 'axios';
 import config from '@/config/configuration';
 import { IProject } from '@/types/project.type';
 import { IEarlyAccessRound, IQfRound } from '@/types/round.type';
+import { createPublicClient, http, formatUnits as viemFormatUnits } from 'viem';
+import { polygon } from 'viem/chains';
 
 const provider = new ethers.JsonRpcProvider(config.NETWORK_RPC_ADDRESS);
+
+// Create viem public client for multicall
+const viemClient = createPublicClient({
+  chain: polygon,
+  transport: http(config.NETWORK_RPC_ADDRESS),
+});
 
 const abi = [
   {
@@ -234,20 +242,103 @@ export const useTokenPriceRangeStatus = ({
 };
 
 export async function getTokenSupplyDetails(address: string) {
-  const contract = new ethers.Contract(address, abi, provider);
-  // const price = await contract.getStaticPriceForBuying();
-  const reserveRatioForBuying = await contract.getReserveRatioForBuying();
-  const virtualCollateralSupply = await contract.getVirtualCollateralSupply();
-  const virtualIssuanceSupply = await contract.getVirtualIssuanceSupply();
-  const collateral_supply = formatUnits(virtualCollateralSupply, 18);
-  const issuance_supply = formatUnits(virtualIssuanceSupply, 18);
-  const reserve_ration = formatUnits(reserveRatioForBuying, 6);
-  return {
-    reserve_ration,
-    collateral_supply,
-    issuance_supply,
-  };
+  try {
+    // Use viem multicall to batch all 3 contract calls
+    const results = await viemClient.multicall({
+      contracts: [
+        {
+          address: address as `0x${string}`,
+          abi,
+          functionName: 'getReserveRatioForBuying',
+        },
+        {
+          address: address as `0x${string}`,
+          abi,
+          functionName: 'getVirtualCollateralSupply',
+        },
+        {
+          address: address as `0x${string}`,
+          abi,
+          functionName: 'getVirtualIssuanceSupply',
+        },
+      ],
+    });
+
+    // Extract results and handle any failures
+    const [reserveRatioResult, virtualCollateralResult, virtualIssuanceResult] = results;
+
+    if (reserveRatioResult.status === 'failure') {
+      throw new Error(`Failed to get reserve ratio: ${reserveRatioResult.error}`);
+    }
+    if (virtualCollateralResult.status === 'failure') {
+      throw new Error(`Failed to get virtual collateral supply: ${virtualCollateralResult.error}`);
+    }
+    if (virtualIssuanceResult.status === 'failure') {
+      throw new Error(`Failed to get virtual issuance supply: ${virtualIssuanceResult.error}`);
+    }
+    const collateral_supply = viemFormatUnits(virtualCollateralResult.result as bigint, 18);
+    const issuance_supply = viemFormatUnits(virtualIssuanceResult.result as bigint, 18);
+    const reserve_ration = viemFormatUnits(reserveRatioResult.result as bigint, 6);
+
+    return {
+      reserve_ration,
+      collateral_supply,
+      issuance_supply,
+    };
+  } catch (error) {
+    console.error('Error in getTokenSupplyDetails multicall:', error);
+    throw error;
+  }
 }
+
+// export async function calculateMarketCapFromDonations(
+//   donations: any[],
+//   contract_address: string,
+//   startDate?: string
+// ): Promise<number> {
+//   if (!contract_address) {
+//     throw new Error('Contract address is required');
+//   }
+
+//   try {
+//     const { reserve_ration, collateral_supply, issuance_supply } =
+//       await getTokenSupplyDetails(contract_address);
+
+//     const reserveRatio = Number(reserve_ration);
+//     let reserve = Number(collateral_supply);
+//     let supply = Number(issuance_supply);
+
+//     // Validate initial values
+//     if (reserveRatio <= 0 || reserve <= 0 || supply <= 0) {
+//       throw new Error('Invalid bonding curve parameters');
+//     }
+
+//     // Filter donations if start date is provided
+//     const filteredDonations = startDate 
+//       ? donations.filter(d => new Date(d.createdAt) > new Date(startDate))
+//       : donations;
+
+//     // Process each donation through bonding curve
+//     filteredDonations.forEach(({ amount }) => {
+//       if (amount > 0) {
+//         // Update supply using bonding curve formula
+//         supply = supply * Math.pow(1 + amount / reserve, reserveRatio);
+//         // Update reserve
+//         reserve += amount;
+//         const price = (reserve / (supply * reserveRatio)) * 1.1;
+//         const marketCap = supply * price;
+    
+//       }
+//     });
+
+//     // Calculate final price and market cap
+
+//     return Math.round(marketCap);
+//   } catch (error) {
+//     console.error('Error calculating market cap from donations:', error);
+//     throw error;
+//   }
+// }
 
 export async function calculateMarketCapChange(
   donations: any[],
@@ -301,7 +392,8 @@ export async function calculateMarketCapChange(
   // const marketCapPast = past ? past.marketCap : initialMarketCap;
   const marketCapPast = initialMarketCap;
 
-  const latestMarketCap = history[history.length - 1].marketCap;
+  const latestMarketCap = history[history.length - 1].marketCap; 
+  
 
   // const change24h = recentDonationExists
   // ? ((latestMarketCap - marketCapPast) / marketCapPast) * 100
@@ -357,11 +449,17 @@ export async function getMarketCap(
   isTokenListed: boolean,
   tokenAddress: string,
   contract_address: string,
+  donations?: any[]
 ): Promise<number> {
   if (isTokenListed) {
     const result = await fetchGeckoMarketCap(tokenAddress);
     return result?.marketCap ?? 0;
   } else {
+    if (donations && donations.length > 0) {
+      const {marketCap, change24h} = await calculateMarketCapChange(donations, contract_address);
+      return marketCap;
+    }
+    
     const { reserve_ration, collateral_supply, issuance_supply } =
       await getTokenSupplyDetails(contract_address);
 
@@ -374,3 +472,4 @@ export async function getMarketCap(
     return marketCap;
   }
 }
+
