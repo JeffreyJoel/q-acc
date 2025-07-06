@@ -117,11 +117,14 @@ const EditTeamForm: FC<EditTeamFormProps> = ({ projectId }) => {
 
     try {
       await updateProject(project);
+      console.log(project);
+      
       toast.success("Project updated successfully");
     } catch (err: any) {
       setErrorMessage(
         err.message || "Failed to update project. Please try again."
       );
+      toast.error(err.message);
     } finally {
       router.push(`/profile/${userWalletAddress}`);
     }
@@ -134,12 +137,21 @@ const EditTeamForm: FC<EditTeamFormProps> = ({ projectId }) => {
           <h1 className="text-2xl font-bold text-white mb-7">Edit Team</h1>
           <div className="flex flex-row items-center gap-6">
             <button
-              className="bg-peach-400 text-black p-3  shadow-2xl rounded-full  text-xs md:text-md min-w-[150px] flex items-center justify-center gap-2 hover:bg-peach-300"
+              className="bg-peach-400 text-black p-3  shadow-2xl rounded-full  text-xs md:text-md min-w-[150px] flex items-center justify-center gap-2 hover:bg-peach-300 disabled:opacity-50 disabled:cursor-not-allowed"
               type="submit"
               disabled={isPending}
             >
-              Save Changes
-              <IconArrowRight width={20} height={20} />
+              {isPending ? (
+                <>
+                  Saving...
+                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-black"></div>
+                </>
+              ) : (
+                <>
+                  Save Changes
+                  <IconArrowRight width={20} height={20} />
+                </>
+              )}
             </button>
           </div>
         </div>
